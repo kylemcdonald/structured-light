@@ -1,0 +1,15 @@
+#summary This page is a portal to subsections of the wiki.
+
+[Projects] Information about specific projects on this site.
+
+[Implementations] Other projects that implements structured light scanning.
+
+[Techniques] Algorithms, academic research, and hardware involved in structured light scanning.
+
+[Hardware] Cameras and projectors used for structured light scanning.
+
+[Discussion] Talk about structured light scanning.
+
+=What is structured light 3D scanning?=
+
+Structured light 3D scanning is about determining the 3D structure of a scene based on the distortion of the projected pattern. You might have seen it used for capturing Thom Yorke's face in the "[http://www.youtube.com/watch?v=8nTFjVm9sTQ House of Cards]" music video. [http://en.wikipedia.org/wiki/Structured_Light_3D_Scanner Wikipedia] has more info.
