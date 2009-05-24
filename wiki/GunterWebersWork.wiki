@@ -1,0 +1,44 @@
+*GWebMAs work towards an open source structured light scanner:
+
+
+
+= TPS_extended_I =
+
+Open source, for Processing. Based on [http://www.openprocessing.org/visuals/?visualID=1995 Three Phase Scanner] Kyle McDonald . Re - implements parts of Florian Jennet's former Processing sketch of [http://www.mediamolecule.com/2007/12/10/homebrew-3d-scanner/ Homebrew 3D Scanner] by Alex Evans (C++):
+
+This code is a module extracting 3D data from a serie of 3 phase images + a colored texture image to a textured triangle mesh. It expects the images as "phase1.png", "phase2.png", "phase3.png" and "tex.png" in a subfolder named "data". The default settings of the code expect images at 480x640 pixel.
+
+e.g:
+ -  textured triangulated mesh 
+
+ -  interpolation 
+
+ -  median filter
+
+==Keycodes:==
+===Viewmodes===
+*"1" textured triangle mesh;
+
+*"2" point cloud;
+
+*"3" solid triangle mesh;
+
+===Filters===
+
+*"i" interpolate ( fill holes);
+
+*"m" median smooth;
+
+===Specials===
+
+*"d" shows the coordinates system;
+
+*"i" saves a screenshot of the current 3D view;
+
+
+Remember: 
+It`s free...  use it for nice things. But do not blame any creator...  
+
+
+= More to follow =
+
