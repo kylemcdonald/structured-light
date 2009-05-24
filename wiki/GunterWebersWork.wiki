@@ -35,10 +35,11 @@ e.g:
 
 *"i" saves a screenshot of the current 3D view;
 
+ [http://code.google.com/p/structured-light/source/browse/#svn/trunk/TPS_extended_I Sources]
+
 
 Remember: 
 It`s free...  use it for nice things. But do not blame any creator...  
 
 
 = More to follow =
-
