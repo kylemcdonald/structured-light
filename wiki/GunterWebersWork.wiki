@@ -35,8 +35,17 @@ e.g:
 
 *"i" saves a screenshot of the current 3D view;
 
- [http://code.google.com/p/structured-light/source/browse/#svn/trunk/TPS_extended_I Sources]
+[http://code.google.com/p/structured-light/source/browse/#svn/trunk/TPS_extended_I Sources]
 
+= ThreePhaseScan =
+
+Open source, for Processing. Based on [http://www.openprocessing.org/visuals/?visualID=1995 Three Phase Scanner] Kyle McDonald and Florian Jennet's  Processing sketch of [http://www.mediamolecule.com/2007/12/10/homebrew-3d-scanner/ Homebrew 3D Scanner] by Alex Evans (C++): It is inspired by the [http://code.google.com/p/sandtable/ Sandtable] project of the Redfish Group.
+
+This code creates phaseshifted patterns to project onto the object, captures the needed images and extracts 3D data to a textured triangle mesh.
+
+-----Documentation coming soon------
+
+[http://code.google.com/p/structured-light/source/browse/#svn/trunk/ThreePhaseScan_24_05 Sources]
 
 Remember: 
 It`s free...  use it for nice things. But do not blame any creator...  
