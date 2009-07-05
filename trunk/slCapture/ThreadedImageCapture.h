@@ -17,6 +17,9 @@ public:
 		startSeconds = 0;
 		grabber.listDevices();
 	}
+	int getFrameNumber() {
+		return frameNumber;
+	}
 	float getFrameRate() {
 		return (float) frameNumber / (ofGetElapsedTimef() - startSeconds);
 	}

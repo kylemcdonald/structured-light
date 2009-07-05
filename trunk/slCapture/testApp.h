@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ThreadedImageCapture.h"
+#include "ThreePhaseGenerator.h"
 
 class testApp : public ofBaseApp {
 public:
@@ -10,5 +11,6 @@ public:
 	void update();
 	void draw();
 
+	ThreePhaseGenerator generator;
 	ThreadedImageCapture capture;
 };

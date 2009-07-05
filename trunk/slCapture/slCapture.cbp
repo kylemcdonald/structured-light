@@ -78,8 +78,10 @@
 		</ExtraCommands>
 		<Unit filename="..\..\..\addons\ofxThread\src\ofxThread.cpp" />
 		<Unit filename="..\..\..\addons\ofxThread\src\ofxThread.h" />
+		<Unit filename="PatternGenerator.h" />
 		<Unit filename="ThreadedImageCapture.h" />
 		<Unit filename="ThreadedImageSaver.h" />
+		<Unit filename="ThreePhaseGenerator.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="testApp.cpp" />
 		<Unit filename="testApp.h" />
