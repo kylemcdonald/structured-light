@@ -5,13 +5,13 @@ testApp::testApp(){
 }
 
 /*
- next:
-	check sync with camera
-	compute mesh in post
-	compute mesh in real time
+	1 compute mesh in post
+	2 compute mesh in real time
 */
 
 void testApp::setup(){
+	ofSetBackgroundAuto(false);
+	font.loadFont("../trebuchet.ttf", 256, false, false);
 	ofSetVerticalSync(true);
 	generator.setWavelength(32);
 	generator.setOrientation(GENERATOR_VERTICAL);
@@ -23,7 +23,8 @@ void testApp::update(){
 }
 
 void testApp::draw(){
-	// this can be optimized by only drawing
-	// when there is a change (isFrameNew())
-	generator.get(capture.getFrameNumber() % generator.size()).draw(0, 0);
+	int cur = capture.getEffectiveFrameNumber();
+
+	ofSetColor(255, 255, 255);
+	generator.get(cur % generator.size()).draw(0, 0);
 }

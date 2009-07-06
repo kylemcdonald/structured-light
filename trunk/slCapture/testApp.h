@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ThreadedImageCapture.h"
 #include "ThreePhaseGenerator.h"
+#include "GlobalLogger.h"
 
 class testApp : public ofBaseApp {
 public:
@@ -13,4 +14,5 @@ public:
 
 	ThreePhaseGenerator generator;
 	ThreadedImageCapture capture;
+	ofTrueTypeFont font;
 };
