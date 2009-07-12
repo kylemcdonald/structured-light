@@ -46,6 +46,8 @@
 			<Add directory="..\..\..\libs\openFrameworks\video" />
 			<Add directory="..\..\..\libs\openFrameworks\communication" />
 			<Add directory="..\..\..\libs\poco\includes" />
+			<Add directory="..\..\..\addons\ofx3DUtils\src" />
+			<Add directory="..\..\..\addons\ofxVectorMath\src" />
 		</Compiler>
 		<Linker>
 			<Add option="../../../addons/ofxOpenCv/libs/opencv/lib/win32/libcv.a" />
@@ -83,6 +85,13 @@
 			<Add after="cmd /c if not exist bin\data mkdir bin\data" />
 			<Add after='xcopy /e /i /y &quot;$(PROJECT_DIR)..\..\..\other\export\coreDlls_cbWin32\*.dll&quot;  bin' />
 		</ExtraCommands>
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofx3DGraphics.cpp" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofx3DGraphics.h" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofx3DUtils.h" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxCamera.cpp" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxCamera.h" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxLight.cpp" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxLight.h" />
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxCvBlob.h" />
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxCvColorImage.cpp" />
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxCvColorImage.h" />
@@ -99,6 +108,21 @@
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxCvShortImage.cpp" />
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxCvShortImage.h" />
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxOpenCv.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxMatrix3x3.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxMatrix3x3.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint2f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint2f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint3f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint3f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint4f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint4f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec2f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec2f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec3f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec3f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec4f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec4f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVectorMath.h" />
 		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxml.cpp" />
 		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h" />
 		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
@@ -108,6 +132,7 @@
 		<Unit filename="ThreePhaseDecoder.cpp" />
 		<Unit filename="ThreePhaseDecoder.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="ofxEasyCam.h" />
 		<Unit filename="testApp.cpp" />
 		<Unit filename="testApp.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppBaseWindow.h" />

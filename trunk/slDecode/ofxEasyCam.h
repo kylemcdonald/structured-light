@@ -8,10 +8,10 @@ private:
 	float dmouseX, dmouseY, pmouseX, pmouseY;
 	int mouseButton;
 public:
-	float orbitSpeed;
-	float panSpeed;
+	float zoomSpeed, orbitSpeed, panSpeed;
 
 	ofxEasyCam() {
+		zoomSpeed = 1;
 		orbitSpeed = .2;
 		panSpeed = 1;
 		ofAddListener(ofEvents.mousePressed, this, &ofxEasyCam::mousePressed);
@@ -37,13 +37,14 @@ public:
 				rely,
 				orbitSpeed * -dmouseX);
 		} else if(mouseButton == 2) {
-			moveLocal(0, 0, dmouseY);
+			ofxVec3f offset = getDir().normalize() * (zoomSpeed * dmouseY);
+			eye(getEye() - offset);
+			moveGlobal(offset);
 		} else if(mouseButton == 3) {
 			ofxVec3f offset =
 				(relx * dmouseX * panSpeed) +
 				(rely * dmouseY * panSpeed);
 			moveGlobal(offset);
-			eye(getEye() + offset);
 		}
 		dmouseX *= .9;
 		dmouseY *= .9;
