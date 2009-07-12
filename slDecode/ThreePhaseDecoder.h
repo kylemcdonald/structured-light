@@ -5,7 +5,18 @@
 #include <iostream>
 using namespace std;
 
-struct int2 {
+/*
+	Possible optimizations:
+	- working with *s instead of **s
+	- replacing toProcess with a fixed-capacity deque
+	-using an int[2] instead of intPoint
+
+	Next:
+	- how long does decoding take?
+	- capture + playback three phase video
+*/
+
+struct intPoint {
 	int x;
 	int y;
 };
@@ -30,9 +41,9 @@ private:
 	float noiseTolerance;
 	int width, height;
 
-	deque<int2> toProcess;
+	deque<intPoint> toProcess;
 
-	float** _wrapphase;
-	bool** _mask;
-	bool** _process;
+	float** wrapphase;
+	bool** mask;
+	bool** process;
 };
