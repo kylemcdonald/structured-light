@@ -7,10 +7,10 @@ void testApp::setup(){
 	FastTimer fastTimer;
 
 	fastTimer.start();
-	for(int i = 0; i < 100; i++)
+	for(int i = 0; i < 50; i++)
 		decoder.decode();
 	fastTimer.stop();
-	cout << (100 / fastTimer.getSeconds()) << " fps" << endl;
+	cout << (50 / fastTimer.getSeconds()) << " fps" << endl;
 
 	zscale = 140;
 	zskew = 23;
