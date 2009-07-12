@@ -2,7 +2,15 @@
 
 void testApp::setup(){
 	decoder.setup(ofGetWidth(), ofGetHeight());
-	decoder.decode();
+	decoder.loadImages();
+
+	FastTimer fastTimer;
+
+	fastTimer.start();
+	for(int i = 0; i < 100; i++)
+		decoder.decode();
+	fastTimer.stop();
+	cout << (100 / fastTimer.getSeconds()) << " fps" << endl;
 
 	zscale = 140;
 	zskew = 23;
@@ -22,15 +30,15 @@ void testApp::draw(){
 	int width = decoder.getWidth();
 	int height = decoder.getHeight();
 
-	bool** _process = decoder.getProcess();
-	float** _wrapphase = decoder.getWrapPhase();
+	bool** mask = decoder.getMask();
+	float** wrapphase = decoder.getWrapPhase();
   int step = 2;
   glBegin(GL_POINTS);
   for (int y = step; y < height; y += step) {
     float planephase = 0.5 - (y - (height / 2)) / zskew;
     for (int x = step; x < width; x += step) {
-      if (!_process[y][x] && !_process[y - step][x - step]) {
-        glVertex3f(x, y, (_wrapphase[y][x] - planephase) * zscale);
+      if (!mask[y][x]) {
+        glVertex3f(x, y, (wrapphase[y][x] - planephase) * zscale);
       }
     }
   }

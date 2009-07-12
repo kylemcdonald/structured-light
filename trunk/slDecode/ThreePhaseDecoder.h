@@ -28,13 +28,14 @@ public:
 	int getWidth();
 	int getHeight();
 	bool** getProcess();
+	bool** getMask();
 	float** getWrapPhase();
 	void decode();
 	~ThreePhaseDecoder();
 	ofImage phase1Image, phase2Image, phase3Image;
 private:
 	void phaseUnwrapAll();
-	float phaseUnwrap(float phase1, float phase2, float phase3);
+	inline float phaseUnwrap(unsigned char phase1, unsigned char phase2, unsigned char phase3);
 	void propagatePhases();
 	void unwrap(float r, int x, int y);
 
