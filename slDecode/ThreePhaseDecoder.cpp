@@ -44,12 +44,15 @@ bool** ThreePhaseDecoder::getProcess() {
 	return process;
 }
 
+bool** ThreePhaseDecoder::getMask() {
+	return mask;
+}
+
 float** ThreePhaseDecoder::getWrapPhase() {
 	return wrapphase;
 }
 
 void ThreePhaseDecoder::decode() {
-	loadImages();
   phaseUnwrapAll();
   propagatePhases();
 }
@@ -72,28 +75,27 @@ void ThreePhaseDecoder::phaseUnwrapAll() {
     for (int x = 0; x < width; x++) {
       int i = x + y * width;
 
-      float phase1 = phase1Pixels[i] / 255.;
-      float phase2 = phase2Pixels[i] / 255.;
-      float phase3 = phase3Pixels[i] / 255.;
+      float phaseSum = phase1Pixels[i] + phase2Pixels[i] + phase3Pixels[i];
+      float phaseRange =
+				maximum(phase1Pixels[i], phase2Pixels[i], phase3Pixels[i]) -
+				minimum(phase1Pixels[i], phase2Pixels[i], phase3Pixels[i]);
 
-      float phaseSum = phase1 + phase2 + phase3;
-      float phaseRange = maximum(phase1, phase2, phase3) - minimum(phase1, phase2, phase3);
-
-      // avoid the noise floor
-      float gamma = phaseRange / phaseSum;
-      mask[y][x] = gamma < noiseTolerance;
-      process[y][x] = true;
-
-      float theta = phaseUnwrap(phase1, phase2, phase3);
-      wrapphase[y][x] = theta;
+      if(phaseRange / phaseSum < noiseTolerance) {
+				mask[y][x] = true;
+				process[y][x] = false;
+			} else {
+				mask[y][x] = false;
+				process[y][x] = true;
+				wrapphase[y][x] = phaseUnwrap(phase1Pixels[i], phase2Pixels[i],	phase3Pixels[i]);
+			}
     }
   }
 }
 
-float ThreePhaseDecoder::phaseUnwrap(float phase1, float phase2, float phase3) {
+float ThreePhaseDecoder::phaseUnwrap(unsigned char phase1, unsigned char phase2, unsigned char phase3) {
   bool flip;
   int off;
-  float maxPhase, medPhase, minPhase;
+  unsigned char maxPhase, medPhase, minPhase;
   if(phase2 <= phase3 && phase3 <= phase1) {
     flip = false;
     off = 0;
@@ -133,7 +135,7 @@ float ThreePhaseDecoder::phaseUnwrap(float phase1, float phase2, float phase3) {
   }
   float theta = 0;
   if(maxPhase != minPhase)
-    theta = (medPhase-minPhase) / (maxPhase-minPhase);
+    theta = (float) (medPhase-minPhase) / (maxPhase-minPhase);
   if (flip)
     theta = -theta;
   theta += off;
@@ -158,19 +160,19 @@ void ThreePhaseDecoder::propagatePhases() {
 
     // propagate in each direction, so long as
     // it isn't masked and it hasn't already been processed
-    if (y > 0 && !mask[y-1][x] && process[y-1][x])
+    if (y > 0 && process[y-1][x])
       unwrap(r, x, y-1);
-    if (y < height-1 && !mask[y+1][x] && process[y+1][x])
+    if (y < height-1 && process[y+1][x])
       unwrap(r, x, y+1);
-    if (x > 0 && !mask[y][x-1] && process[y][x-1])
+    if (x > 0 && process[y][x-1])
       unwrap(r, x-1, y);
-    if (x < width-1 && !mask[y][x+1] && process[y][x+1])
+    if (x < width-1 && process[y][x+1])
       unwrap(r, x+1, y);
   }
 }
 
 void ThreePhaseDecoder::unwrap(float r, int x, int y) {
-  float frac = r - floor(r);
+	float frac = r - floorf(r);
   float myr = wrapphase[y][x] - frac;
   if (myr > .5)
     myr--;
