@@ -129,6 +129,7 @@
 		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
 		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
 		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
+		<Unit filename="FastTimer.h" />
 		<Unit filename="ThreePhaseDecoder.cpp" />
 		<Unit filename="ThreePhaseDecoder.h" />
 		<Unit filename="main.cpp" />
