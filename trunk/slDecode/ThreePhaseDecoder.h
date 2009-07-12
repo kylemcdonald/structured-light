@@ -1,20 +1,7 @@
 #pragma once
 
 #include "ofImage.h"
-#include <deque>
-#include <iostream>
-using namespace std;
-
-/*
-	Possible optimizations:
-	- working with *s instead of **s
-	- replacing toProcess with a fixed-capacity deque
-	-using an int[2] instead of intPoint
-
-	Next:
-	- how long does decoding take?
-	- capture + playback three phase video
-*/
+#include "FastQueue.h"
 
 struct intPoint {
 	int x;
@@ -35,14 +22,17 @@ public:
 	ofImage phase1Image, phase2Image, phase3Image;
 private:
 	void phaseUnwrapAll();
-	inline float phaseUnwrap(unsigned char phase1, unsigned char phase2, unsigned char phase3);
+	inline float phaseUnwrap(
+		const unsigned char& phase1,
+		const unsigned char& phase2,
+		const unsigned char& phase3);
 	void propagatePhases();
-	void unwrap(float r, int x, int y);
+	inline void unwrap(const float& r, int x, int y);
 
 	float noiseTolerance;
 	int width, height;
 
-	deque<intPoint> toProcess;
+	FastQueue<intPoint> toProcess;
 
 	float** wrapphase;
 	bool** mask;

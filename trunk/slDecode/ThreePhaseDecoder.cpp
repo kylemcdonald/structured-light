@@ -17,6 +17,8 @@ void ThreePhaseDecoder::setup(int width, int height, float noiseTolerance) {
 	phase2Image.allocate(width, height, OF_IMAGE_COLOR);
 	phase3Image.allocate(width, height, OF_IMAGE_COLOR);
 
+	toProcess.reserve(height * width);
+
 	wrapphase = new float*[height];
 	mask = new bool*[height];
 	process = new bool*[height];
@@ -92,7 +94,10 @@ void ThreePhaseDecoder::phaseUnwrapAll() {
   }
 }
 
-float ThreePhaseDecoder::phaseUnwrap(unsigned char phase1, unsigned char phase2, unsigned char phase3) {
+float ThreePhaseDecoder::phaseUnwrap(
+		const unsigned char& phase1,
+		const unsigned char& phase2,
+		const unsigned char& phase3) {
   bool flip;
   int off;
   unsigned char maxPhase, medPhase, minPhase;
@@ -138,7 +143,7 @@ float ThreePhaseDecoder::phaseUnwrap(unsigned char phase1, unsigned char phase2,
     theta = (float) (medPhase-minPhase) / (maxPhase-minPhase);
   if (flip)
     theta = -theta;
-  theta += off;
+	theta += off;
   return theta / 6;
 }
 
@@ -154,12 +159,12 @@ void ThreePhaseDecoder::propagatePhases() {
   while (!toProcess.empty()) {
     intPoint xy = toProcess.front();
     toProcess.pop_front();
-    int x = xy.x;
-    int y = xy.y;
-    float r = wrapphase[y][x];
+    int& x = xy.x;
+    int& y = xy.y;
+    float& r = wrapphase[y][x];
 
     // propagate in each direction, so long as
-    // it isn't masked and it hasn't already been processed
+    // it hasn't already been processed
     if (y > 0 && process[y-1][x])
       unwrap(r, x, y-1);
     if (y < height-1 && process[y+1][x])
@@ -171,12 +176,12 @@ void ThreePhaseDecoder::propagatePhases() {
   }
 }
 
-void ThreePhaseDecoder::unwrap(float r, int x, int y) {
+void ThreePhaseDecoder::unwrap(const float& r, int x, int y) {
 	float frac = r - floorf(r);
   float myr = wrapphase[y][x] - frac;
   if (myr > .5)
     myr--;
-  if (myr < -.5)
+  else if (myr < -.5)
     myr++;
 
   wrapphase[y][x] = myr + r;

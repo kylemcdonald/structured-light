@@ -13,7 +13,9 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -21,6 +23,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-O3" />
 			<Add option="-Wno-multichar" />
 			<Add directory="..\..\..\addons\ofxXmlSettings\src" />
 			<Add directory="..\..\..\addons\ofxXmlSettings\libs" />
@@ -129,6 +132,7 @@
 		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
 		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
 		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
+		<Unit filename="FastQueue.h" />
 		<Unit filename="FastTimer.h" />
 		<Unit filename="ThreePhaseDecoder.cpp" />
 		<Unit filename="ThreePhaseDecoder.h" />
