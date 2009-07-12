@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ThreePhaseDecoder.h"
+#include "ofxEasyCam.h"
 
 class testApp : public ofBaseApp {
 public:
@@ -10,6 +11,7 @@ public:
 	void draw();
 
 	ThreePhaseDecoder decoder;
-
 	float zscale, zskew;
+
+	ofxEasyCam camera;
 };

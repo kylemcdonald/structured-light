@@ -4,26 +4,23 @@ void testApp::setup(){
 	decoder.setup(ofGetWidth(), ofGetHeight());
 	decoder.decode();
 
-	ofBackground(0, 0, 0);
-	ofSetColor(255, 255, 255);
-
 	zscale = 140;
 	zskew = 23;
+
+	camera.setup(this, 1024);
+
+	ofBackground(0, 0, 0);
+	ofSetColor(255, 255, 255);
 }
 
 void testApp::update(){
 }
 
 void testApp::draw(){
+  camera.draw();
+
 	int width = decoder.getWidth();
 	int height = decoder.getHeight();
-
-	float distance = ofMap(mouseY, 0, height, 0, 500);
-	float theta = ofMap(mouseX, 0, width, -PI, PI);
-	gluLookAt(
-		distance * sin(theta), 0, distance * cos(theta),
-		0, 0, 0,
-		0, 1, 0);
 
 	bool** _process = decoder.getProcess();
 	float** _wrapphase = decoder.getWrapPhase();
