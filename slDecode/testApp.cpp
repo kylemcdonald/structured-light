@@ -1,21 +1,20 @@
 #include "testApp.h"
 
 void testApp::setup(){
-	decoder.setup(ofGetWidth(), ofGetHeight());
-	decoder.loadImages();
+	decoder.setup(ofGetWidth(), ofGetHeight(), 23, 140);
+	decoder.loadImages("phase1.jpg", "phase2.jpg", "phase3.jpg");
 
 	FastTimer fastTimer;
 
+	float itr = 50;
 	fastTimer.start();
-	for(int i = 0; i < 50; i++)
+	for(int i = 0; i < itr; i++)
 		decoder.decode();
 	fastTimer.stop();
-	cout << (50 / fastTimer.getSeconds()) << " fps" << endl;
+	float fps = (itr / fastTimer.getSeconds());
+	cout << fps << " fps / " << (1000 / fps) << " ms" << endl;
 
-	zscale = 140;
-	zskew = 23;
-
-	camera.setup(this, 1024);
+	camera.setup(this, 512);
 
 	ofBackground(0, 0, 0);
 	ofSetColor(255, 255, 255);
@@ -31,16 +30,12 @@ void testApp::draw(){
 	int height = decoder.getHeight();
 
 	bool** mask = decoder.getMask();
-	float** wrapphase = decoder.getWrapPhase();
+	float** depth = decoder.getDepth();
   int step = 2;
   glBegin(GL_POINTS);
-  for (int y = step; y < height; y += step) {
-    float planephase = 0.5 - (y - (height / 2)) / zskew;
-    for (int x = step; x < width; x += step) {
-      if (!mask[y][x]) {
-        glVertex3f(x, y, (wrapphase[y][x] - planephase) * zscale);
-      }
-    }
-  }
+  for (int y = step; y < height; y += step)
+    for (int x = step; x < width; x += step)
+      if (!mask[y][x])
+        glVertex3f(x, y, depth[y][x]);
   glEnd();
 }
