@@ -8,9 +8,11 @@
 	(a < b && a < c ? a : \
 	(b < a && b < c ? b : c))
 
-void ThreePhaseDecoder::setup(int width, int height, float noiseTolerance) {
+void ThreePhaseDecoder::setup(int width, int height, float zskew, float zscale, float noiseTolerance) {
 	this->width = width;
 	this->height = height;
+	this->zskew = zskew;
+	this->zscale = zscale;
 	this->noiseTolerance = noiseTolerance;
 
 	phase1Image.allocate(width, height, OF_IMAGE_COLOR);
@@ -22,15 +24,12 @@ void ThreePhaseDecoder::setup(int width, int height, float noiseTolerance) {
 	wrapphase = new float*[height];
 	mask = new bool*[height];
 	process = new bool*[height];
+	depth = new float*[height];
 	for(int i = 0; i < height; i++) {
 		wrapphase[i] = new float[width];
 		mask[i] = new bool[width];
 		process[i] = new bool[width];
-		for(int j = 0; j < width; j++) {
-			wrapphase[i][j] = 0;
-			mask[i][j] = false;
-			process[i][j] = false;
-		}
+		depth[i] = new float[width];
 	}
 }
 
@@ -42,34 +41,35 @@ int ThreePhaseDecoder::getHeight() {
 	return height;
 }
 
-bool** ThreePhaseDecoder::getProcess() {
-	return process;
-}
-
 bool** ThreePhaseDecoder::getMask() {
 	return mask;
 }
 
-float** ThreePhaseDecoder::getWrapPhase() {
-	return wrapphase;
+float** ThreePhaseDecoder::getDepth() {
+	return depth;
 }
 
 void ThreePhaseDecoder::decode() {
-  phaseUnwrapAll();
-  propagatePhases();
+  phaseWrap();
+  phaseUnwrap();
+  makeDepth();
 }
 
-void ThreePhaseDecoder::loadImages() {
-  phase1Image.loadImage("phase1.jpg");
-  phase2Image.loadImage("phase2.jpg");
-  phase3Image.loadImage("phase3.jpg");
+void ThreePhaseDecoder::loadImages(
+	string phase1Filename,
+	string phase2Filename,
+	string phase3Filename) {
+
+  phase1Image.loadImage(phase1Filename);
+  phase2Image.loadImage(phase2Filename);
+  phase3Image.loadImage(phase3Filename);
 
   phase1Image.setImageType(OF_IMAGE_GRAYSCALE);
   phase2Image.setImageType(OF_IMAGE_GRAYSCALE);
   phase3Image.setImageType(OF_IMAGE_GRAYSCALE);
 }
 
-void ThreePhaseDecoder::phaseUnwrapAll() {
+void ThreePhaseDecoder::phaseWrap() {
 	unsigned char* phase1Pixels = phase1Image.getPixels();
 	unsigned char* phase2Pixels = phase2Image.getPixels();
 	unsigned char* phase3Pixels = phase3Image.getPixels();
@@ -88,13 +88,13 @@ void ThreePhaseDecoder::phaseUnwrapAll() {
 			} else {
 				mask[y][x] = false;
 				process[y][x] = true;
-				wrapphase[y][x] = phaseUnwrap(phase1Pixels[i], phase2Pixels[i],	phase3Pixels[i]);
+				wrapphase[y][x] = phaseWrap(phase1Pixels[i], phase2Pixels[i],	phase3Pixels[i]);
 			}
     }
   }
 }
 
-float ThreePhaseDecoder::phaseUnwrap(
+float ThreePhaseDecoder::phaseWrap(
 		const unsigned char& phase1,
 		const unsigned char& phase2,
 		const unsigned char& phase3) {
@@ -147,7 +147,7 @@ float ThreePhaseDecoder::phaseUnwrap(
   return theta / 6;
 }
 
-void ThreePhaseDecoder::propagatePhases() {
+void ThreePhaseDecoder::phaseUnwrap() {
   int startX = width / 2;
   int startY = height / 2;
 
@@ -166,17 +166,17 @@ void ThreePhaseDecoder::propagatePhases() {
     // propagate in each direction, so long as
     // it hasn't already been processed
     if (y > 0 && process[y-1][x])
-      unwrap(r, x, y-1);
+      phaseUnwrap(r, x, y-1);
     if (y < height-1 && process[y+1][x])
-      unwrap(r, x, y+1);
+      phaseUnwrap(r, x, y+1);
     if (x > 0 && process[y][x-1])
-      unwrap(r, x-1, y);
+      phaseUnwrap(r, x-1, y);
     if (x < width-1 && process[y][x+1])
-      unwrap(r, x+1, y);
+      phaseUnwrap(r, x+1, y);
   }
 }
 
-void ThreePhaseDecoder::unwrap(const float& r, int x, int y) {
+void ThreePhaseDecoder::phaseUnwrap(const float& r, int x, int y) {
 	float frac = r - floorf(r);
   float myr = wrapphase[y][x] - frac;
   if (myr > .5)
@@ -190,8 +190,17 @@ void ThreePhaseDecoder::unwrap(const float& r, int x, int y) {
   toProcess.push_back(cur);
 }
 
+void ThreePhaseDecoder::makeDepth() {
+	for (int y = 0; y < height; y ++) {
+    float planephase = 0.5 - (y - (height / 2)) / zskew;
+    for (int x = 0; x < width; x++)
+      if (!mask[y][x])
+        depth[y][x] = (wrapphase[y][x] - planephase) * zscale;
+  }
+}
+
 ThreePhaseDecoder::~ThreePhaseDecoder() {
 	for(int i = 0; i < height; i++)
-		delete [] wrapphase[i], mask[i], process[i];
-	delete [] wrapphase, mask, process;
+		delete [] wrapphase[i], mask[i], process[i], depth[i];
+	delete [] wrapphase, mask, process, depth;
 }
