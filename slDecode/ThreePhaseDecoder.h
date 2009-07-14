@@ -19,7 +19,8 @@ public:
 	int getHeight();
 	bool** getMask();
 	float** getDepth();
-	void decode();
+	unsigned char** getColor();
+	void decode(int offset = 0);
 	~ThreePhaseDecoder();
 	ofImage phase1Image, phase2Image, phase3Image;
 private:
@@ -30,7 +31,7 @@ private:
 		const unsigned char& phase3);
 	void phaseUnwrap();
 	inline void phaseUnwrap(const float& r, int x, int y);
-	void makeDepth();
+	void makeDepth(int offset);
 
 	float noiseTolerance, zskew, zscale;
 	int width, height;
@@ -41,4 +42,5 @@ private:
 	bool** mask;
 	bool** process;
 	float** depth;
+	unsigned char** color;
 };
