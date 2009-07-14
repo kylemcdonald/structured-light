@@ -15,21 +15,19 @@ void ThreePhaseDecoder::setup(int width, int height, float zskew, float zscale, 
 	this->zscale = zscale;
 	this->noiseTolerance = noiseTolerance;
 
-	phase1Image.allocate(width, height, OF_IMAGE_COLOR);
-	phase2Image.allocate(width, height, OF_IMAGE_COLOR);
-	phase3Image.allocate(width, height, OF_IMAGE_COLOR);
-
 	toProcess.reserve(height * width);
 
 	wrapphase = new float*[height];
 	mask = new bool*[height];
 	process = new bool*[height];
 	depth = new float*[height];
+	color = new unsigned char*[height];
 	for(int i = 0; i < height; i++) {
 		wrapphase[i] = new float[width];
 		mask[i] = new bool[width];
 		process[i] = new bool[width];
 		depth[i] = new float[width];
+		color[i] = new unsigned char[width * 3];
 	}
 }
 
@@ -49,10 +47,8 @@ float** ThreePhaseDecoder::getDepth() {
 	return depth;
 }
 
-void ThreePhaseDecoder::decode() {
-  phaseWrap();
-  phaseUnwrap();
-  makeDepth();
+unsigned char** ThreePhaseDecoder::getColor() {
+	return color;
 }
 
 void ThreePhaseDecoder::loadImages(
@@ -64,9 +60,35 @@ void ThreePhaseDecoder::loadImages(
   phase2Image.loadImage(phase2Filename);
   phase3Image.loadImage(phase3Filename);
 
+	unsigned char* phase1Pixels = phase1Image.getPixels();
+	unsigned char* phase2Pixels = phase2Image.getPixels();
+	unsigned char* phase3Pixels = phase3Image.getPixels();
+
+  for(int y = 0; y < height; y++) {
+  	int offset = y * width * 3;
+  	for(int xc = 0; xc < width * 3; xc++) {
+  		color[y][xc] = maximum(
+				phase1Pixels[offset],
+				phase2Pixels[offset],
+				phase3Pixels[offset]);
+  		offset++;
+  	}
+  }
+
+	// this could be sped up by loading the files into
+	// a color image, and doing our own color->grayscale
+	// conversion. that cuts down on re-allocation and
+	// conversion time.
+
   phase1Image.setImageType(OF_IMAGE_GRAYSCALE);
   phase2Image.setImageType(OF_IMAGE_GRAYSCALE);
   phase3Image.setImageType(OF_IMAGE_GRAYSCALE);
+}
+
+void ThreePhaseDecoder::decode(int offset) {
+  phaseWrap();
+  phaseUnwrap();
+  makeDepth(offset);
 }
 
 void ThreePhaseDecoder::phaseWrap() {
@@ -190,9 +212,10 @@ void ThreePhaseDecoder::phaseUnwrap(const float& r, int x, int y) {
   toProcess.push_back(cur);
 }
 
-void ThreePhaseDecoder::makeDepth() {
+void ThreePhaseDecoder::makeDepth(int offset) {
 	for (int y = 0; y < height; y ++) {
     float planephase = 0.5 - (y - (height / 2)) / zskew;
+    planephase += ((float) offset) / 3.;
     for (int x = 0; x < width; x++)
       if (!mask[y][x])
         depth[y][x] = (wrapphase[y][x] - planephase) * zscale;
@@ -201,6 +224,6 @@ void ThreePhaseDecoder::makeDepth() {
 
 ThreePhaseDecoder::~ThreePhaseDecoder() {
 	for(int i = 0; i < height; i++)
-		delete [] wrapphase[i], mask[i], process[i], depth[i];
-	delete [] wrapphase, mask, process, depth;
+		delete [] wrapphase[i], mask[i], process[i], depth[i], color[i];
+	delete [] wrapphase, mask, process, depth, color;
 }

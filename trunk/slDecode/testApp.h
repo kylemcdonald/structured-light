@@ -10,9 +10,9 @@ public:
 	void setup();
 	void update();
 	void draw();
+	void timeDecoder();
 
 	ThreePhaseDecoder decoder;
-	float zscale, zskew;
-
+	vector<string> files;
 	ofxEasyCam camera;
 };
