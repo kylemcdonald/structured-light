@@ -23,6 +23,9 @@ public:
 	void decode(int offset = 0);
 	~ThreePhaseDecoder();
 	ofImage phase1Image, phase2Image, phase3Image;
+
+	bool wide;
+	float noiseTolerance, zskew, zscale;
 private:
 	void phaseWrap();
 	inline float phaseWrap(
@@ -33,7 +36,6 @@ private:
 	inline void phaseUnwrap(const float& r, int x, int y);
 	void makeDepth(int offset);
 
-	float noiseTolerance, zskew, zscale;
 	int width, height;
 
 	FastQueue<intPoint> toProcess;

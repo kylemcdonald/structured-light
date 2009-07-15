@@ -29,6 +29,8 @@ void ThreePhaseDecoder::setup(int width, int height, float zskew, float zscale, 
 		depth[i] = new float[width];
 		color[i] = new unsigned char[width * 3];
 	}
+
+	wide = false;
 }
 
 int ThreePhaseDecoder::getWidth() {
@@ -213,13 +215,24 @@ void ThreePhaseDecoder::phaseUnwrap(const float& r, int x, int y) {
 }
 
 void ThreePhaseDecoder::makeDepth(int offset) {
-	for (int y = 0; y < height; y ++) {
-    float planephase = 0.5 - (y - (height / 2)) / zskew;
-    planephase += ((float) offset) / 3.;
-    for (int x = 0; x < width; x++)
-      if (!mask[y][x])
-        depth[y][x] = (wrapphase[y][x] - planephase) * zscale;
-  }
+	if(wide) {
+		for (int y = 0; y < height; y ++) {
+			for (int x = 0; x < width; x++) {
+				float planephase = 0.5 - (x - (width / 2)) / -zskew;
+				planephase += ((float) offset) / 3.;
+				if (!mask[y][x])
+					depth[y][x] = (wrapphase[y][x] - planephase) * zscale;
+			}
+		}
+	} else {
+		for (int y = 0; y < height; y ++) {
+			float planephase = 0.5 - (y - (height / 2)) / zskew;
+			planephase += ((float) offset) / 3.;
+			for (int x = 0; x < width; x++)
+				if (!mask[y][x])
+					depth[y][x] = (wrapphase[y][x] - planephase) * zscale;
+		}
+	}
 }
 
 ThreePhaseDecoder::~ThreePhaseDecoder() {

@@ -16,15 +16,25 @@ void testApp::timeDecoder() {
 }
 
 void testApp::setup() {
-	decoder.setup(ofGetWidth(), ofGetHeight(), 24, 140);
+	decoder.setup(480, 640, 23.8, 172.5, 0.15);
+	decoder.wide = false;
+	startOffset = 0;
+	modifyDecoder = false;
 
-	files.push_back("phase1.jpg");
-	files.push_back("phase2.jpg");
-	files.push_back("phase3.jpg");
+	ofxDirList dir;
+	int n = dir.listDir(".");
+	cout << n << " images to play." << endl;
+	for(int i = 0; i < n; i++) {
+		cout << "adding " << dir.getName(i) << endl;
+		files.push_back(dir.getName(i));
+	}
+	std::sort(files.begin(), files.end());
 
-	timeDecoder();
+	//timeDecoder();
 
 	camera.setup(this, 512);
+
+	recording = false;
 
 	ofBackground(0, 0, 0);
 	ofSetColor(255, 255, 255);
@@ -37,10 +47,15 @@ void testApp::update() {
 		files[(position + 0) % size],
 		files[(position + 1) % size],
 		files[(position + 2) % size]);
-	decoder.decode((position + 1) % 3);
+	decoder.decode((position + startOffset) % 3);
 }
 
 void testApp::draw() {
+	if(modifyDecoder) {
+		decoder.zskew = ofMap(mouseY, 0, ofGetHeight(), 10, 60);
+		decoder.zscale = ofMap(mouseX, 0, ofGetWidth(), 10, 250);
+	}
+
   camera.draw();
 
 	int width = decoder.getWidth();
@@ -49,7 +64,8 @@ void testApp::draw() {
 	bool** mask = decoder.getMask();
 	float** depth = decoder.getDepth();
 	unsigned char** color = decoder.getColor();
-  int step = 2;
+  int step = 1;
+
   glBegin(GL_POINTS);
   for (int y = step; y < height; y += step)
     for (int x = step; x < width; x += step)
@@ -58,4 +74,32 @@ void testApp::draw() {
         glVertex3f(x, y, depth[y][x]);
       }
   glEnd();
+
+	if(recording) {
+		screen.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+		saver.addFrame(screen.getPixels(), 1. / 30.);
+	}
+}
+
+void testApp::keyPressed(int key) {
+	if(key == 's') {
+		recording = !recording;
+		if(recording) {
+			saver.setCodecQualityLevel(OF_QT_SAVER_CODEC_QUALITY_NORMAL);
+			saver.setup(ofGetWidth(), ofGetHeight(), "../output.mov");
+			screen.allocate(ofGetWidth(), ofGetHeight(), OF_IMAGE_COLOR);
+		} else {
+			saver.finishMovie();
+		}
+	} else if (key == ' ') {
+		modifyDecoder = !modifyDecoder;
+		cout << "zskew: " << decoder.zskew << endl;
+		cout << "zscale: " << decoder.zscale << endl;
+	} else if(key == OF_KEY_RIGHT) {
+		startOffset++;
+	} else if(key == OF_KEY_LEFT) {
+		startOffset--;
+	} else if(key == 'p') {
+		ofSaveFrame();
+	}
 }
