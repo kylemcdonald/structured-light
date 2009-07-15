@@ -51,6 +51,8 @@
 			<Add directory="..\..\..\libs\poco\includes" />
 			<Add directory="..\..\..\addons\ofx3DUtils\src" />
 			<Add directory="..\..\..\addons\ofxVectorMath\src" />
+			<Add directory="..\..\..\addons\ofxDirList\src" />
+			<Add directory="..\..\..\addons\ofxMovieSaver\src" />
 		</Compiler>
 		<Linker>
 			<Add option="../../../addons/ofxOpenCv/libs/opencv/lib/win32/libcv.a" />
@@ -95,6 +97,10 @@
 		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxCamera.h" />
 		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxLight.cpp" />
 		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxLight.h" />
+		<Unit filename="..\..\..\addons\ofxDirList\src\ofxDirList.cpp" />
+		<Unit filename="..\..\..\addons\ofxDirList\src\ofxDirList.h" />
+		<Unit filename="..\..\..\addons\ofxMovieSaver\src\ofxQtVideoSaver.cpp" />
+		<Unit filename="..\..\..\addons\ofxMovieSaver\src\ofxQtVideoSaver.h" />
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxCvBlob.h" />
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxCvColorImage.cpp" />
 		<Unit filename="..\..\..\addons\ofxOpenCv\src\ofxCvColorImage.h" />
