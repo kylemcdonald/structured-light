@@ -52,8 +52,8 @@ void testApp::update() {
 
 void testApp::draw() {
 	if(modifyDecoder) {
-		decoder.zskew = ofMap(mouseY, 0, ofGetHeight(), 10, 60);
-		decoder.zscale = ofMap(mouseX, 0, ofGetWidth(), 10, 250);
+		decoder.zskew = ofMap(mouseY, 0, ofGetHeight(), 10, 1600);
+		decoder.zscale = ofMap(mouseX, 0, ofGetWidth(), 10, 400);
 	}
 
   camera.draw();
@@ -77,12 +77,14 @@ void testApp::draw() {
 
 	if(recording) {
 		screen.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
-		saver.addFrame(screen.getPixels(), 1. / 30.);
+		saver.addFrame(screen.getPixels(), 1. / 10.);
 	}
 }
 
 void testApp::keyPressed(int key) {
-	if(key == 's') {
+	if(key == 'f') {
+		ofSaveScreen("out.png");
+	} else if(key == 's') {
 		recording = !recording;
 		if(recording) {
 			saver.setCodecQualityLevel(OF_QT_SAVER_CODEC_QUALITY_NORMAL);
