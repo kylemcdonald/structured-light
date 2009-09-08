@@ -14,5 +14,4 @@ public:
 
 	ThreePhaseGenerator generator;
 	ThreadedImageCapture capture;
-	ofTrueTypeFont font;
 };

@@ -4,17 +4,15 @@
 testApp::testApp(){
 }
 
-/*
-	1 compute mesh in post
-	2 compute mesh in real time
-*/
-
 void testApp::setup(){
-	ofSetBackgroundAuto(false);
-	font.loadFont("../trebuchet.ttf", 256, false, false);
 	ofSetVerticalSync(true);
-	generator.setWavelength(32);
+	ofSetBackgroundAuto(false);
+	generator.setWavelength(48);
 	generator.setOrientation(GENERATOR_VERTICAL);
+	generator.setReverse(true);
+	generator.setMode(THREEPHASE_LINE);
+	generator.setMaximum(254);
+	generator.setGamma(1);
 	generator.generate(ofGetWidth(), ofGetHeight());
 	capture.setup(640, 480);
 }
