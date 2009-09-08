@@ -49,6 +49,8 @@ protected :
 				curImage.setFromPixels(grabber.getPixels(), width, height, OF_IMAGE_COLOR);
 				if((frameNumber + frameOffset) % loopbackDelay == 0) {
 					stringstream filename;
+					filename.fill('0');
+					filename.width(5);
 					filename << getEffectiveFrameNumber();
 					filename << ".jpg";
 					saver.save(curImage, filename.str());
