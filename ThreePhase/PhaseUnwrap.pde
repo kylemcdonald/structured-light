@@ -1,54 +1,48 @@
 /*
-  Takes the amplitudes of three out of phase sine waves
-  and determines the unique angle determined by those amplitudes.
+  Use the wrapped phase information,  and propagate it across the boundaries.
+  This implementation uses a flood-fill propagation algorithm.
+  
+  Because the algorithm starts in the center and propagates outwards,
+  so if you have noise (e.g.: a black background, a shadow) in
+  the center, then it may not reconstruct your image.
 */
 
-float phaseUnwrap(float phase1, float phase2, float phase3) {
-  boolean flip;
-  int off;
-  float maxPhase, medPhase, minPhase;
-  if(phase2 <= phase3 && phase3 <= phase1) {
-    flip = false;
-    off = 0;
-    maxPhase = phase1;
-    medPhase = phase3;
-    minPhase = phase2;
-  } else if(phase2 <= phase1 && phase1 <= phase3) {
-    flip = true;
-    off = 2;
-    maxPhase = phase3;
-    medPhase = phase1;
-    minPhase = phase2;
-  } else if(phase1 <= phase2 && phase2 <= phase3) {
-    flip = false;
-    off = 2;
-    maxPhase = phase3;
-    medPhase = phase2;
-    minPhase = phase1;
-  } else if(phase1 <= phase3 && phase3 <= phase2) {
-    flip = true;
-    off = 4;
-    maxPhase = phase2;
-    medPhase = phase3;
-    minPhase = phase1;
-  } else if(phase3 <= phase1 && phase1 <= phase2) {
-    flip = false;
-    off = 4;
-    maxPhase = phase2;
-    medPhase = phase1;
-    minPhase = phase3;
-  } else {
-    flip = true;
-    off = 6;
-    maxPhase = phase1;
-    medPhase = phase2;
-    minPhase = phase3;
+LinkedList toProcess;
+
+void phaseUnwrap() {
+  int startX = inputWidth / 2;
+  int startY = inputHeight / 2;
+
+  toProcess = new LinkedList();
+  toProcess.add(new int[]{startX, startY});
+  process[startX][startY] = false;
+
+  while (!toProcess.isEmpty()) {
+    int[] xy = (int[]) toProcess.remove();
+    int x = xy[0];
+    int y = xy[1];
+    float r = phase[y][x];
+    
+    if (y > 0)
+      phaseUnwrap(r, x, y-1);
+    if (y < inputHeight-1)
+      phaseUnwrap(r, x, y+1);
+    if (x > 0)
+      phaseUnwrap(r, x-1, y);
+    if (x < inputWidth-1)
+      phaseUnwrap(r, x+1, y);
   }
-  float theta = 0;
-  if(maxPhase != minPhase)
-    theta = (medPhase-minPhase) / (maxPhase-minPhase);
-  if (flip)
-    theta = -theta;
-  theta += off;
-  return theta / 6;
+}
+
+void phaseUnwrap(float basePhase, int x, int y) {
+  if(process[y][x]) {
+    float diff = phase[y][x] - (basePhase - (int) basePhase);
+    if (diff > .5)
+      diff--;
+    if (diff < -.5)
+      diff++;
+    phase[y][x] = basePhase + diff;
+    process[y][x] = false;
+    toProcess.add(new int[]{x, y});
+  }
 }
