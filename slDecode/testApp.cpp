@@ -16,7 +16,7 @@ void testApp::timeDecoder() {
 }
 
 void testApp::setup() {
-	decoder.setup(480, 640, 23.8, 172.5, 0.15);
+	decoder.setup(480, 640, 25.4, 75.2, 0.15);
 	decoder.wide = false;
 	startOffset = 0;
 	modifyDecoder = false;
@@ -43,16 +43,15 @@ void testApp::setup() {
 void testApp::update() {
 	int position = ofGetFrameNum();
 	int size = files.size();
-	decoder.loadImages(
-		files[(position + 0) % size],
-		files[(position + 1) % size],
-		files[(position + 2) % size]);
-	decoder.decode((position + startOffset) % 3);
+	ofImage img;
+	img.loadImage(files[position % size]);
+	decoder.setImage(position % 3, img);
+	decoder.decode();
 }
 
 void testApp::draw() {
 	if(modifyDecoder) {
-		decoder.zskew = ofMap(mouseY, 0, ofGetHeight(), 10, 1600);
+		decoder.zskew = ofMap(mouseY, 0, ofGetHeight(), 0, 40);
 		decoder.zscale = ofMap(mouseX, 0, ofGetWidth(), 10, 400);
 	}
 

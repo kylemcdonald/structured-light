@@ -15,14 +15,20 @@ public:
 		string phase1Filename,
 		string phase2Filename,
 		string phase3Filename);
+	void loadImage(int phase, string filename);
+	void setImage(int phase, ofImage& img);
+	void updateColor();
 	int getWidth();
 	int getHeight();
 	bool** getMask();
 	float** getDepth();
 	unsigned char** getColor();
-	void decode(int offset = 0);
+	void decode();
+	bool ready();
 	~ThreePhaseDecoder();
-	ofImage phase1Image, phase2Image, phase3Image;
+
+	ofImage img[3];
+	ofImage imgColor[3];
 
 	bool wide;
 	float noiseTolerance, zskew, zscale;
@@ -34,7 +40,7 @@ private:
 		const unsigned char& phase3);
 	void phaseUnwrap();
 	inline void phaseUnwrap(const float& r, int x, int y);
-	void makeDepth(int offset);
+	void makeDepth();
 
 	int width, height;
 

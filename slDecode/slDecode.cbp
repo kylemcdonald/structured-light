@@ -95,6 +95,7 @@
 		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofx3DUtils.h" />
 		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxCamera.cpp" />
 		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxCamera.h" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxEasyCam.h" />
 		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxLight.cpp" />
 		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxLight.h" />
 		<Unit filename="..\..\..\addons\ofxDirList\src\ofxDirList.cpp" />
@@ -143,7 +144,6 @@
 		<Unit filename="ThreePhaseDecoder.cpp" />
 		<Unit filename="ThreePhaseDecoder.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="ofxEasyCam.h" />
 		<Unit filename="testApp.cpp" />
 		<Unit filename="testApp.h" />
 		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppBaseWindow.h" />
