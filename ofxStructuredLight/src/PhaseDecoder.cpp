@@ -12,7 +12,10 @@ PhaseDecoder::PhaseDecoder() {
 	depth = NULL;
 	depthScale = 1;
 	depthSkew = 1;
+	maxPasses = 1;
+	minRemaining = 0;
 	color = NULL;
+	orientation = PHASE_VERTICAL;
 }
 
 void PhaseDecoder::setup(int width, int height, int sequenceSize) {
@@ -32,6 +35,8 @@ void PhaseDecoder::setup(int width, int height, int sequenceSize) {
 	ready = new bool[n];
 	depth = new float[n];
 	color = new byte[n * 3];
+
+	blur.setup(width, height);
 }
 
 int PhaseDecoder::getWidth() {
@@ -40,6 +45,14 @@ int PhaseDecoder::getWidth() {
 
 int PhaseDecoder::getHeight() {
 	return height;
+}
+
+void PhaseDecoder::setMaxPasses(int maxPasses) {
+	this->maxPasses = maxPasses;
+}
+
+void PhaseDecoder::setMinRemaining(float minRemaining) {
+	this->minRemaining = minRemaining;
 }
 
 void PhaseDecoder::set(int position, byte* image) {
@@ -61,7 +74,12 @@ void PhaseDecoder::set(int position, byte* image) {
 
 void PhaseDecoder::decode() {
 	makePhase();
-	unwrapPhase();
+	int pass;
+	for(pass = 0; pass < maxPasses; pass++) {
+		unwrapPhase();
+		if(getRemaining() < minRemaining)
+			break;
+	}
 	makeDepth();
 	makeColor();
 }
@@ -82,15 +100,31 @@ void PhaseDecoder::setDepthSkew(float depthSkew) {
 	this->depthSkew = depthSkew;
 }
 
+void PhaseDecoder::setOrientation(phaseOrientation orientation) {
+	this->orientation = orientation;
+}
+
 void PhaseDecoder::makeDepth() {
 	int n = width * height;
-	for (int i = 0; i < n; i++) {
-		if (!mask[i]) {
-			float x = (float) (i % width);
-			float planephase = ((x / width) - .5f) * depthSkew;
-			depth[i] = (phase[i] - planephase) * depthScale;
-		} else {
-			depth[i] = 0;
+	if(orientation == PHASE_VERTICAL) {
+		for (int i = 0; i < n; i++) {
+			if (!mask[i]) {
+				float x = (float) (i % width);
+				float planephase = ((x / width) - .5f) * depthSkew;
+				depth[i] = (phase[i] - planephase) * depthScale;
+			} else {
+				depth[i] = 0;
+			}
+		}
+	} else if(orientation == PHASE_HORIZONTAL) {
+			for (int i = 0; i < n; i++) {
+				if (!mask[i]) {
+					float y = (float) (i / width);
+					float planephase = ((y / height) - .5f) * depthSkew;
+					depth[i] = (phase[i] - planephase) * depthScale;
+				} else {
+					depth[i] = 0;
+			}
 		}
 	}
 }
@@ -122,6 +156,32 @@ void PhaseDecoder::save(string filename) {
 			out << "v" << (j++) << " ";
 	out << "\n";
 	out.close();
+}
+
+float PhaseDecoder::getRemaining() {
+	int n = width * height;
+	int readySum = 0;
+	int maskSum = 0;
+	for(int i = 0; i < n; i++) {
+		readySum += (unsigned char) ready[i];
+		maskSum += (unsigned char) mask[i];
+	}
+	return (float) readySum / (float) (n - maskSum);
+}
+
+int PhaseDecoder::getStart() {
+	blur.blur((unsigned char*) ready, ready, 16);
+	int* sum = blur.getSum();
+	int max = 0;
+	int n = width * height;
+	for(int i = 0; i < n; i++)
+		if(sum[i] > sum[max])
+			max = i;
+	return max;
+}
+
+int* PhaseDecoder::getBlur() {
+	return blur.getSum();
 }
 
 PhaseDecoder::~PhaseDecoder() {
