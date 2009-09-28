@@ -2,11 +2,11 @@
 
 void FloodFillDecoder::unwrapPhase() {
 	toProcess.clear();
-	int center = (getHeight() * getWidth()) / 2 + getWidth() / 2;
-	toProcess.push_back(center);
-	ready[center] = false;
+	int start = getStart();
+	toProcess.push_back(start);
+	ready[start] = false;
 
-	while (!toProcess.empty()) {
+	while(!toProcess.empty()) {
     int i = toProcess.front();
     toProcess.pop_front();
     float sourcePhase = phase[i];

@@ -29,10 +29,6 @@ void ThreePhaseDecoder::makePhase() {
 	}
 }
 
-void ThreePhaseDecoder::setGamma(float gamma) {
-	this->gamma = gamma;
-}
-
 void ThreePhaseDecoder::makeColor() {
 	int n = width * height * 3;
 	float i1, i2, i3, avg;
@@ -54,5 +50,5 @@ void ThreePhaseDecoder::setRangeThreshold(float rangeThreshold) {
 }
 
 void ThreePhaseDecoder::unwrapPhase() {
-	FloodFillDecoder::unwrapPhase();
+	PriorityDecoder::unwrapPhase();
 }
