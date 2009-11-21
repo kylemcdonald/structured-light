@@ -41,6 +41,11 @@ void setup() {
 }
 
 void draw () {
+  if(keyPressed) {
+    zscale = map(mouseX, 0, width, -150, 150);
+    zskew = map(mouseY, 0, height, -50, 50);
+  }
+
   background(0);
   translate(-inputWidth / 2, -inputHeight / 2);  
   int step = 2;
