@@ -2,7 +2,11 @@
 
 void PriorityDecoder::unwrapPhase() {
 	int start = getStart();
-	toProcess.push(UnwrapPath(0, start, phase[start]));
+	if(phasePersistence) {
+		unwrapPhase(start, lastPhase[start]);
+	} else {
+		unwrapPhase(start, phase[start]);
+	}
 
 	while(!toProcess.empty()) {
 		const UnwrapPath& cur = toProcess.top();
@@ -10,7 +14,7 @@ void PriorityDecoder::unwrapPhase() {
 		if(ready[i]) {
 			phase[i] = cur.resultPhase;
 			ready[i] = false;
-			float sourcePhase = phase[i];
+			float sourcePhase = cur.resultPhase;
 			toProcess.pop();
 
 	    int x = i % width;

@@ -24,6 +24,7 @@ public:
 	void setOrientation(phaseOrientation orientation);
 	void setMaxPasses(int maxPasses);
 	void setMinRemaining(float minRemaining);
+	void setPhasePersistence(bool phasePersistence);
 	void set(int i, byte* image);
 	void decode();
 	float* getPhase();
@@ -48,6 +49,8 @@ protected:
 	float depthScale, depthSkew;
 	phaseOrientation orientation;
 	FastBlur blur;
+	bool phasePersistence;
+	float* lastPhase;
 
 	void setup(int width, int height, int sequenceSize);
 	virtual void makePhase() = 0;
