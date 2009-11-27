@@ -3,8 +3,11 @@
 void FloodFillDecoder::unwrapPhase() {
 	toProcess.clear();
 	int start = getStart();
-	toProcess.push_back(start);
-	ready[start] = false;
+	if(phasePersistence) {
+		unwrapPhase(start, lastPhase[start]);
+	} else {
+		unwrapPhase(start, phase[start]);
+	}
 
 	while(!toProcess.empty()) {
     int i = toProcess.front();

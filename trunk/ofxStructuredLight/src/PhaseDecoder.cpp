@@ -16,6 +16,8 @@ PhaseDecoder::PhaseDecoder() {
 	minRemaining = 0;
 	color = NULL;
 	orientation = PHASE_VERTICAL;
+	phasePersistence = false;
+	lastPhase = false;
 }
 
 void PhaseDecoder::setup(int width, int height, int sequenceSize) {
@@ -37,6 +39,8 @@ void PhaseDecoder::setup(int width, int height, int sequenceSize) {
 	color = new byte[n * 3];
 
 	blur.setup(width, height);
+
+	lastPhase = new float[n];
 }
 
 int PhaseDecoder::getWidth() {
@@ -80,6 +84,8 @@ void PhaseDecoder::decode() {
 		if(getRemaining() < minRemaining)
 			break;
 	}
+	if(phasePersistence)
+		memcpy(lastPhase, phase, sizeof(float) * width * height);
 	makeDepth();
 	makeColor();
 }
@@ -102,6 +108,10 @@ void PhaseDecoder::setDepthSkew(float depthSkew) {
 
 void PhaseDecoder::setOrientation(phaseOrientation orientation) {
 	this->orientation = orientation;
+}
+
+void PhaseDecoder::setPhasePersistence(bool phasePersistence) {
+	this->phasePersistence = phasePersistence;
 }
 
 void PhaseDecoder::makeDepth() {
@@ -170,7 +180,7 @@ float PhaseDecoder::getRemaining() {
 }
 
 int PhaseDecoder::getStart() {
-	blur.blur((unsigned char*) ready, ready, 16);
+	blur.blur((unsigned char*) ready, ready, 64);
 	int* sum = blur.getSum();
 	int max = 0;
 	int n = width * height;
@@ -197,5 +207,6 @@ PhaseDecoder::~PhaseDecoder() {
 		delete [] ready;
 		delete [] depth;
 		delete [] color;
+		delete [] lastPhase;
 	}
 }
