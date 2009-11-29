@@ -2,9 +2,8 @@
 
 This wiki is meant to augment and document the open-source utilities developed on this site. For more information on structured light scanning in general, check out the [http://sites.google.com/site/structuredlight/Home structured light wiki].
 
+[ofxStructuredLight]
 [GunterWebersWork]
-
-[JohnMathersWork]
 
 =What is structured light 3D scanning?=
 
