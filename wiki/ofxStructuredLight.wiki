@@ -1,0 +1,70 @@
+#summary Description of the ofxStructuredLight addon for Open Frameworks.
+#labels Featured
+
+= Introduction =
+
+ofxStructuredLight is meant to be a collection of implementations of structured light generation and decoding algorithms, along with some basic helper methods.
+
+= Decoding Usage =
+
+Basic use of ofxStructuredLight as a decoder requires the creation of a decoding object (e.g., ThreePhaseDecoder):
+
+{{{
+#include "ofMain.h"
+#include "ThreePhaseDecoder.h"
+
+class testApp : public ofBaseApp{
+public:
+	...
+	ThreePhaseDecoder threePhase;
+};
+}}}
+
+Followed by loading the source images, setting decode parameters, and grabbing the depth image:
+
+{{{
+void testApp::setup() {
+	ofImage phase1, phase2, phase3;
+	phase1.loadImage("0.jpg");
+	phase2.loadImage("1.jpg");
+	phase3.loadImage("2.jpg");
+	int srcWidth = (int) phase1.getWidth();
+	int srcHeight = (int) phase1.getHeight();
+
+	threePhase.setup(srcWidth, srcHeight);
+	threePhase.set(0, phase1.getPixels());
+	threePhase.set(1, phase2.getPixels());
+	threePhase.set(2, phase3.getPixels());
+	threePhase.setDepthScale(160);
+	threePhase.setDepthSkew(26);
+	threePhase.setRangeThreshold(13);
+	threePhase.setOrientation(PHASE_HORIZONTAL);
+	threePhase.decode();
+
+	bool* mask = threePhase.getMask();
+	float* depth = threePhase.getDepth();
+	byte* color = threePhase.getColor();
+
+	// loading colors and depths into arrays for a vbo
+	vCount = srcWidth * srcHeight;
+	GLfloat* vertices = new GLfloat[vCount * 3];
+	GLubyte* colors = new GLubyte[vCount * 3];
+	int target = 0;
+	for(int y = 0; y < srcHeight; y++) {
+		for(int x = 0; x < srcWidth; x++) {
+			int src = y * srcWidth + x;
+			if(!mask[src]) {
+				vertices[target * 3 + 0] = x - srcWidth / 2;
+				vertices[target * 3 + 1] = y - srcHeight / 2;
+				vertices[target * 3 + 2] = depth[src];
+
+				colors[target * 3 + 0] = color[src* 3 + 0];
+				colors[target * 3 + 1] = color[src* 3 + 1];
+				colors[target * 3 + 2] = color[src* 3 + 2];
+
+				target++;
+			}
+		}
+	}
+}
+}}}
