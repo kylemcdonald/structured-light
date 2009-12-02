@@ -1,25 +1,23 @@
 #include "PhaseDecoder.h"
 
-PhaseDecoder::PhaseDecoder() {
-	width = 0;
-	height = 0;
-	sequenceSize = 0;
-	colorSequence = NULL;
-	graySequence = NULL;
-	phase = NULL;
-	mask = NULL;
-	ready = NULL;
-	depth = NULL;
-	depthScale = 1;
-	depthSkew = 1;
-	maxPasses = 1;
-	minRemaining = 0;
-	color = NULL;
-	orientation = PHASE_VERTICAL;
-	phasePersistence = false;
-	lastPhase = false;
+PhaseDecoder::PhaseDecoder() :
+	sequenceSize(0),
+	colorSequence(NULL),
+	graySequence(NULL),
+	phase(NULL),
+	ready(NULL),
+	depthScale(1),
+	depthSkew(1),
+	maxPasses(1),
+	minRemaining(0),
+	color(NULL),
+	orientation(PHASE_VERTICAL),
+	phasePersistence(false),
+	lastPhase(false) {
 }
 
+// This code should migrate to DepthDecoder, as it will
+// be used for allocating a gray coded image sequence also.
 void PhaseDecoder::setup(int width, int height, int sequenceSize) {
 	this->width = width;
 	this->height = height;
@@ -43,12 +41,19 @@ void PhaseDecoder::setup(int width, int height, int sequenceSize) {
 	lastPhase = new float[n];
 }
 
-int PhaseDecoder::getWidth() {
-	return width;
-}
-
-int PhaseDecoder::getHeight() {
-	return height;
+PhaseDecoder::~PhaseDecoder() {
+	if(colorSequence != NULL) {
+		for(int i = 0; i < sequenceSize; i++) {
+				delete [] colorSequence[i];
+				delete [] graySequence[i];
+		}
+		delete [] colorSequence;
+		delete [] graySequence;
+		delete [] phase;
+		delete [] ready;
+		delete [] color;
+		delete [] lastPhase;
+	}
 }
 
 void PhaseDecoder::setMaxPasses(int maxPasses) {
@@ -94,10 +99,6 @@ float* PhaseDecoder::getPhase() {
 	return phase;
 }
 
-bool* PhaseDecoder::getMask() {
-	return mask;
-}
-
 void PhaseDecoder::setDepthScale(float depthScale) {
 	this->depthScale = depthScale;
 }
@@ -139,33 +140,8 @@ void PhaseDecoder::makeDepth() {
 	}
 }
 
-float* PhaseDecoder::getDepth() {
-	return depth;
-}
-
 byte* PhaseDecoder::getColor() {
 	return color;
-}
-
-void PhaseDecoder::save(string filename) {
-	ofstream out;
-	out.open(filename.c_str());
-	int n = width * height;
-	for(int i = 0; i < n; i++) {
-		if(!mask[i]) {
-			int x = i % width;
-			int y = i / width;
-			float z = depth[i];
-			out << "v\t" << x << "\t" << y << "\t" << z << "\n";
-		}
-	}
-	out <<	"p ";
-	int j = 1;
-	for(int i = 0; i < n; i++)
-		if(!mask[i])
-			out << "v" << (j++) << " ";
-	out << "\n";
-	out.close();
 }
 
 float PhaseDecoder::getRemaining() {
@@ -194,19 +170,10 @@ int* PhaseDecoder::getBlur() {
 	return blur.getSum();
 }
 
-PhaseDecoder::~PhaseDecoder() {
-	if(colorSequence != NULL) {
-		for(int i = 0; i < sequenceSize; i++) {
-				delete [] colorSequence[i];
-				delete [] graySequence[i];
-		}
-		delete [] colorSequence;
-		delete [] graySequence;
-		delete [] phase;
-		delete [] mask;
-		delete [] ready;
-		delete [] depth;
-		delete [] color;
-		delete [] lastPhase;
-	}
+void PhaseDecoder::exportCloud(string filename) {
+	DepthExporter::exportCloud(filename, width, height, mask, depth, color);
+}
+
+void PhaseDecoder::exportMesh(string filename) {
+	DepthExporter::exportMesh(filename, width, height, mask, depth, color);
 }

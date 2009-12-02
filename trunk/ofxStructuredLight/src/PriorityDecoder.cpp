@@ -34,7 +34,7 @@ void PriorityDecoder::unwrapPhase() {
 	}
 }
 
-void PriorityDecoder::unwrapPhase(int target, float sourcePhase) {
+inline void PriorityDecoder::unwrapPhase(int target, float sourcePhase) {
 	if(ready[target]) {
 		float diff = phase[target] - (sourcePhase - (int) sourcePhase);
 		if(diff > .5)
