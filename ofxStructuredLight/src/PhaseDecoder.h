@@ -1,24 +1,14 @@
 #pragma once
 
-#include <string.h>
-#include <math.h>
-#include <iostream>
-#include <fstream>
+#include "DepthDecoder.h"
 #include "FastBlur.h"
-using namespace std;
 
-#ifndef TWO_PI
-	#define TWO_PI (6.28318530718)
-#endif
-
-typedef unsigned char byte;
 enum phaseOrientation {PHASE_VERTICAL, PHASE_HORIZONTAL};
 
-class PhaseDecoder {
+class PhaseDecoder : public DepthDecoder {
 public:
 	PhaseDecoder();
-	int getWidth();
-	int getHeight();
+	virtual ~PhaseDecoder();
 	void setDepthScale(float depthScale);
 	void setDepthSkew(float depthSkew);
 	void setOrientation(phaseOrientation orientation);
@@ -28,20 +18,15 @@ public:
 	void set(int i, byte* image);
 	void decode();
 	float* getPhase();
-	bool* getMask();
-	float* getDepth();
 	byte* getColor();
 	int* getBlur();
-	void save(string filename);
-	virtual ~PhaseDecoder();
+	void exportCloud(string filename);
+	void exportMesh(string filename);
 protected:
-	int width, height;
 	byte** colorSequence;
 	byte** graySequence;
 	float* phase;
-	bool* mask;
 	bool* ready;
-	float* depth;
 	byte* color;
 	int sequenceSize;
 	int maxPasses;

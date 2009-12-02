@@ -27,7 +27,7 @@ void FloodFillDecoder::unwrapPhase() {
   }
 }
 
-void FloodFillDecoder::unwrapPhase(int target, float sourcePhase) {
+inline void FloodFillDecoder::unwrapPhase(int target, float sourcePhase) {
 	if(ready[target]) {
 		float diff = phase[target] - (sourcePhase - (int) sourcePhase);
 		if(diff > .5)

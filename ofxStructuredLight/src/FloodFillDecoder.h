@@ -6,6 +6,6 @@
 class FloodFillDecoder : public PhaseDecoder {
 protected:
 	virtual void unwrapPhase();
-	inline void unwrapPhase(int target, float sourcePhase);
+	void unwrapPhase(int target, float sourcePhase);
 	std::deque<int> toProcess;
 };
