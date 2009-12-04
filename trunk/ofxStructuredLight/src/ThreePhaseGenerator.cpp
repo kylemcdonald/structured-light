@@ -2,7 +2,8 @@
 
 ThreePhaseGenerator::ThreePhaseGenerator() :
 	orientation(PHASE_VERTICAL),
-	wavelength(0) {
+	wavelength(0),
+	gamma(1) {
 }
 
 void ThreePhaseGenerator::setOrientation(phaseOrientation orientation) {
@@ -11,6 +12,10 @@ void ThreePhaseGenerator::setOrientation(phaseOrientation orientation) {
 
 void ThreePhaseGenerator::setWavelength(float wavelength) {
 	this->wavelength = wavelength;
+}
+
+void ThreePhaseGenerator::setGamma(float gamma) {
+	this->gamma = gamma;
 }
 
 void ThreePhaseGenerator::generate() {
@@ -28,8 +33,9 @@ void ThreePhaseGenerator::generate() {
 			int i = 3 * y * width;
 			for(int x = 0; x < width; x++) {
 				float reference = orientation == PHASE_VERTICAL ? x : y;
-				float curPhase = cosf(reference * normalize + offset);
-				curPhase = (curPhase + 1) * 128;
+				float curPhase = (cosf(reference * normalize + offset) + 1) / 2;
+				curPhase = powf(curPhase, gamma);
+				curPhase *= 256;
 				if(curPhase >= 256)
 					curPhase = 255;
 				unsigned char value = (unsigned char) curPhase;
