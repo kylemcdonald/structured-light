@@ -2,8 +2,7 @@
 
 #include "DepthDecoder.h"
 #include "FastBlur.h"
-
-enum phaseOrientation {PHASE_VERTICAL, PHASE_HORIZONTAL};
+#include "PhaseConstants.h"
 
 class PhaseDecoder : public DepthDecoder {
 public:
