@@ -15,6 +15,7 @@ public:
 	void setMinRemaining(float minRemaining);
 	void setPhasePersistence(bool phasePersistence);
 	void set(int i, byte* image);
+	void makeDepth();
 	void decode();
 	float* getPhase();
 	byte* getColor();
@@ -39,7 +40,6 @@ protected:
 	void setup(int width, int height, int sequenceSize);
 	virtual void makePhase() = 0;
 	virtual void unwrapPhase() = 0;
-	void makeDepth();
 	virtual void makeColor() = 0;
 	virtual int getStart();
 	float getRemaining();
