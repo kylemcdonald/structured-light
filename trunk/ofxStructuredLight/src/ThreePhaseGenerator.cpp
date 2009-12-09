@@ -29,21 +29,36 @@ void ThreePhaseGenerator::generate() {
 		}
 		unsigned char* pixels = sequence[k].getPixels();
 		float normalize = TWO_PI / wavelength;
-		for(int y = 0; y < height; y++) {
-			int i = 3 * y * width;
-			for(int x = 0; x < width; x++) {
-				float reference = orientation == PHASE_VERTICAL ? x : y;
-				float curPhase = (cosf(reference * normalize + offset) + 1) / 2;
-				curPhase = powf(curPhase, gamma);
-				curPhase *= 256;
-				if(curPhase >= 256)
-					curPhase = 255;
-				unsigned char value = (unsigned char) curPhase;
-				pixels[i++] = value;
-				pixels[i++] = value;
-				pixels[i++] = value;
+		int side = orientation == PHASE_VERTICAL ? width : height;
+		unsigned char* single = new unsigned char[side * 3];
+		int i = 0;
+		for(int j = 0; j < side; j++) {
+			float curPhase = (cosf(j * normalize + offset) + 1) / 2;
+			curPhase = powf(curPhase, gamma);
+			curPhase *= 256;
+			if(curPhase >= 256)
+				curPhase = 255;
+			unsigned char value = (unsigned char) curPhase;
+			single[i++] = value;
+			single[i++] = value;
+			single[i++] = value;
+		}
+		if(orientation == PHASE_VERTICAL) {
+			for(int y = 0; y < height; y++) {
+				memcpy(&pixels[y * width * 3], single, width * 3);
+			}
+		} else {
+			int i = 0;
+			int j = 0;
+			for(int y = 0; y < height; y++) {
+				for(int x = 0; x < width; x++) {
+					memcpy(&pixels[i], &single[j], 3);
+					i += 3;
+				}
+				j += 3;
 			}
 		}
+		delete [] single;
 		sequence[k].update();
 	}
 }
