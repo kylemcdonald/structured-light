@@ -86,13 +86,13 @@ void PhaseDecoder::decode() {
 	int pass;
 	for(pass = 0; pass < maxPasses; pass++) {
 		unwrapPhase();
-		if(getRemaining() < minRemaining)
+		if(minRemaining != 0 && getRemaining() < minRemaining)
 			break;
 	}
 	if(phasePersistence)
 		memcpy(lastPhase, phase, sizeof(float) * width * height);
-	makeDepth();
 	makeColor();
+	makeDepth();
 }
 
 float* PhaseDecoder::getPhase() {
