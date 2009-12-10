@@ -14,6 +14,12 @@
 				(a - b))))
 #endif
 
+/*
+	Right now the decoders use decoding strategies via inheritance.
+	This should be changed, so that PriorityDecoder extends
+	DecodingStrategy while ThreePhaseDecoder is just a phase generator
+	and color generator.
+*/
 class ThreePhaseDecoder : public PriorityDecoder {
 public:
 	ThreePhaseDecoder();
