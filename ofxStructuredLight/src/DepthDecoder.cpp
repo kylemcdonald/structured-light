@@ -57,6 +57,15 @@ void DepthDecoder::filterDeviations(float deviations) {
 	filterRange(mean - range, mean + range);
 }
 
+/*
+	Filtering the data is a destructive operation, since it
+	overwrites the mask values. Sometimes we want to move the
+	filtering min/max around a bit on a single decoded 3d frame.
+	This is slow because the data has to be re-decoded each time.
+	This could be avoided by toggling a flag that caches the
+	original mask, and operates against that rather than in-place.
+	It would be called something like setFastFilter(bool fastFilter).
+*/
 void DepthDecoder::filterRange(float min, float max) {
 	int n = width * height;
 	for(int i = 0; i < n; i++)
