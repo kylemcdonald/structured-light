@@ -65,6 +65,8 @@ void ThreePhaseGenerator::generate() {
 			}
 		}
 		delete [] single;
+#ifdef OPENFRAMEWORKS_AVAIL
 		sequence[k].update();
+#endif
 	}
 }
