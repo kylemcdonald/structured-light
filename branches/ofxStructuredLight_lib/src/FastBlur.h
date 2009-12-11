@@ -1,6 +1,9 @@
-#pragma once
+#ifndef _VISION_DIY3DSCAN_SRC_FastBlur
+#define _VISION_DIY3DSCAN_SRC_FastBlur
 
-class FastBlur {
+#include "libexport.h"
+
+class DLL_EXPORT FastBlur {
 public:
 	FastBlur() {
 		integral = NULL;
@@ -57,3 +60,5 @@ protected:
 	int* integral;
 	int* sum;
 };
+
+#endif

@@ -1,5 +1,7 @@
 #include "ThreePhaseDecoder.h"
 
+#include "basics.h"
+
 float ThreePhaseDecoder::rangeThreshold = 20;
 
 ThreePhaseDecoder::ThreePhaseDecoder() {
@@ -47,6 +49,10 @@ float* ThreePhaseDecoder::getRange() {
 
 void ThreePhaseDecoder::setRangeThreshold(float rangeThreshold) {
 	this->rangeThreshold = rangeThreshold;
+}
+
+float ThreePhaseDecoder::getRangeThreshold() {
+	return this->rangeThreshold;
 }
 
 void ThreePhaseDecoder::unwrapPhase() {

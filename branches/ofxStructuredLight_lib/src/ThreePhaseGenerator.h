@@ -1,9 +1,12 @@
-#pragma once
+#ifndef _VISION_DIY3DSCAN_SRC_ThreePhaseGenerator
+#define _VISION_DIY3DSCAN_SRC_ThreePhaseGenerator
 
 #include "PatternGenerator.h"
 #include "PhaseConstants.h"
 
-class ThreePhaseGenerator : public PatternGenerator {
+#include "libexport.h"
+
+class DLL_EXPORT ThreePhaseGenerator : public PatternGenerator {
 private:
 	float wavelength;
 	phaseOrientation orientation;
@@ -15,3 +18,5 @@ public:
 	void setGamma(float gamma);
 	void generate();
 };
+
+#endif

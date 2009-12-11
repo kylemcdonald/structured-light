@@ -1,8 +1,10 @@
 #include "ThreePhaseGenerator.h"
 
+#include "basics.h"
+
 ThreePhaseGenerator::ThreePhaseGenerator() :
-	orientation(PHASE_VERTICAL),
 	wavelength(0),
+	orientation(PHASE_VERTICAL),
 	gamma(1) {
 }
 
@@ -27,7 +29,11 @@ void ThreePhaseGenerator::generate() {
 			case 1: offset = 0; break;
 			case 2: offset = + TWO_PI / 3; break;
 		}
+#ifdef OPENFRAMEWORKS_AVAIL
 		unsigned char* pixels = sequence[k].getPixels();
+#else
+		unsigned char* pixels = (unsigned char*)(sequence[k].imageData);
+#endif
 		float normalize = TWO_PI / wavelength;
 		int side = orientation == PHASE_VERTICAL ? width : height;
 		unsigned char* single = new unsigned char[side * 3];

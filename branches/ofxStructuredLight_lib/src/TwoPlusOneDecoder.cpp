@@ -1,5 +1,7 @@
 #include "TwoPlusOneDecoder.h"
 
+#include "basics.h"
+
 void TwoPlusOneDecoder::setup(int width, int height) {
 	PhaseDecoder::setup(width, height, 3);
 }

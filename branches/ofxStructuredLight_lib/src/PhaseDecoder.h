@@ -1,15 +1,22 @@
-#pragma once
+#ifndef _VISION_DIY3DSCAN_SRC_PhaseDecoder
+#define _VISION_DIY3DSCAN_SRC_PhaseDecoder
 
 #include "DepthDecoder.h"
 #include "FastBlur.h"
 #include "PhaseConstants.h"
 
-class PhaseDecoder : public DepthDecoder {
+#include <string>
+
+#include "libexport.h"
+
+class DLL_EXPORT PhaseDecoder : public DepthDecoder {
 public:
 	PhaseDecoder();
 	virtual ~PhaseDecoder();
 	void setDepthScale(float depthScale);
+	float getDepthScale();
 	void setDepthSkew(float depthSkew);
+	float getDepthSkew();
 	void setOrientation(phaseOrientation orientation);
 	void setMaxPasses(int maxPasses);
 	void setMinRemaining(float minRemaining);
@@ -20,18 +27,18 @@ public:
 	float* getPhase();
 	byte* getColor();
 	int* getBlur();
-	void exportCloud(string filename);
-	void exportMesh(string filename);
+	void exportCloud(std::string filename);
+	void exportMesh(std::string filename);
 protected:
+	int sequenceSize;
 	byte** colorSequence;
 	byte** graySequence;
 	float* phase;
 	bool* ready;
-	byte* color;
-	int sequenceSize;
+	float depthScale, depthSkew;
 	int maxPasses;
 	float minRemaining;
-	float depthScale, depthSkew;
+	byte* color;
 	phaseOrientation orientation;
 	FastBlur blur;
 	bool phasePersistence;
@@ -44,3 +51,5 @@ protected:
 	virtual int getStart();
 	float getRemaining();
 };
+
+#endif

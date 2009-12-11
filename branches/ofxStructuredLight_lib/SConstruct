@@ -1,0 +1,66 @@
+EnsurePythonVersion(2,4)
+EnsureSConsVersion(1,2,0)
+
+vars = Variables('scons.conf', ARGUMENTS)
+vars.AddVariables(
+	BoolVariable('debug', 'debug mode', False),
+	PathVariable('OPENCV_ROOT', 'OpenCV root directory.', None, PathVariable.PathAccept),
+)
+
+env = Environment(OS=str(ARGUMENTS.get('OS', Platform())), variables=vars, tools = ['default'])
+
+if (env['OS']=='win32'):
+	t = Tool('msvc')
+	t(env)
+elif (env['OS']=='posix'):
+	t = Tool('gcc')
+	t(env)
+else:
+	print '*** error: platform',ARGUMENTS.get('OS',Platform()),'is not supported!'
+	Exit(1)
+
+env.SConscript(['opencv.py'], exports='env')
+Import('CheckOpenCV')
+conf = env.Configure(custom_tests = { 'CheckOpenCV' : CheckOpenCV } )
+# Checks for libraries, header files, etc. go here!
+# Check OpenCV
+if not conf.CheckOpenCV(env['OPENCV_ROOT']):
+	print
+	print '*** error: Set $OPENCV_ROOT in ''scons.conf'' or edit opencv.py!'
+	Exit(1)
+env = conf.Finish()
+
+if (env['OS']=='win32'):
+	env['MSVS_VERSION'] = '8.0'
+	print "Using msvs version ",env['MSVS_VERSION']
+	#manifest 
+	env['LINKCOM'] = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
+	env['SHLINKCOM'] = [env['SHLINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
+	env['WINDOWS_INSERT_MANIFEST'] = True
+
+if (env['OS']=='win32'):
+	env.MergeFlags(['-EHsc', '-nologo', '-D_MBCS', '-D"_WIN32_WINNT=0X0400"', '-GR', '-FD'])
+	if (env['debug']):
+		env.MergeFlags(['-O2', '-DNDEBUG', '-MD', '-arch:SSE2'])
+	else:
+		env.MergeFlags(['-D_DEBUG','-vmg', '-RTC1', '-GF', '-MDd', '-Z7'])
+elif (env['OS']=='posix'):
+	env.MergeFlags(['-fPIC', '-Wall'])
+	if (env['debug']):
+		env.MergeFlags(['-g'])
+
+
+lib = env.SharedLibrary(
+	'structuredLight',
+	[
+		'src/DepthDecoder.cpp',
+		'src/DepthExporter.cpp',
+		'src/FloodFillDecoder.cpp',
+		'src/PhaseDecoder.cpp',
+		'src/PriorityDecoder.cpp',
+		'src/ThreePhaseDecoder.cpp',
+		'src/ThreePhaseGenerator.cpp',
+		'src/TwoPlusOneDecoder.cpp',
+		'src/PatternGenerator.cpp',
+	],
+)

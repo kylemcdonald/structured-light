@@ -1,5 +1,7 @@
 #include "DepthDecoder.h"
 
+using namespace std;
+
 DepthDecoder::DepthDecoder() :
 	width(0),
 	height(0),

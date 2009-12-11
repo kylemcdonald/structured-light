@@ -1,19 +1,32 @@
 #include "DepthExporter.h"
 
+#define NOMINMAX
+#include <limits>
+
+#include <cv.h>
+#include <highgui.h>
+
 /*
  More information about OBJ and PLY are available at:
  http://local.wasp.uwa.edu.au/~pbourke/dataformats/obj/
  http://local.wasp.uwa.edu.au/~pbourke/dataformats/ply/
 */
 
+using namespace std;
+
 void DepthExporter::exportDepth(string filename, int width, int height, const bool* mask, const float* depth) {
+#ifdef OPENFRAMEWORKS_AVAIL
 	ofImage img;
 	img.allocate(width, height, OF_IMAGE_GRAYSCALE);
 	unsigned char* pixels = img.getPixels();
+#else
+	IplImage* img = cvCreateImage(cvSize(width, height), 8 , 1);
+	unsigned char* pixels = (unsigned char*)(img->imageData);
+#endif
 	int n = width * height;
 
-	float min = numeric_limits<float>::max();
-	float max = numeric_limits<float>::min();
+	float min = std::numeric_limits<float>::max();
+	float max = std::numeric_limits<float>::min();
 
 	for(int i = 0; i < n; i++) {
 		if(!mask[i]) {
@@ -28,15 +41,23 @@ void DepthExporter::exportDepth(string filename, int width, int height, const bo
 		if(mask[i]) {
 			pixels[i] = 0;
 		} else {
+#ifdef OPENFRAMEWORKS_AVAIL
 			pixels[i] = (unsigned char) ofClamp(ofMap(depth[i], min, max, 0, 255), 0, 255);
+#else
+			//TODO
+#endif
 		}
 	}
 
+#ifdef OPENFRAMEWORKS_AVAIL
 	img.saveImage(filename);
+#else
+	cvSaveImage(filename.c_str(), img);
+#endif
 }
 
 string DepthExporter::getExtension(string filename) {
-	int i = filename.rfind('.');
+	size_t i = filename.rfind('.');
 	if(i != string::npos){
 		return filename.substr(i + 1);
 	} else {
@@ -69,7 +90,11 @@ inline void DepthExporter::exportObjVertex(ostream& obj, int x, int y, float z) 
 
 void DepthExporter::exportObjCloud(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	ofstream obj;
+#ifdef OPENFRAMEWORKS_AVAIL
 	obj.open(ofToDataPath(filename).c_str(), ios::out);
+#else
+	//TODO
+#endif
 	if(obj.is_open()) {
 		int total = 0;
 		for(int y = 0; y < height; y++) {
@@ -90,9 +115,12 @@ void DepthExporter::exportObjCloud(string filename, int width, int height, const
 
 void DepthExporter::exportObjMesh(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	ofstream obj;
+#ifdef OPENFRAMEWORKS_AVAIL
 	obj.open(ofToDataPath(filename).c_str(), ios::out);
+#else
+	//TODO
+#endif
 	if(obj.is_open()) {
-		int total = 0;
 		int nw, ne, sw, se;
 		for(int y = 0; y < height - 1; y++) {
 			for(int x = 0; x < width - 1; x++) {
@@ -166,7 +194,11 @@ int DepthExporter::exportPlyVertices(ostream& ply, int width, int height, const 
 
 void DepthExporter::exportPlyCloud(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	ofstream ply;
+#ifdef OPENFRAMEWORKS_AVAIL
 	ply.open(ofToDataPath(filename).c_str(), ios::out | ios::binary);
+#else
+	//TODO
+#endif
 	if(ply.is_open()) {
 		// create all the vertices
 		stringstream vertices(ios::in | ios::out | ios::binary);
@@ -193,7 +225,11 @@ void DepthExporter::exportPlyCloud(string filename, int width, int height, const
 
 void DepthExporter::exportPlyMesh(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	ofstream ply;
+#ifdef OPENFRAMEWORKS_AVAIL
 	ply.open(ofToDataPath(filename).c_str(), ios::out | ios::binary);
+#else
+	//TODO
+#endif
 	if(ply.is_open()) {
 		int n = width * height;
 		unsigned int* names = new unsigned int[n];

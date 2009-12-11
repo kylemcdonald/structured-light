@@ -1,5 +1,7 @@
 #include "PhaseDecoder.h"
 
+using namespace std;
+
 PhaseDecoder::PhaseDecoder() :
 	sequenceSize(0),
 	colorSequence(NULL),
@@ -13,7 +15,7 @@ PhaseDecoder::PhaseDecoder() :
 	color(NULL),
 	orientation(PHASE_VERTICAL),
 	phasePersistence(false),
-	lastPhase(false) {
+	lastPhase(NULL) {
 }
 
 // This code should migrate to DepthDecoder, as it will
@@ -73,9 +75,10 @@ void PhaseDecoder::set(int position, byte* image) {
 	int j = 0;
 	while(j < n) {
 		float sum =
-			(float) curColor[i++] +
-			(float) curColor[i++] +
-			(float) curColor[i++];
+			(float) curColor[i+0] +
+			(float) curColor[i+1] +
+			(float) curColor[i+2];
+		i+=3;
 		sum /= 3;
 		curGray[j++] = (byte) sum;
 	}
@@ -86,13 +89,13 @@ void PhaseDecoder::decode() {
 	int pass;
 	for(pass = 0; pass < maxPasses; pass++) {
 		unwrapPhase();
-		if(minRemaining != 0 && getRemaining() < minRemaining)
+		if(getRemaining() < minRemaining)
 			break;
 	}
 	if(phasePersistence)
 		memcpy(lastPhase, phase, sizeof(float) * width * height);
-	makeColor();
 	makeDepth();
+	makeColor();
 }
 
 float* PhaseDecoder::getPhase() {
@@ -103,8 +106,16 @@ void PhaseDecoder::setDepthScale(float depthScale) {
 	this->depthScale = depthScale;
 }
 
+float PhaseDecoder::getDepthScale() {
+	return this->depthScale;
+}
+
 void PhaseDecoder::setDepthSkew(float depthSkew) {
 	this->depthSkew = depthSkew;
+}
+
+float PhaseDecoder::getDepthSkew() {
+	return this->depthSkew;
 }
 
 void PhaseDecoder::setOrientation(phaseOrientation orientation) {

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _VISION_DIY3DSCAN_SRC_PriorityDecoder
+#define _VISION_DIY3DSCAN_SRC_PriorityDecoder
 
 #include "PhaseDecoder.h"
 #include <queue>
@@ -7,7 +8,9 @@
 	#define abs(x) (x < 0 ? -x : x)
 #endif
 
-class UnwrapPath {
+#include "libexport.h"
+
+class DLL_EXPORT UnwrapPath {
 public:
 	float diff;
 	int target;
@@ -20,9 +23,11 @@ public:
 	}
 };
 
-class PriorityDecoder : public PhaseDecoder {
+class DLL_EXPORT PriorityDecoder : public PhaseDecoder {
 protected:
 	virtual void unwrapPhase();
 	void unwrapPhase(int target, float sourcePhase);
 	std::priority_queue<UnwrapPath, std::vector<UnwrapPath>, std::less<UnwrapPath> > toProcess;
 };
+
+#endif

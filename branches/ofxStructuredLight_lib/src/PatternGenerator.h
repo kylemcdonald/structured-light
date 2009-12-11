@@ -1,12 +1,23 @@
-#pragma once
+#ifndef _VISION_DIY3DSCAN_SRC_PatternGenerator
+#define _VISION_DIY3DSCAN_SRC_PatternGenerator
 
+#ifdef OPENFRAMEWORKS_AVAIL
 #include "ofMain.h"
+#else
+#include <cv.h>
+#endif
 
-class PatternGenerator {
+#include "libexport.h"
+
+class DLL_EXPORT PatternGenerator {
 protected:
-	bool reverse;
 	int width, height;
-	vector<ofImage> sequence;
+	bool reverse;
+#ifdef OPENFRAMEWORKS_AVAIL
+	std::vector<ofImage> sequence;
+#else
+	std::vector<IplImage> sequence;
+#endif
 	void allocateSequence(int n);
 public:
 	PatternGenerator();
@@ -16,5 +27,11 @@ public:
 	int getWidth();
 	int getHeight();
 	int size();
+#ifdef OPENFRAMEWORKS_AVAIL
 	ofImage& get(int i);
+#else
+	IplImage& get(int i);
+#endif
 };
+
+#endif

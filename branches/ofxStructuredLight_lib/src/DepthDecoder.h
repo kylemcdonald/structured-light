@@ -1,10 +1,19 @@
-#pragma once
+#ifndef _VISION_DIY3DSCAN_SRC_DepthDecoder
+#define _VISION_DIY3DSCAN_SRC_DepthDecoder
 
 #include "DepthExporter.h"
 
+#include <string>
+
+#ifndef OPENFRAMEWORKS_AVAIL
+#include <cv.h>
+#endif
+
 typedef unsigned char byte;
 
-class DepthDecoder {
+#include "libexport.h"
+
+class DLL_EXPORT DepthDecoder {
 public:
 	DepthDecoder();
 	virtual ~DepthDecoder();
@@ -16,11 +25,13 @@ public:
 	float* getDepth();
 	void filterDeviations(float deviations);
 	void filterRange(float min, float max);
-	void exportDepth(string filename);
-	virtual void exportCloud(string filename);
-	virtual void exportMesh(string filename);
+	void exportDepth(std::string filename);
+	virtual void exportCloud(std::string filename);
+	virtual void exportMesh(std::string filename);
 protected:
 	int width, height;
 	bool* mask;
 	float* depth;
 };
+
+#endif
