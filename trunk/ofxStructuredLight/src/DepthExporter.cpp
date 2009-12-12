@@ -12,8 +12,8 @@ void DepthExporter::exportDepth(string filename, int width, int height, const bo
 	unsigned char* pixels = img.getPixels();
 	int n = width * height;
 
-	float min = numeric_limits<float>::max();
-	float max = numeric_limits<float>::min();
+	float min = +numeric_limits<float>::max();
+	float max = -numeric_limits<float>::max();
 
 	for(int i = 0; i < n; i++) {
 		if(!mask[i]) {
