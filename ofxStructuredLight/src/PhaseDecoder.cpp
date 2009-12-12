@@ -83,8 +83,7 @@ void PhaseDecoder::set(int position, byte* image) {
 
 void PhaseDecoder::decode() {
 	makePhase();
-	int pass;
-	for(pass = 0; pass < maxPasses; pass++) {
+	for(int pass = 0; pass < maxPasses; pass++) {
 		unwrapPhase();
 		if(minRemaining != 0 && getRemaining() < minRemaining)
 			break;
