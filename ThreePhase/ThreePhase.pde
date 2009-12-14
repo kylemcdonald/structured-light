@@ -17,9 +17,10 @@ import peasy.*;
  can be reconstructed or not. Start with it small, and work
  up until you start losing important parts of the image.
 */
-float zscale = 140;
-float zskew = 23;
-float noiseTolerance = 0.15;
+
+float zscale = 130;
+float zskew = 24;
+float noiseTolerance = 0.1;
 
 int inputWidth = 480;
 int inputHeight = 640;
@@ -42,8 +43,8 @@ void setup() {
 
 void draw () {
   if(keyPressed) {
-    zscale = map(mouseX, 0, width, -150, 150);
-    zskew = map(mouseY, 0, height, -50, 50);
+    zscale = map(mouseX, 0, width, 0, 550);
+    zskew = map(mouseY, 0, height, 0, 50);
   }
 
   background(0);
