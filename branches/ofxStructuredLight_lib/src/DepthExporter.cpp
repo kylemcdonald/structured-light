@@ -25,8 +25,8 @@ void DepthExporter::exportDepth(string filename, int width, int height, const bo
 #endif
 	int n = width * height;
 
-	float min = std::numeric_limits<float>::max();
-	float max = std::numeric_limits<float>::min();
+	float min = +std::numeric_limits<float>::max();
+	float max = -std::numeric_limits<float>::max();
 
 	for(int i = 0; i < n; i++) {
 		if(!mask[i]) {

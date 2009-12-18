@@ -5,3 +5,9 @@
 #endif
 
 #define TWO_PI (2*M_PI)
+
+inline unsigned int log2(unsigned int value) {
+	unsigned int l = 0;
+	while( (value >> l) > 1 ) ++l;
+	return l;
+}

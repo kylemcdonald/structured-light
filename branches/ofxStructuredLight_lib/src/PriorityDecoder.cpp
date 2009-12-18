@@ -17,7 +17,7 @@ void PriorityDecoder::unwrapPhase() {
 			float sourcePhase = cur.resultPhase;
 			toProcess.pop();
 
-	    int x = i % width;
+			int x = i % width;
 			int y = i / width;
 
 			if (y > 0) // up
