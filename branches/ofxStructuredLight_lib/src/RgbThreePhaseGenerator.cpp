@@ -1,5 +1,7 @@
 #include "RgbThreePhaseGenerator.h"
 
+#include "basics.h"
+
 RgbThreePhaseGenerator::RgbThreePhaseGenerator() :
 	orientation(PHASE_VERTICAL),
 	wavelength(0) {
@@ -13,8 +15,14 @@ void RgbThreePhaseGenerator::setWavelength(float wavelength) {
 	this->wavelength = wavelength;
 }
 
+#ifdef OPENFRAMEWORKS_AVAIL
 #define makeRgbPhase(k, j, normalize, rgb) \
-	(unsigned char) ofClamp(256 * (cosf(j * normalize + offsets[rgb][k]) + 1) / 2, 0, 255)
+	(unsigned char) cvMinMaxLoc(256 * (cosf(j * normalize + offsets[rgb][k]) + 1) / 2, 0, 255)
+#else
+//TODO
+#define makeRgbPhase(k, j, normalize, rgb) \
+	0
+#endif
 void RgbThreePhaseGenerator::generate() {
 	allocateSequence(3);
 	float offsets[][3] = {
@@ -23,7 +31,11 @@ void RgbThreePhaseGenerator::generate() {
 		{+TWO_PI / 3, -TWO_PI / 3, 0}
 	};
 	for(int k = 0; k < 3; k++) {
+#ifdef OPENFRAMEWORKS_AVAIL
 		unsigned char* pixels = sequence[k].getPixels();
+#else
+		unsigned char* pixels = (unsigned char*)(sequence[k].imageData);
+#endif
 		float normalize = TWO_PI / wavelength;
 		int side = orientation == PHASE_VERTICAL ? width : height;
 		unsigned char* single = new unsigned char[side * 3];
@@ -49,6 +61,8 @@ void RgbThreePhaseGenerator::generate() {
 			}
 		}
 		delete [] single;
+#ifdef OPENFRAMEWORKS_AVAIL
 		sequence[k].update();
+#endif
 	}
 }
