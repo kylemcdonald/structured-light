@@ -3,12 +3,12 @@
 #include "PatternGenerator.h"
 #include "PhaseConstants.h"
 
-class ThreePhaseGenerator : public PatternGenerator {
+class RgbThreePhaseGenerator : public PatternGenerator {
 private:
 	float wavelength;
 	phaseOrientation orientation;
 public:
-	ThreePhaseGenerator();
+	RgbThreePhaseGenerator();
 	void setOrientation(phaseOrientation orientation);
 	void setWavelength(float wavelength);
 	void generate();
