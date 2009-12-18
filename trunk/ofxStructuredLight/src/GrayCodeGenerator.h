@@ -3,13 +3,14 @@
 #include "PatternGenerator.h"
 #include "PhaseConstants.h"
 
-class ThreePhaseGenerator : public PatternGenerator {
+class GrayCodeGenerator : public PatternGenerator {
 private:
-	float wavelength;
+	unsigned int length, subdivisions;
 	phaseOrientation orientation;
 public:
-	ThreePhaseGenerator();
+	GrayCodeGenerator();
 	void setOrientation(phaseOrientation orientation);
-	void setWavelength(float wavelength);
+	void setLength(unsigned int length);
+	void setSubdivisions(unsigned int subdivisions);
 	void generate();
 };
