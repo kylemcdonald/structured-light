@@ -1,0 +1,42 @@
+<playSequence>
+    <val_0>1.000000</val_0>
+</playSequence>
+<style>
+    <val_0>0.000000</val_0>
+</style>
+<orientation>
+    <val_0>0.000000</val_0>
+</orientation>
+<rangeThreshold>
+    <val_0>8.500000</val_0>
+</rangeThreshold>
+<depthScale>
+    <val_0>200.000000</val_0>
+</depthScale>
+<depthSkew>
+    <val_0>-11.111111</val_0>
+</depthSkew>
+<filterMin>
+    <val_0>-512.000000</val_0>
+</filterMin>
+<filterMax>
+    <val_0>1024.000000</val_0>
+</filterMax>
+<exportFormat>
+    <val_0>0.000000</val_0>
+</exportFormat>
+<export>
+    <val_0>0.000000</val_0>
+</export>
+<record>
+    <val_0>0.000000</val_0>
+</record>
+<cameraRate>
+    <val_0>2.611111</val_0>
+</cameraRate>
+<cameraOffset>
+    <val_0>1.305556</val_0>
+</cameraOffset>
+<jumpTo>
+    <val_0>20.980927</val_0>
+</jumpTo>
