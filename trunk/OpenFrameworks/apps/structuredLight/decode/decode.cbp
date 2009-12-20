@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="decode" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="release">
+				<Option output="bin\$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin" />
+				<Option object_output="obj\release" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="debug">
+				<Option output="bin\$(PROJECT_NAME)_DEBUG" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin" />
+				<Option object_output="obj\debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wno-multichar" />
+			<Add directory="..\..\..\libs\glu" />
+			<Add directory="..\..\..\libs\freeType\include" />
+			<Add directory="..\..\..\libs\freeType\include\freetype2" />
+			<Add directory="..\..\..\libs\freeImage" />
+			<Add directory="..\..\..\libs\quicktime\CIncludes" />
+			<Add directory="..\..\..\libs\rtAudio" />
+			<Add directory="..\..\..\libs\fmodex\inc" />
+			<Add directory="..\..\..\libs\videoInput\include" />
+			<Add directory="..\..\..\libs\glee\include" />
+			<Add directory="..\..\..\libs\glut" />
+			<Add directory="..\..\..\libs\openFrameworks" />
+			<Add directory="..\..\..\libs\openFrameworks\app" />
+			<Add directory="..\..\..\libs\openFrameworks\events" />
+			<Add directory="..\..\..\libs\openFrameworks\graphics" />
+			<Add directory="..\..\..\libs\openFrameworks\utils" />
+			<Add directory="..\..\..\libs\openFrameworks\sound" />
+			<Add directory="..\..\..\libs\openFrameworks\video" />
+			<Add directory="..\..\..\libs\openFrameworks\communication" />
+			<Add directory="..\..\..\libs\poco\includes" />
+			<Add directory="..\..\..\addons\ofxStructuredLight\src" />
+			<Add directory="..\..\..\addons\ofxVectorMath\src" />
+			<Add directory="..\..\..\addons\ofx3DUtils\src" />
+			<Add directory="..\..\..\addons\ofxXmlSettings\src" />
+			<Add directory="..\..\..\addons\ofxXmlSettings\libs" />
+			<Add directory="..\..\..\addons\ofxDirList\src" />
+			<Add directory="..\..\..\addons\ofxControlPanel" />
+			<Add directory="..\..\..\addons\ofxMovieSaver\src" />
+		</Compiler>
+		<Linker>
+			<Add option="../../../libs/freeImage/FreeImage.lib" />
+			<Add option="../../../libs/rtAudio/RtAudio.a" />
+			<Add option="../../../libs/quicktime/Libraries/qtmlClient.lib" />
+			<Add option="../../../libs/freeType/lib/libfreetype.a" />
+			<Add option="../../../libs/glut/libglut.a" />
+			<Add option="../../../libs/videoInput/lib/videoInputLib.a" />
+			<Add option="../../../libs/fmodex/lib/libfmodex.a" />
+			<Add option="../../../libs/glee/lib/GLee.lib" />
+			<Add option="../../../libs/glu/glu32.lib" />
+			<Add option="../../../libs/poco/libs/libPocoFoundationmt.a" />
+			<Add option="../../../libs/poco/libs/libPocoUtilmt.a" />
+			<Add option="../../../libs/poco/libs/libPocoXMLmt.a" />
+			<Add option="../../../libs/poco/libs/libPocoNetmt.a" />
+			<Add option="-lopengl32" />
+			<Add option="-lglu32" />
+			<Add option="-ldsound" />
+			<Add option="-lwinmm" />
+			<Add option="-ldxguid" />
+			<Add option="-lstrmbase" />
+			<Add option="-lstrmiids" />
+			<Add option="-lz" />
+			<Add option="-luuid" />
+			<Add option="-lole32" />
+			<Add option="-loleaut32" />
+			<Add option="-lsetupapi" />
+			<Add option="-lwsock32" />
+			<Add option="-lws2_32" />
+		</Linker>
+		<ExtraCommands>
+			<Add after='xcopy /e /i /y &quot;$(PROJECT_DIR)..\..\..\other\export\coreDlls_cbWin32\*.dll&quot;  bin' />
+			<Add after="cmd /c if not exist bin\data mkdir bin\data" />
+			<Mode after="always" />
+		</ExtraCommands>
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofx3DGraphics.cpp" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofx3DGraphics.h" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofx3DUtils.h" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxCamera.cpp" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxCamera.h" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxEasyCam.h" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxLight.cpp" />
+		<Unit filename="..\..\..\addons\ofx3DUtils\src\ofxLight.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiBaseObject.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiColor.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiCustomImpl.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiIncludes.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTextBase.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiType2DSlider.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypeCustom.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypeDrawable.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypeFileLister.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypeLogger.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypeMultiToggle.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypePanel.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypeSlider.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypeText.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiTypeToggle.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiValue.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\guiXmlValue.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\ofxControlPanel.cpp" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\ofxControlPanel.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\simpleColor.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\simpleFileLister.h" />
+		<Unit filename="..\..\..\addons\ofxControlPanel\simpleLogger.h" />
+		<Unit filename="..\..\..\addons\ofxDirList\src\ofxDirList.cpp" />
+		<Unit filename="..\..\..\addons\ofxDirList\src\ofxDirList.h" />
+		<Unit filename="..\..\..\addons\ofxMovieSaver\src\ofxQtVideoSaver.cpp" />
+		<Unit filename="..\..\..\addons\ofxMovieSaver\src\ofxQtVideoSaver.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\DepthDecoder.cpp" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\DepthDecoder.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\DepthExporter.cpp" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\DepthExporter.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\FastBlur.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\FloodFillDecoder.cpp" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\FloodFillDecoder.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\PhaseDecoder.cpp" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\PhaseDecoder.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\PriorityDecoder.cpp" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\PriorityDecoder.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\ThreePhaseDecoder.cpp" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\ThreePhaseDecoder.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\TwoPlusOneDecoder.cpp" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\TwoPlusOneDecoder.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\ofxStructuredLight.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxMatrix3x3.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxMatrix3x3.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint2f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint2f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint3f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint3f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint4f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxPoint4f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec2f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec2f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec3f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec3f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec4f.cpp" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVec4f.h" />
+		<Unit filename="..\..\..\addons\ofxVectorMath\src\ofxVectorMath.h" />
+		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxml.cpp" />
+		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h" />
+		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
+		<Unit filename="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
+		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
+		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
+		<Unit filename="src\main.cpp" />
+		<Unit filename="src\ofxAutoControlPanel.h" />
+		<Unit filename="src\testApp.cpp" />
+		<Unit filename="src\testApp.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppBaseWindow.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppGlutWindow.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppGlutWindow.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppRunner.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\app\ofAppRunner.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\app\ofBaseApp.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\communication\ofArduino.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\communication\ofArduino.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\communication\ofSerial.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\communication\ofSerial.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\communication\ofStandardFirmata.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\communication\ofStandardFirmata.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\events\ofEventUtils.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\events\ofEvents.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofBitmapFont.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofBitmapFont.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofGraphics.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofGraphics.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofImage.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofImage.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofTexture.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofTexture.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofTrueTypeFont.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\graphics\ofTrueTypeFont.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\ofMain.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\sound\ofSoundPlayer.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\sound\ofSoundPlayer.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\sound\ofSoundStream.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\sound\ofSoundStream.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\utils\ofConstants.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\utils\ofMath.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\utils\ofMath.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\utils\ofTypes.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\utils\ofUtils.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\utils\ofUtils.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\video\ofQtUtils.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\video\ofQtUtils.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoGrabber.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoGrabber.h" />
+		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoPlayer.cpp" />
+		<Unit filename="..\..\..\libs\openFrameworks\video\ofVideoPlayer.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
