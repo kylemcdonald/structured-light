@@ -18,10 +18,6 @@ void GrayCodeGenerator::setSubdivisions(unsigned int subdivisions) {
 	this->subdivisions = subdivisions;
 }
 
-unsigned short binaryToGray(unsigned short num) {
-	return (num>>1) ^ num;
-}
-
 // for conversion: http://www.dspguru.com/dsp/tricks/gray-code-conversion
 #define makeGrayCode(x) (x >> 1) ^ x
 #define isTrue(x, i) (x >> i & 1)
