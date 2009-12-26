@@ -1,23 +1,32 @@
-<playSequence>
+<cameraRate>
     <val_0>1.000000</val_0>
-</playSequence>
-<style>
+</cameraRate>
+<cameraOffset>
     <val_0>0.000000</val_0>
+</cameraOffset>
+<playSequence>
+    <val_0>0.000000</val_0>
+</playSequence>
+<jumpTo>
+    <val_0>0.000000</val_0>
+</jumpTo>
+<style>
+    <val_0>1.000000</val_0>
 </style>
 <orientation>
     <val_0>0.000000</val_0>
 </orientation>
 <rangeThreshold>
-    <val_0>8.500000</val_0>
+    <val_0>14.166667</val_0>
 </rangeThreshold>
 <depthScale>
-    <val_0>200.000000</val_0>
+    <val_0>77.777779</val_0>
 </depthScale>
 <depthSkew>
-    <val_0>-11.111111</val_0>
+    <val_0>-25.555555</val_0>
 </depthSkew>
 <filterMin>
-    <val_0>-512.000000</val_0>
+    <val_0>-1024.000000</val_0>
 </filterMin>
 <filterMax>
     <val_0>1024.000000</val_0>
@@ -31,12 +40,9 @@
 <record>
     <val_0>0.000000</val_0>
 </record>
-<cameraRate>
-    <val_0>2.611111</val_0>
-</cameraRate>
-<cameraOffset>
-    <val_0>1.305556</val_0>
-</cameraOffset>
-<jumpTo>
-    <val_0>20.980927</val_0>
-</jumpTo>
+<renderMovie>
+    <val_0>1.000000</val_0>
+</renderMovie>
+<movieFramerate>
+    <val_0>60.000000</val_0>
+</movieFramerate>
