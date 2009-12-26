@@ -57,7 +57,7 @@ void testApp::setup(){
 	panel.addToggle("record", "record", false);
 
 	panel.addToggle("render movie", "renderMovie", false);
-	panel.addSlider("movie framerate", "movieFramerate", 15, 5, 60, true);
+	panel.addSlider("movie framerate", "movieFramerate", 60, 5, 60, true);
 
 	ofBackground(0, 0, 0);
 }
@@ -70,6 +70,8 @@ void testApp::drawCloud() {
 	int srcWidth = threePhase->getWidth();
 	int srcHeight = threePhase->getHeight();
 
+	glEnable(GL_POINT_SIZE);
+	glPointSize(3);
 	glBegin(GL_POINTS);
 	int i = 0;
 	for(int y = 0; y < srcHeight; y++) {
