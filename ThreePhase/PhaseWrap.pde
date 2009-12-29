@@ -4,34 +4,45 @@
   and determine their angle (theta). Throw out noisy pixels.
 */
 
-void phaseWrap() { 
-  PImage phase1Image = loadImage("phase1.jpg");
-  PImage phase2Image = loadImage("phase2.jpg");
-  PImage phase3Image = loadImage("phase3.jpg");
-  
+PImage phase1Image, phase2Image, phase3Image;
+
+void loadImages() {
+  phase1Image = loadImage("img/phase1.jpg");
+  phase2Image = loadImage("img/phase2.jpg");
+  phase3Image = loadImage("img/phase3.jpg");
+}
+
+void phaseWrap() {
   float sqrt3 = sqrt(3);
   for (int y = 0; y < inputHeight; y++) {
     for (int x = 0; x < inputWidth; x++) {     
       int i = x + y * inputWidth;  
       
-      float phase1 = (phase1Image.pixels[i] & 255) / 255.;
-      float phase2 = (phase2Image.pixels[i] & 255) / 255.;
-      float phase3 = (phase3Image.pixels[i] & 255) / 255.;
+      color color1 = phase1Image.pixels[i];
+      color color2 = phase2Image.pixels[i];
+      color color3 = phase3Image.pixels[i];
+      
+      float phase1 = (color1 & 255) / 255.;
+      float phase2 = (color2 & 255) / 255.;
+      float phase3 = (color3 & 255) / 255.;
       
       float phaseSum = phase1 + phase2 + phase3;
       float phaseRange = max(phase1, phase2, phase3) - min(phase1, phase2, phase3);
       
-      // avoid the noise floor
+      // ignore noise
       float gamma = phaseRange / phaseSum;
-      mask[y][x] = gamma < noiseTolerance;
+      mask[y][x] = gamma < noiseThreshold;
       process[y][x] = !mask[y][x];
 
       // this equation can be found in Song Zhang's
       // "Recent progresses on real-time 3D shape measurement..."
       // and it is the "bottleneck" of the algorithm
-      // it can be sped up with a LUT, which has the benefit
+      // it can be sped up with a look up table, which has the benefit
       // of allowing for simultaneous gamma correction.
       phase[y][x] = atan2(sqrt3 * (phase1 - phase3), 2 * phase2 - phase1 - phase3) / TWO_PI;
+      
+      // build color based on the lightest channels from all three images
+      colors[y][x] = blendColor(blendColor(color1, color2, LIGHTEST), color3, LIGHTEST);
     }
   }
 }
