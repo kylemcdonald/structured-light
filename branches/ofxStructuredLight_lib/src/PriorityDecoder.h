@@ -1,7 +1,7 @@
-#ifndef _VISION_DIY3DSCAN_SRC_PriorityDecoder
-#define _VISION_DIY3DSCAN_SRC_PriorityDecoder
+#pragma once
 
 #include "PhaseDecoder.h"
+
 #include <queue>
 
 #ifndef abs
@@ -29,5 +29,3 @@ protected:
 	void unwrapPhase(int target, float sourcePhase);
 	std::priority_queue<UnwrapPath, std::vector<UnwrapPath>, std::less<UnwrapPath> > toProcess;
 };
-
-#endif

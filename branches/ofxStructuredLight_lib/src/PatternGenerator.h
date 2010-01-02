@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_PatternGenerator
-#define _VISION_DIY3DSCAN_SRC_PatternGenerator
+#pragma once
 
 #ifdef OPENFRAMEWORKS_AVAIL
 #include "ofMain.h"
@@ -33,5 +32,3 @@ public:
 	IplImage& get(int i);
 #endif
 };
-
-#endif

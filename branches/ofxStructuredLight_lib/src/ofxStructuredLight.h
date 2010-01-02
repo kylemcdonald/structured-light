@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_ofxStructuredLight
-#define _VISION_DIY3DSCAN_SRC_ofxStructuredLight
+#pragma once
 
 #ifdef OPENFRAMEWORKS_AVAIL
 #include "ofMain.h"
@@ -8,8 +7,7 @@
 #include "ThreePhaseGenerator.h"
 #include "RgbThreePhaseGenerator.h"
 #include "GrayCodeGenerator.h"
+#include "GradientGenerator.h"
 
 #include "ThreePhaseDecoder.h"
 #include "TwoPlusOneDecoder.h"
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_FloodFillDecoder
-#define _VISION_DIY3DSCAN_SRC_FloodFillDecoder
+#pragma once
 
 #include "PhaseDecoder.h"
 
@@ -13,5 +12,3 @@ protected:
 	void unwrapPhase(int target, float sourcePhase);
 	std::deque<int> toProcess;
 };
-
-#endif

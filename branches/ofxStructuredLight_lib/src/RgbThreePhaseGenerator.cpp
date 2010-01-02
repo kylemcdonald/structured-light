@@ -3,8 +3,9 @@
 #include "basics.h"
 
 RgbThreePhaseGenerator::RgbThreePhaseGenerator() :
-	orientation(PHASE_VERTICAL),
-	wavelength(0) {
+	PatternGenerator(),
+	wavelength(0),
+	orientation(PHASE_VERTICAL) {
 }
 
 void RgbThreePhaseGenerator::setOrientation(phaseOrientation orientation) {

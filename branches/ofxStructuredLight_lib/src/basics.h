@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cmath>
 
 #ifndef M_PI

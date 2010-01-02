@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_TwoPlusOneDecoder
-#define _VISION_DIY3DSCAN_SRC_TwoPlusOneDecoder
+#pragma once
 
 #include "FloodFillDecoder.h"
 
@@ -13,5 +12,3 @@ protected:
 	void unwrapPhase();
 	void makeColor();
 };
-
-#endif

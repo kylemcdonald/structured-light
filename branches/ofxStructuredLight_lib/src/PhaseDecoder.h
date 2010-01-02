@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_PhaseDecoder
-#define _VISION_DIY3DSCAN_SRC_PhaseDecoder
+#pragma once
 
 #include "DepthDecoder.h"
 #include "FastBlur.h"
@@ -51,5 +50,3 @@ protected:
 	virtual int getStart();
 	float getRemaining();
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_ThreePhaseDecoder
-#define _VISION_DIY3DSCAN_SRC_ThreePhaseDecoder
+#pragma once
 
 #include "FloodFillDecoder.h"
 #include "PriorityDecoder.h"
@@ -38,5 +37,3 @@ protected:
 	float* range;
 	static float rangeThreshold;
 };
-
-#endif

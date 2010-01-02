@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_ThreePhaseGenerator
-#define _VISION_DIY3DSCAN_SRC_ThreePhaseGenerator
+#pragma once
 
 #include "PatternGenerator.h"
 #include "PhaseConstants.h"
@@ -18,5 +17,3 @@ public:
 	void setGamma(float gamma);
 	void generate();
 };
-
-#endif

@@ -6,6 +6,7 @@ void PriorityDecoder::unwrapPhase() {
 		unwrapPhase(start, lastPhase[start]);
 	} else {
 		unwrapPhase(start, phase[start]);
+		//unwrapPhase(start, 0);
 	}
 
 	while(!toProcess.empty()) {

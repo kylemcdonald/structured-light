@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_DepthExporter
-#define _VISION_DIY3DSCAN_SRC_DepthExporter
+#pragma once
 
 #ifdef OPENFRAMEWORKS_AVAIL
 #include "ofMain.h"
@@ -30,4 +29,3 @@ private:
 	static void exportPlyMesh(std::string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color = NULL);
 };
 
-#endif

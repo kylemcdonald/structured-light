@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_DepthDecoder
-#define _VISION_DIY3DSCAN_SRC_DepthDecoder
+#pragma once
 
 #include "DepthExporter.h"
 
@@ -33,5 +32,3 @@ protected:
 	bool* mask;
 	float* depth;
 };
-
-#endif

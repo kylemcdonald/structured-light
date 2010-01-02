@@ -3,9 +3,9 @@
 #include "basics.h"
 
 GrayCodeGenerator::GrayCodeGenerator() :
-	orientation(PHASE_VERTICAL),
 	length(1024),
-	subdivisions(10) {
+	subdivisions(10),
+	orientation(PHASE_VERTICAL) {
 }
 
 void GrayCodeGenerator::setOrientation(phaseOrientation orientation) {
@@ -18,10 +18,6 @@ void GrayCodeGenerator::setLength(unsigned int length) {
 
 void GrayCodeGenerator::setSubdivisions(unsigned int subdivisions) {
 	this->subdivisions = subdivisions;
-}
-
-unsigned short binaryToGray(unsigned short num) {
-	return (num>>1) ^ num;
 }
 
 // for conversion: http://www.dspguru.com/dsp/tricks/gray-code-conversion

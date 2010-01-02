@@ -1,5 +1,4 @@
-#ifndef _VISION_DIY3DSCAN_SRC_FastBlur
-#define _VISION_DIY3DSCAN_SRC_FastBlur
+#pragma once
 
 #include "libexport.h"
 
@@ -60,5 +59,3 @@ protected:
 	int* integral;
 	int* sum;
 };
-
-#endif
