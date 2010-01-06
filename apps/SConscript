@@ -1,0 +1,3 @@
+Import('env')
+
+env.SConscript('structuredLight/SConscript', exports='env', duplicate=0)
