@@ -18,10 +18,10 @@ import controlP5.*;
  up until you start losing important parts of the image.
  */
  
-float noiseThreshold = 0.1;
-float zscale = 130;
-float zskew = 24; 
-int renderDetail = 2;
+public float noiseThreshold = 0.1;
+public float zscale = 130;
+public float zskew = 24; 
+public int renderDetail = 2;
 
 ControlWindow controlWindow;
 ControlP5 control;
