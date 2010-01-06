@@ -1,7 +1,5 @@
-Import('env')
-
 def CheckOpenCV(context, cvdir):
-	context.Message( 'Checking for OpenCV ...' )
+	context.Message( 'Checking for OpenCV'+context.env['DSUF']+' ...' )
 	try:
 		lastLIBS = context.env['LIBS']
 	except:
@@ -25,16 +23,25 @@ def CheckOpenCV(context, cvdir):
 			"$OPENCV_ROOT/otherlibs/highgui",
 			"$OPENCV_ROOT/otherlibs/cvcam/include"
 			],
-			LIBPATH = [
-			"$OPENCV_ROOT/lib/release"
-			],
 			LIBS = [
-			'cv200',
-			'cxcore200',
-			'cvaux200',
-			'highgui200',
+			'cv200'+context.env['DSUF'],
+			'cxcore200'+context.env['DSUF'],
+			'cvaux200'+context.env['DSUF'],
+			'highgui200'+context.env['DSUF'],
 			]
 		)
+		if (context.env['DSUF']==''):
+			context.env.Append(
+				LIBPATH = [
+					"$OPENCV_ROOT/lib/release"
+				],
+			)
+		if (context.env['DSUF']=='d'):
+			context.env.Append(
+				LIBPATH = [
+					"$OPENCV_ROOT/lib/debug"
+				],
+			)
 	else:
 		context.env.Append(
 			CPPPATH = [
@@ -44,11 +51,11 @@ def CheckOpenCV(context, cvdir):
 			"$OPENCV_ROOT/lib",
 			],
 			LIBS = [
-			'cv',
-			'cxcore',
-			'cvaux',
-			'highgui',
-			'ml',
+			'cv'+context.env['DSUF'],
+			'cxcore'+context.env['DSUF'],
+			'cvaux'+context.env['DSUF'],
+			'highgui'+context.env['DSUF'],
+			'ml'+context.env['DSUF'],
 			]
 		)
 	ret = context.TryLink("""
@@ -64,6 +71,9 @@ int main(int argc, char **argv) {
 		print '  LIBS = ', context.env['LIBS']
 		print '  $OPENCV_ROOT = ', context.env['OPENCV_ROOT']
 		context.env.Replace(LIBS = lastLIBS, LIBPATH=lastLIBPATH, CPPPATH=lastCPPPATH)
+	else:
+		d = context.env.ParseFlags('-DOPENCV_AVAIL')
+		context.env.MergeFlags(d)
 	return ret
 
 Export('CheckOpenCV')

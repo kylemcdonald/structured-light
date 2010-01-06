@@ -1,0 +1,4 @@
+Import('env')
+
+env.SConscript('capture/SConscript', exports='env', duplicate=0)
+env.SConscript('decode/SConscript', exports='env', duplicate=0)

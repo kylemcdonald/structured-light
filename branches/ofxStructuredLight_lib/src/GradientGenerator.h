@@ -3,7 +3,9 @@
 #include "PatternGenerator.h"
 #include "PhaseConstants.h"
 
-class GradientGenerator : public PatternGenerator {
+#include "libexport.h"
+
+class DLL_EXPORT GradientGenerator : public PatternGenerator {
 private:
 	phaseOrientation orientation;
 public:

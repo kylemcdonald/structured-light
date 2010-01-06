@@ -18,7 +18,7 @@ void RgbThreePhaseGenerator::setWavelength(float wavelength) {
 
 #ifdef OPENFRAMEWORKS_AVAIL
 #define makeRgbPhase(k, j, normalize, rgb) \
-	(unsigned char) cvMinMaxLoc(256 * (cosf(j * normalize + offsets[rgb][k]) + 1) / 2, 0, 255)
+	(unsigned char) ofClamp(256 * (cosf(j * normalize + offsets[rgb][k]) + 1) / 2, 0, 255)
 #else
 //TODO
 #define makeRgbPhase(k, j, normalize, rgb) \

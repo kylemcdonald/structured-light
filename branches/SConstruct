@@ -1,0 +1,107 @@
+EnsurePythonVersion(2,4)
+EnsureSConsVersion(1,2,0)
+
+vars = Variables('scons.conf', ARGUMENTS)
+vars.AddVariables(
+	BoolVariable('release', 'release build', True),
+	BoolVariable('debug', 'debug build', False),
+	PathVariable('OPENCV_ROOT', 'OpenCV root directory.', None, PathVariable.PathAccept),
+	PathVariable('OPENFRAMEWORKS_ROOT', 'OpenFrameworks root directory.', None, PathVariable.PathAccept),
+)
+
+VariantDir('build/release', '.', duplicate=0)
+VariantDir('build/debug', '.', duplicate=0)
+SConsignFile('build/.sconsign.dblite')
+env = Environment(
+	OS=str(ARGUMENTS.get('OS', Platform())),
+	variables=vars,
+	tools = ['default'],
+	CONFIGUREDIR='#build/.sconf_temp',
+	CONFIGURELOG='#build/config.log',
+)
+Help(vars.GenerateHelpText(env))
+
+if (env['OS']=='win32'):
+	t = Tool('msvc')
+	t(env)
+	env['MSVS_VERSION'] = '8.0'
+	print "Using msvs version ",env['MSVS_VERSION']
+elif (env['OS']=='posix'):
+	t = Tool('gcc')
+	t(env)
+else:
+	print '*** error: platform',ARGUMENTS.get('OS',Platform()),'is not supported!'
+	Exit(1)
+
+if (env['OS']=='win32'):
+	da = env.ParseFlags('-EHsc -nologo -D_MBCS -D"_WIN32_WINNT=0X0400" -GR -FD -D_CONSOLE -DPOCO_STATIC')
+	env.MergeFlags(da)
+elif (env['OS']=='posix'):
+	da = env.ParseFlags('-fPIC -Wall -D_CONSOLE -DPOCO_STATIC')
+	env.MergeFlags(da)
+
+envd = env.Clone()
+env['DSUF'] = ''
+envd['DSUF'] = 'd'
+
+if (env['OS']=='win32'):
+	dr = env.ParseFlags('-O2 -DNDEBUG -MD -arch:SSE2')
+	env.MergeFlags(dr)
+	dd = envd.ParseFlags('-D_DEBUG -vmg -RTC1 -GF -MDd -Z7')
+	envd.MergeFlags(dd)
+elif (env['OS']=='posix'):
+	dd = envd.ParseFlags('-g')
+	envd.MergeFlags(dd)
+
+
+	
+env.SConscript(['opencv.conf.py'])
+Import('CheckOpenCV')
+env.SConscript(['openframeworks.conf.py'])
+Import('CheckOpenFrameworks')
+
+# Checks for libraries, header files, etc. go here!
+if (env['release']):
+	conf = env.Configure(custom_tests = { 'CheckOpenCV' : CheckOpenCV, 'CheckOpenFrameworks' : CheckOpenFrameworks } )
+	# Check OpenCV
+	if not conf.CheckOpenCV(env['OPENCV_ROOT']):
+		print
+		print '*** error: Set $OPENCV_ROOT in ''scons.conf'' or edit opencv.conf.py!'
+		#Exit(1)
+	# Check OpenFrameworks
+	if not conf.CheckOpenFrameworks(env['OPENFRAMEWORKS_ROOT']):
+		print
+		print '*** error: Set $OPENFRAMEWORKS_ROOT in ''scons.conf'' or edit openframeworks.conf.py!'
+		#Exit(1)
+	env = conf.Finish()
+if (env['debug']):
+	confd = envd.Configure(custom_tests = { 'CheckOpenCV' : CheckOpenCV, 'CheckOpenFrameworks' : CheckOpenFrameworks } )
+	# Check OpenCV
+	if not confd.CheckOpenCV(envd['OPENCV_ROOT']):
+		print
+		print '*** error: Set $OPENCV_ROOT in ''scons.conf'' or edit opencv.conf.py!'
+		#Exit(1)
+	# Check OpenFrameworks
+	if not confd.CheckOpenFrameworks(envd['OPENFRAMEWORKS_ROOT']):
+		print
+		print '*** error: Set $OPENFRAMEWORKS_ROOT in ''scons.conf'' or edit openframeworks.conf.py!'
+		#Exit(1)
+	envd = confd.Finish()
+
+if (env['OS']=='win32'):
+	#manifest 
+	env['LINKCOM'] = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
+	env['SHLINKCOM'] = [env['SHLINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
+	env['WINDOWS_INSERT_MANIFEST'] = True
+	#env['WINDOWS_INSERT_DEF'] = True
+	envd['LINKCOM'] = [envd['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
+	envd['SHLINKCOM'] = [envd['SHLINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
+	envd['WINDOWS_INSERT_MANIFEST'] = True
+	#envd['WINDOWS_INSERT_DEF'] = True
+
+if (env['release']):
+	env.SConscript('build/release/ofxStructuredLight_lib/SConscript', exports={'env':env}, duplicate=0)
+	env.SConscript('build/release/OpenFrameworks_lib/SConscript', exports={'env':env}, duplicate=0)
+if (env['debug']):
+	envd.SConscript('build/debug/ofxStructuredLight_lib/SConscript', exports={'env':envd}, duplicate=0)
+	envd.SConscript('build/debug/OpenFrameworks_lib/SConscript', exports={'env':envd}, duplicate=0)

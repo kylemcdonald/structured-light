@@ -3,7 +3,9 @@
 #include "PatternGenerator.h"
 #include "PhaseConstants.h"
 
-class GrayCodeGenerator : public PatternGenerator {
+#include "libexport.h"
+
+class DLL_EXPORT GrayCodeGenerator : public PatternGenerator {
 private:
 	unsigned int length, subdivisions;
 	phaseOrientation orientation;

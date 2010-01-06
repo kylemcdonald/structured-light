@@ -1,0 +1,18 @@
+Import('env')
+imported_env = env
+env = env.Clone()
+
+srcs = 	[
+	'main.cpp',
+	'testApp.cpp',
+]
+srcs = map(lambda x: 'src/'+x, srcs)
+
+env.AppendUnique(
+	CPPPATH=['#ofxStructuredLight_lib/src'],
+	LIBPATH=['#lib'],
+	LIBS=['structuredLight'+env['DSUF']]
+)
+
+prog = env.Program('decode'+env['DSUF'], srcs)
+env.Install('#OpenFrameworks_lib/apps/structuredLight/decode/bin', prog)
