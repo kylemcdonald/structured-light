@@ -1,4 +1,4 @@
-function [angles,unwrapped_angles,p1]=slight;
+function [angles,unwrapped_angles,p1]=structured_light;
 % binarymillenium Jan 2010
 % GNU GPL v3.0
 
@@ -12,9 +12,9 @@ function [angles,unwrapped_angles,p1]=slight;
 % p2 = rot90(double( rgb2gray(imread('data/00003phase2.jpg'))));
 % p3 = rot90(double( rgb2gray(imread('data/00003phase3.jpg'))));
 
-p1 = rot90(double( rgb2gray(imread('data/phase1.jpg'))));
-p2 = rot90(double( rgb2gray(imread('data/phase2.jpg'))));
-p3 = rot90(double( rgb2gray(imread('data/phase3.jpg'))));
+p1 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase1.jpg'))));
+p2 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase2.jpg'))));
+p3 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase3.jpg'))));
 
 
 figure(10);
