@@ -18,14 +18,16 @@ import toxi.geom.*;
 
 GL gl;
 
-Texture tex[] = new Texture[3];
+int numPeriods = 4;
+int numPhases = 3;
+
+Texture tex[] = new Texture[numPeriods*numPhases];
 float rotx = PI/4;
 float roty = PI/4;
 
-String imnames[] = new String[3]; 
 int imind = 0;
 
-
+XPatternGen patterns;
 
 Matrix4x4 view;
 /// the position and orientation of the projector
@@ -67,10 +69,11 @@ void setup()
   size(480, 640, OPENGL);
   perspective(PI/16, float(width)/float(height), 1, 20000);
   
-  imnames[0] = "i1.png";
-  imnames[1] = "i2.png";
-  imnames[2] = "i3.png";
+  patterns = new XPatternGen(width, height,8, numPeriods, numPhases);
   
+  
+  /// generate random object
+  /// TBD load obj
   float sc = 1;
   
   int mx = 28;
@@ -99,16 +102,18 @@ void setup()
   
   gl=((PGraphicsOpenGL)g).gl;
    
-  for (int i = 0; i < 3; i++) { 
+  for (int i = 0; i < numPeriods; i++) { 
+  for (int j = 0; j < numPhases; j++) { 
+    int ind = i*numPhases+j;
     try { 
-      tex[i] = TextureIO.newTexture(new File(dataPath(imnames[i])),true); 
+      tex[ind] = TextureIO.newTexture(new File(dataPath(patterns.pnames[i][j])),true); 
     }
     catch(Exception e) { println(e); } 
     
-    tex[i].setTexParameteri(GL.GL_TEXTURE_WRAP_R,GL.GL_REPEAT);    
-    tex[i].setTexParameteri(GL.GL_TEXTURE_WRAP_S,GL.GL_REPEAT);
-    tex[i].setTexParameteri(GL.GL_TEXTURE_WRAP_T,GL.GL_REPEAT);
-  }
+    //tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_R,GL.GL_REPEAT);    
+    //tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_S,GL.GL_REPEAT);
+    //tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_T,GL.GL_REPEAT);
+  }}
  
   textureMode(NORMALIZED);
   fill(255);
@@ -237,7 +242,7 @@ void apply(Matrix4x4 m) {
 boolean switchTex = false;
 boolean drawLine = true;
 boolean saveIm = false;
-float relAngle = -25.0/180.0*PI;
+float relAngle = 15.0/180.0*PI;
 
 //////////////////////////////////////////////////////////////
 void draw() {
@@ -245,12 +250,12 @@ void draw() {
   /// only do this synchronously with drawing
   if (switchTex) {
     imind++;
-    imind %= 3;  
+    imind %= numPeriods*numPhases;  
     /*
     try { tex  = TextureIO.newTexture(new File(dataPath(imnames[imind])),true); }
     catch(Exception e) { println(e); } 
     */
-    println("using texture " + imnames[imind]); 
+    //println("using texture " + imnames[imind]); 
     
   }
   switchTex = false;
@@ -276,14 +281,15 @@ void draw() {
   drawObject(tex[imind]);
   
   if (saveIm) {
-    String name = "phase" + (imind + 1) + ".jpg";
+    String name = "phase" + (imind + 1001) + ".jpg";
     saveFrame(name);
     println("saving " + name);
     
     imind++;
     
   } 
-  if (imind > 2) { saveIm = false;
+  if (imind > numPeriods*numPhases) { 
+    saveIm = false;
     imind = 0;
   }
   
