@@ -69,7 +69,7 @@ void setup()
   size(480, 640, OPENGL);
   perspective(PI/16, float(width)/float(height), 1, 20000);
   
-  patterns = new XPatternGen(width, height,8, numPeriods, numPhases);
+  patterns = new XPatternGen(width, height,16, numPeriods, numPhases);
   
   
   /// generate random object
