@@ -1,0 +1,22 @@
+Import('env')
+
+srcs = 	[
+	'DepthDecoder.cpp',
+	'DepthExporter.cpp',
+	'FloodFillDecoder.cpp',
+	'GradientGenerator.cpp',
+	'GrayCodeGenerator.cpp',
+	'PatternGenerator.cpp',
+	'PatternGenerator.cpp',
+	'PhaseDecoder.cpp',
+	'PriorityDecoder.cpp',
+	'RgbThreePhaseGenerator.cpp',
+	'ThreePhaseDecoder.cpp',
+	'ThreePhaseGenerator.cpp',
+	'TwoPlusOneDecoder.cpp',
+]
+srcs = map(lambda x: 'src/'+x, srcs)
+
+#lib = env.StaticLibrary('ofxStructuredLight'+env['DSUF'], srcs)
+lib = env.SharedLibrary('ofxStructuredLight'+env['DSUF'], srcs)
+env.Install('#lib', lib)

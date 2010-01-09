@@ -9,9 +9,9 @@ srcs = 	[
 srcs = map(lambda x: 'src/'+x, srcs)
 
 env.AppendUnique(
-	CPPPATH=['#ofxStructuredLight_lib/src'],
+	CPPPATH=['#OpenFrameworks_lib/addons/ofxStructuredLight/src'],
 	LIBPATH=['#lib'],
-	LIBS=['structuredLight'+env['DSUF']]
+	LIBS=['ofxStructuredLight'+env['DSUF']]
 )
 
 prog = env.Program('decode'+env['DSUF'], srcs)
