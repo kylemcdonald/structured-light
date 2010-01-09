@@ -17,6 +17,6 @@ srcs = 	[
 ]
 srcs = map(lambda x: 'src/'+x, srcs)
 
-#lib = env.StaticLibrary('structuredLight'+env['DSUF'], srcs)
-lib = env.SharedLibrary('structuredLight'+env['DSUF'], srcs)
+#lib = env.StaticLibrary('ofxStructuredLight'+env['DSUF'], srcs)
+lib = env.SharedLibrary('ofxStructuredLight'+env['DSUF'], srcs)
 env.Install('#lib', lib)

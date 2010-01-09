@@ -100,8 +100,6 @@ if (env['OS']=='win32'):
 	#envd['WINDOWS_INSERT_DEF'] = True
 
 if (env['release']):
-	env.SConscript('build/release/ofxStructuredLight_lib/SConscript', exports={'env':env}, duplicate=0)
 	env.SConscript('build/release/OpenFrameworks_lib/SConscript', exports={'env':env}, duplicate=0)
 if (env['debug']):
-	envd.SConscript('build/debug/ofxStructuredLight_lib/SConscript', exports={'env':envd}, duplicate=0)
 	envd.SConscript('build/debug/OpenFrameworks_lib/SConscript', exports={'env':envd}, duplicate=0)

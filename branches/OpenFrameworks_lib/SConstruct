@@ -121,32 +121,40 @@ elif (env['OS']=='posix'):
 	dd = envd.ParseFlags('-g')
 	envd.MergeFlags(dd)
 
-
-src = env.Glob('build/release/addons/*/src/*.cpp', source=True)
-src += env.Glob('build/release/addons/*/src/3DS/*.cpp', source=True)
-src += env.Glob('build/release/addons/*/libs/*.cpp', source=True)
-src += env.Glob('build/release/addons/ofx3DUtils/src/*.cpp', source=True)
-src += env.Glob('build/release/addons/ofxControlPanel/src/*.cpp', source=True)
-src += env.Glob('build/release/addons/ofxQtVideoSaver/src/*.cpp', source=True)
-src += env.Glob('build/release/libs/openFrameworks/video/*.cpp', source=True)
-src += env.Glob('build/release/libs/openFrameworks/utils/*.cpp', source=True)
-src += env.Glob('build/release/libs/openFrameworks/sound/*.cpp', source=True)
-src += env.Glob('build/release/libs/openFrameworks/graphics/*.cpp', source=True)
-src += env.Glob('build/release/libs/openFrameworks/app/*.cpp', source=True)
-src += env.Glob('build/release/libs/openFrameworks/*/*/*.cpp', source=True)
-
-srcd = env.Glob('build/debug/addons/*/src/*.cpp', source=True)
-srcd += env.Glob('build/debug/addons/*/src/3DS/*.cpp', source=True)
-srcd += env.Glob('build/debug/addons/*/libs/*.cpp', source=True)
-srcd += env.Glob('build/debug/addons/ofx3DUtils/src/*.cpp', source=True)
-srcd += env.Glob('build/debug/addons/ofxControlPanel/src/*.cpp', source=True)
-srcd += env.Glob('build/debug/addons/ofxQtVideoSaver/src/*.cpp', source=True)
-srcd += env.Glob('build/debug/libs/openFrameworks/video/*.cpp', source=True)
-srcd += env.Glob('build/debug/libs/openFrameworks/utils/*.cpp', source=True)
-srcd += env.Glob('build/debug/libs/openFrameworks/sound/*.cpp', source=True)
-srcd += env.Glob('build/debug/libs/openFrameworks/graphics/*.cpp', source=True)
-srcd += env.Glob('build/debug/libs/openFrameworks/app/*.cpp', source=True)
-srcd += env.Glob('build/debug/libs/openFrameworks/*/*/*.cpp', source=True)
+srclist = [
+	'addons/ofx3DModelLoader/src/*.cpp',
+	'addons/ofx3DModelLoader/src/3DS/*.cpp',
+	'addons/ofx3DUtils/src/*.cpp',
+	'addons/ofxControlPanel/src/*.cpp',
+	'addons/ofxDirList/src/*.cpp',
+	'addons/ofxMovieSaver/src/*.cpp',
+	'addons/ofxNetwork/src/*.cpp',
+	'addons/ofxObjLoader/src/*.cpp',
+	'addons/ofxOpenCv/src/*.cpp',
+	'addons/ofxOsc/src/*.cpp',
+	'addons/ofxQtVideoSaver/src/*.cpp',
+	'addons/ofxThread/src/*.cpp',
+	'addons/ofxVectorGraphics/src/*.cpp',
+	'addons/ofxVectorGraphics/libs/*.cpp',
+	'addons/ofxVectorMath/src/*.cpp',
+	'addons/ofxXmlSettings/src/*.cpp',
+	'addons/ofxXmlSettings/libs/*.cpp',
+	'libs/openFrameworks/app/*.cpp',
+	'libs/openFrameworks/communication/*.cpp',
+	'libs/openFrameworks/events/*.cpp',
+	'libs/openFrameworks/graphics/*.cpp',
+	'libs/openFrameworks/sound/*.cpp',
+	'libs/openFrameworks/utils/*.cpp',
+	'libs/openFrameworks/video/*.cpp',
+]
+srcglob = map(lambda x: 'build/release/'+x, srclist)
+srcdglob = map(lambda x: 'build/debug/'+x, srclist)
+src = []
+for i in srcglob:
+	src += env.Glob(i, source=True)
+srcd = []
+for j in srcdglob:
+	srcd += env.Glob(j, source=True)
 
 if (env['release']):
 	#lib = env.SharedLibrary('build/release/openFrameworks', src)
