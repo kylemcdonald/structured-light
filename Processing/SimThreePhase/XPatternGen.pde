@@ -36,8 +36,10 @@ int startPeriodPower = 8;
   } 
 
 public void draw() {
+  noLights();
 
-    int curPeriod = 2^startPeriodPower;
+    int curPeriod = (int)pow(2,startPeriodPower);
+    
     
     for (int i = 0; i < numPeriods; i++) {
     for (int j = 0; j < numPhases; j++) {
@@ -52,18 +54,19 @@ public void draw() {
         color c = color(sin((y-height/2 + offset) * (2*PI/(float)curPeriod) ) * 128.0 + 128);
         for(int x=0; x < width; x++) {
           /// make sure edges are black for texture clamping
-          if ((y != 0) && (y != height-1)) pp[i][j].pixels[y*width+x] = c;  
-          else pp[i][j].pixels[y*width+x] = color(0);  
+          if ((y > 1 ) && (y < height-2)) pp[i][j].pixels[y*width+x] = c;  
+          else pp[i][j].pixels[y*width+x] = color(0,0,0);  
         } 
-        pp[i][j].pixels[y*width+width-1]  = color(0);
-        pp[i][j].pixels[y*width]  = color(0);
+        pp[i][j].pixels[y*width+width-1]  = color(0,0,0);
+         pp[i][j].pixels[y*width+width-2]  = color(0,0,0);
+        pp[i][j].pixels[y*width]  = color(0,0,0);
       }
        pp[i][j].updatePixels(); 
           
            
       /// TBD make saving optional
       pnames[i][j] =   (i+1000) + "phase" + (j+1000) +".png";
-      println("saving " + i + " " + j + " " + pnames[i][j]);
+      println("saving period " + curPeriod + " " + i + " " + j + " " + pnames[i][j]);
       pp[i][j].save(savePath(folderPath + "/" + pnames[i][j]));
     }
     curPeriod = curPeriod/2;

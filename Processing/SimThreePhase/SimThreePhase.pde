@@ -18,7 +18,7 @@ import toxi.geom.*;
 
 GL gl;
 
-int numPeriods = 2;
+int numPeriods = 3;
 int numPhases = 3;
 
 Texture tex[] = new Texture[numPeriods*numPhases];
@@ -69,7 +69,8 @@ void setup()
   size(480, 640, OPENGL);
   perspective(PI/16, float(width)/float(height), 1, 20000);
   
-  patterns = new XPatternGen(width, height,20, numPhases,numPeriods );
+  
+  patterns = new XPatternGen(width, height,8, numPhases,numPeriods );
   
   
   /// generate random object
@@ -115,7 +116,7 @@ void setup()
     
     //tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_R,GL.GL_REPEAT);    
     //tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_S,GL.GL_REPEAT);
-    //tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_T,GL.GL_REPEAT);
+   // tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_T,GL.GL_REPEAT);
   }}
  
   textureMode(NORMALIZED);
@@ -288,10 +289,9 @@ void draw() {
     saveFrame(name);
     println("saving " + name);
     
-    imind++;
-    
+    imind++;  
   } 
-  if (imind > numPeriods*numPhases) { 
+  if (imind >= numPeriods*numPhases) { 
     saveIm = false;
     imind = 0;
   }
@@ -304,23 +304,31 @@ void draw() {
          projPos.y+15.0*(float)projector.matrix[2][1], 
          projPos.z+15.0*(float)projector.matrix[2][2]);
   }
-  
+   
  
 }
 
 ///////////////////////////////////////////////////
 
-float texScale = 0.14;
+int counttemp = 0;
+/// TBD make this work non-orthogonally
+float texScale = 0.25;
 void vertexProj(Vec3D v,boolean verbose) {
   
   Vec3D rel = v.sub(projPos);
-
   Vec3D uv = projector.apply(rel);
   
-  uv = uv.scale(texScale);
+   uv = uv.scale(texScale);
+   
+   float yscale = (float)tex[imind].getHeight()/(float)tex[imind].getWidth();
+  if (counttemp ==0)println(yscale);
+  uv.x = uv.x+0.5;
+  uv.y = (uv.y)*yscale+0.5;
+  
+  counttemp++;
   
   //vertex(v.x, v.y, v.z, pt.x*10, pt.y *10);
-  gl.glTexCoord2f(uv.y,uv.x);
+  gl.glTexCoord2f(uv.y,uv.x );
   gl.glVertex3f(v.x,v.y,v.z);
   
   //vertex(v.x,v.y,v.z);//, uv.x,uv.y);
@@ -364,9 +372,9 @@ void drawObject(Texture tex) {
   gl.glBegin(GL.GL_QUADS);
   //gl.glNormal3f( 0.0f, 0.0f, 1.0f); 
   
-  gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
-  gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
-  gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_R, GL.GL_REPEAT );
+   gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
+   gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP );
+   gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP );
   
   // Given one texture and six faces, we can easily set up the uv coordinates
   // such that four of the faces tile "perfectly" along either u or v, but the other
