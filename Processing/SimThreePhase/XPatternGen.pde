@@ -51,15 +51,19 @@ public void draw() {
         /// and not be lined up on the left edge
         color c = color(sin((y-height/2 + offset) * (2*PI/(float)curPeriod) ) * 128.0 + 128);
         for(int x=0; x < width; x++) {
-          pp[i][j].pixels[y*width+x] = c;
+          /// make sure edges are black for texture clamping
+          if ((y != 0) && (y != height-1)) pp[i][j].pixels[y*width+x] = c;  
+          else pp[i][j].pixels[y*width+x] = color(0);  
         } 
-       pp[i][j].updatePixels(); 
+        pp[i][j].pixels[y*width+width-1]  = color(0);
+        pp[i][j].pixels[y*width]  = color(0);
       }
-      
-      
+       pp[i][j].updatePixels(); 
+          
            
       /// TBD make saving optional
       pnames[i][j] =   (i+1000) + "phase" + (j+1000) +".png";
+      println("saving " + i + " " + j + " " + pnames[i][j]);
       pp[i][j].save(savePath(folderPath + "/" + pnames[i][j]));
     }
     curPeriod = curPeriod/2;

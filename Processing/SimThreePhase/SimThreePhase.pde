@@ -18,7 +18,7 @@ import toxi.geom.*;
 
 GL gl;
 
-int numPeriods = 4;
+int numPeriods = 2;
 int numPhases = 3;
 
 Texture tex[] = new Texture[numPeriods*numPhases];
@@ -69,7 +69,7 @@ void setup()
   size(480, 640, OPENGL);
   perspective(PI/16, float(width)/float(height), 1, 20000);
   
-  patterns = new XPatternGen(width, height,16, numPeriods, numPhases);
+  patterns = new XPatternGen(width, height,20, numPhases,numPeriods );
   
   
   /// generate random object
@@ -102,11 +102,14 @@ void setup()
   
   gl=((PGraphicsOpenGL)g).gl;
    
-  for (int i = 0; i < numPeriods; i++) { 
-  for (int j = 0; j < numPhases; j++) { 
+  for (int i = 0; i < numPeriods; i++) {
+  for (int j = 0; j < numPhases; j++) {
     int ind = i*numPhases+j;
-    try { 
-      tex[ind] = TextureIO.newTexture(new File(dataPath(patterns.pnames[i][j])),true); 
+    println("loading " + ind + ", " + i + " " + j + " ");
+    try {  
+      String name = dataPath(patterns.pnames[i][j]);
+      println(name);
+      tex[ind] = TextureIO.newTexture(new File(name),true); 
     }
     catch(Exception e) { println(e); } 
     
@@ -317,7 +320,7 @@ void vertexProj(Vec3D v,boolean verbose) {
   uv = uv.scale(texScale);
   
   //vertex(v.x, v.y, v.z, pt.x*10, pt.y *10);
-  gl.glTexCoord2f(uv.x,uv.y);
+  gl.glTexCoord2f(uv.y,uv.x);
   gl.glVertex3f(v.x,v.y,v.z);
   
   //vertex(v.x,v.y,v.z);//, uv.x,uv.y);
