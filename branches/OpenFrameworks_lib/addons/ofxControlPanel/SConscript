@@ -1,0 +1,10 @@
+Import('env')
+
+srcs = 	[
+	'ofxControlPanel.cpp',
+]
+srcs = map(lambda x: 'src/'+x, srcs)
+
+lib = env.StaticLibrary('ofxControlPanel'+env['DSUF'], srcs)
+#lib = env.SharedLibrary('ofxControlPanel'+env['DSUF'], srcs)
+env.Install('#lib', lib)

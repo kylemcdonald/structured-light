@@ -1,16 +1,34 @@
 EnsurePythonVersion(2,4)
 EnsureSConsVersion(1,2,0)
 
+env = envd = None
+variants = [
+	{
+		'name': 'release',
+		'env': env,
+		'suffix': '',
+		'flags_win32': '-O2 -DNDEBUG -MD -arch:SSE2',
+		'flags_posix': ''
+	},
+	{
+		'name': 'debug',
+		'env': envd,
+		'suffix': 'd',
+		'flags_win32': '-D_DEBUG -vmg -RTC1 -GF -MDd -Z7',
+		'flags_posix': '-g'
+	}
+]
+
 vars = Variables('scons.conf', ARGUMENTS)
+for v in variants:
+	vars.AddVariables(BoolVariable(v['name'], 'Set to ''1'' to build '+v['name'], True))
 vars.AddVariables(
-	BoolVariable('release', 'release build', True),
-	BoolVariable('debug', 'debug build', False),
 	PathVariable('OPENCV_ROOT', 'OpenCV root directory.', None, PathVariable.PathAccept),
 	PathVariable('OPENFRAMEWORKS_ROOT', 'OpenFrameworks root directory.', None, PathVariable.PathAccept),
 )
 
-VariantDir('build/release', '.', duplicate=0)
-VariantDir('build/debug', '.', duplicate=0)
+for v in variants:
+	VariantDir('build/'+v['name'], '.', duplicate=0)
 SConsignFile('build/.sconsign.dblite')
 env = Environment(
 	OS=str(ARGUMENTS.get('OS', Platform())),
@@ -18,6 +36,7 @@ env = Environment(
 	tools = ['default'],
 	CONFIGUREDIR='#build/.sconf_temp',
 	CONFIGURELOG='#build/config.log',
+	DSUF = ''
 )
 Help(vars.GenerateHelpText(env))
 
@@ -40,66 +59,47 @@ elif (env['OS']=='posix'):
 	da = env.ParseFlags('-fPIC -Wall -D_CONSOLE -DPOCO_STATIC')
 	env.MergeFlags(da)
 
-envd = env.Clone()
-env['DSUF'] = ''
-envd['DSUF'] = 'd'
+for v in variants:
+	v['env'] = env.Clone()
+	v['env']['DSUF'] = v['suffix']
 
-if (env['OS']=='win32'):
-	dr = env.ParseFlags('-O2 -DNDEBUG -MD -arch:SSE2')
-	env.MergeFlags(dr)
-	dd = envd.ParseFlags('-D_DEBUG -vmg -RTC1 -GF -MDd -Z7')
-	envd.MergeFlags(dd)
-elif (env['OS']=='posix'):
-	dd = envd.ParseFlags('-g')
-	envd.MergeFlags(dd)
+for v in variants:
+	if (env['OS']=='win32'):
+		dt = v['env'].ParseFlags(v['flags_win32'])
+		v['env'].MergeFlags(dt)
+	elif (env['OS']=='posix'):
+		dd = v['env'].ParseFlags(v['flags_posix'])
+		v['env'].MergeFlags(dd)
 
-
-	
-env.SConscript(['opencv.conf.py'])
+v['env'].SConscript(['opencv.conf.py'])
 Import('CheckOpenCV')
-env.SConscript(['openframeworks.conf.py'])
+v['env'].SConscript(['openframeworks.conf.py'])
 Import('CheckOpenFrameworks')
 
 # Checks for libraries, header files, etc. go here!
-if (env['release']):
-	conf = env.Configure(custom_tests = { 'CheckOpenCV' : CheckOpenCV, 'CheckOpenFrameworks' : CheckOpenFrameworks } )
-	# Check OpenCV
-	if not conf.CheckOpenCV(env['OPENCV_ROOT']):
-		print
-		print '*** error: Set $OPENCV_ROOT in ''scons.conf'' or edit opencv.conf.py!'
-		#Exit(1)
-	# Check OpenFrameworks
-	if not conf.CheckOpenFrameworks(env['OPENFRAMEWORKS_ROOT']):
-		print
-		print '*** error: Set $OPENFRAMEWORKS_ROOT in ''scons.conf'' or edit openframeworks.conf.py!'
-		#Exit(1)
-	env = conf.Finish()
-if (env['debug']):
-	confd = envd.Configure(custom_tests = { 'CheckOpenCV' : CheckOpenCV, 'CheckOpenFrameworks' : CheckOpenFrameworks } )
-	# Check OpenCV
-	if not confd.CheckOpenCV(envd['OPENCV_ROOT']):
-		print
-		print '*** error: Set $OPENCV_ROOT in ''scons.conf'' or edit opencv.conf.py!'
-		#Exit(1)
-	# Check OpenFrameworks
-	if not confd.CheckOpenFrameworks(envd['OPENFRAMEWORKS_ROOT']):
-		print
-		print '*** error: Set $OPENFRAMEWORKS_ROOT in ''scons.conf'' or edit openframeworks.conf.py!'
-		#Exit(1)
-	envd = confd.Finish()
+for v in variants:
+	if (env[v['name']]):
+		conf = v['env'].Configure(custom_tests = { 'CheckOpenCV' : CheckOpenCV, 'CheckOpenFrameworks' : CheckOpenFrameworks } )
+		# Check OpenCV
+		if not conf.CheckOpenCV(v['env']['OPENCV_ROOT']):
+			print
+			print '*** error: Set $OPENCV_ROOT in ''scons.conf'' or edit opencv.conf.py!'
+			#Exit(1)
+		# Check OpenFrameworks
+		if not conf.CheckOpenFrameworks(v['env']['OPENFRAMEWORKS_ROOT']):
+			print
+			print '*** error: Set $OPENFRAMEWORKS_ROOT in ''scons.conf'' or edit openframeworks.conf.py!'
+			#Exit(1)
+		v['env'] = conf.Finish()
 
 if (env['OS']=='win32'):
-	#manifest 
-	env['LINKCOM'] = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
-	env['SHLINKCOM'] = [env['SHLINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
-	env['WINDOWS_INSERT_MANIFEST'] = True
-	#env['WINDOWS_INSERT_DEF'] = True
-	envd['LINKCOM'] = [envd['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
-	envd['SHLINKCOM'] = [envd['SHLINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
-	envd['WINDOWS_INSERT_MANIFEST'] = True
-	#envd['WINDOWS_INSERT_DEF'] = True
+	for v in variants:
+		#manifest 
+		v['env']['LINKCOM'] = [v['env']['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']
+		v['env']['SHLINKCOM'] = [v['env']['SHLINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2']
+		v['env']['WINDOWS_INSERT_MANIFEST'] = True
+		#env['WINDOWS_INSERT_DEF'] = True
 
-if (env['release']):
-	env.SConscript('build/release/OpenFrameworks_lib/SConscript', exports={'env':env}, duplicate=0)
-if (env['debug']):
-	envd.SConscript('build/debug/OpenFrameworks_lib/SConscript', exports={'env':envd}, duplicate=0)
+for v in variants:
+	if (env[v['name']]):
+		v['env'].SConscript('build/'+v['name']+'/OpenFrameworks_lib/SConscript', exports={'env':v['env']}, duplicate=0)

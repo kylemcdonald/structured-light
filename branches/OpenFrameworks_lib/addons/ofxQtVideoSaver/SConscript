@@ -1,0 +1,10 @@
+Import('env')
+
+srcs = 	[
+	'ofxQtVideoSaver.cpp',
+]
+srcs = map(lambda x: 'src/'+x, srcs)
+
+lib = env.StaticLibrary('ofxQtVideoSaver'+env['DSUF'], srcs)
+#lib = env.SharedLibrary('ofxQtVideoSaver'+env['DSUF'], srcs)
+env.Install('#lib', lib)
