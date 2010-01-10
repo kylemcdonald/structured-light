@@ -57,7 +57,7 @@ void setup()
    //model.showModelInfo();
    
    
-   String[] lines = loadStrings("cube.obj");
+   String[] lines = loadStrings("test2.obj");
    
    vs = new Vec3D[1];
    vn = new Vec3D[1];
@@ -97,9 +97,15 @@ void setup()
        
        if (toks[0].equals("f")) {
          //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
-         faces[fcount][0] =Integer.parseInt(toks[1].substring(0,1));
-         faces[fcount][1] =Integer.parseInt(toks[2].substring(0,1));
-         faces[fcount][2] =Integer.parseInt(toks[3].substring(0,1));
+         
+         String[] nums;
+         nums = splitTokens(toks[1],"/");
+         faces[fcount][0] =Integer.parseInt(nums[0]);
+         nums = splitTokens(toks[2],"/");
+         faces[fcount][1] =Integer.parseInt(nums[0]);
+         nums = splitTokens(toks[3],"/");
+         faces[fcount][2] =Integer.parseInt(nums[0]);
+
          
          println("face " + fcount + " " + faces[fcount][0] + " " + faces[fcount][1] + " " + faces[fcount][2]);
          fcount++;
@@ -324,8 +330,9 @@ float relAngle = 15.0/180.0*PI;
 //////////////////////////////////////////////////////////////
 void draw() {
   
-  lights();
-  pointLight(projPos.x,projPos.y,projPos.z, 255,0,0);
+
+  
+  
   
   /// only do this synchronously with drawing
   if (switchTex) {
@@ -358,6 +365,18 @@ void draw() {
   */
 
   scale(90);
+  
+  gl.glEnable(gl.GL_LIGHTING);
+  gl.glEnable(gl.GL_LIGHT0);
+  
+  float position[] = { projPos.x,  projPos.y,  projPos.z, 1.0f };
+  float diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+  gl.glLightfv(gl.GL_LIGHT0, gl.GL_POSITION,  position ,0);
+  gl.glLightfv(gl.GL_LIGHT0, gl.GL_DIFFUSE, diffuse,0 );
+  
+  //lights();
+  //pointLight(projPos.x,projPos.y,projPos.z, 255,0,0);
+  
   drawObject(tex[imind]);
   
   if (saveIm) {
@@ -414,8 +433,9 @@ Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
   //vertex(v.x,v.y,v.z);//, uv.x,uv.y);
     //vertex(v.x, v.y, v.z, pt.x*10, pt.y *10);
     gl.glTexCoord2f(uv.y,uv.x );
+       gl.glNormal3f(n.x,n.y,n.z);
     gl.glVertex3f(v.x,v.y,v.z);
-    gl.glNormal3f(n.x,n.y,n.z);
+ 
   
   if (verbose) println(uv.x + " " + uv.y);
   
