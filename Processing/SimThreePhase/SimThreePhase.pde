@@ -12,16 +12,21 @@ http://code.google.com/p/structured-light/
 */
 
 import javax.media.opengl.*;
+//import saito.objloader.*;
 import processing.opengl.*;
 import com.sun.opengl.util.texture.*;  
 import toxi.geom.*;
 
 GL gl;
 
+//OBJModel model;
+
 int numPeriods = 3;
 int numPhases = 3;
 
 Texture tex[] = new Texture[numPeriods*numPhases];
+//PImage tex[] = new PImage[numPeriods*numPhases];
+
 float rotx = PI/4;
 float roty = PI/4;
 
@@ -34,34 +39,11 @@ Matrix4x4 view;
 Matrix4x4 projector;
 Vec3D projPos;
 
-
-Vec3D vs[];
-int faces[][];
-
-//////////////////////////////////////////////////////////
-/// utility functions
-
-Matrix4x4 rotateAbs(Matrix4x4 rot, float df, Vec3D axis) {
-  Quaternion quat = new Quaternion(cos(df/2), 
-                          new Vec3D(axis.x*sin(df/2),
-                                    axis.y*sin(df/2),
-                                    axis.z*sin(df/2)) );
-                                    
-  rot = rot.multiply(quat.getMatrix());
-  return rot;
-}
+Vec3D[] vs;
+Vec3D[] vn;
+int[][] faces;
 
 
-///////////////////
-Matrix4x4 rotateRel(Matrix4x4 rot, float df, Vec3D axis) {
-  Quaternion quat = new Quaternion(cos(df/2), 
-                          new Vec3D(axis.x*sin(df/2),
-                                    axis.y*sin(df/2),
-                                    axis.z*sin(df/2)) );
-                                    
-  rot = quat.getMatrix().multiply(rot);
-  return rot;
-}
     
 /////////////////////////////////////////////////////////////
 void setup() 
@@ -69,10 +51,71 @@ void setup()
   size(480, 640, OPENGL);
   perspective(PI/16, float(width)/float(height), 1, 20000);
   
+   //model = new OBJModel(this, "cube.obj");
+   
+   //model.debugMode();
+   //model.showModelInfo();
+   
+   
+   String[] lines = loadStrings("cube.obj");
+   
+   vs = new Vec3D[1];
+   vn = new Vec3D[1];
+   
+   faces = new int[1][3];
+   
+   int vcount = 0;
+   int vncount = 0;
+   int fcount = 0;
+   for (int i=0; i< lines.length; i++) {
+     String[] toks = splitTokens(lines[i]);
+     if (toks.length > 2) {
+       if (toks[0].equals("v")) {
+         //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
+         vs[vcount] = new Vec3D(Float.parseFloat(toks[1]),
+                               Float.parseFloat(toks[2]),
+                               Float.parseFloat(toks[3]));
+         
+         vcount++;
+         Vec3D[] nvs = new Vec3D[vcount+1];
+         arraycopy(vs,nvs,vs.length);
+         vs = nvs;
+         
+       }
+       
+       if (toks[0].equals("vn")) {
+         //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
+         vn[vncount] = new Vec3D(Float.parseFloat(toks[1]),
+                               Float.parseFloat(toks[2]),
+                               Float.parseFloat(toks[3]));
+         
+         vncount++;
+         Vec3D[] nvn = new Vec3D[vncount+1];
+         arraycopy(vn,nvn,vn.length);
+         vn = nvn;
+       }
+       
+       if (toks[0].equals("f")) {
+         //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
+         faces[fcount][0] =Integer.parseInt(toks[1].substring(0,1));
+         faces[fcount][1] =Integer.parseInt(toks[2].substring(0,1));
+         faces[fcount][2] =Integer.parseInt(toks[3].substring(0,1));
+         
+         println("face " + fcount + " " + faces[fcount][0] + " " + faces[fcount][1] + " " + faces[fcount][2]);
+         fcount++;
+         int[][] nfaces = new int[fcount+1][3];
+         arraycopy(faces,nfaces,faces.length);
+         faces = nfaces;
+         
+       }
+     }
+   } 
   
+  if (true) { 
   patterns = new XPatternGen(width, height,8, numPhases,numPeriods );
   
   
+  /*
   /// generate random object
   /// TBD load obj
   float sc = 1;
@@ -100,6 +143,7 @@ void setup()
         faces[find][3] = ind - mx;
       }
   }}
+  */
   
   gl=((PGraphicsOpenGL)g).gl;
    
@@ -111,6 +155,7 @@ void setup()
       String name = dataPath(patterns.pnames[i][j]);
       println(name);
       tex[ind] = TextureIO.newTexture(new File(name),true); 
+      //tex[ind] = loadImage(name);
     }
     catch(Exception e) { println(e); } 
     
@@ -141,6 +186,8 @@ void setup()
                             0,1,0,0,
                             0,0,1,0,
                             0,0,0,1);
+                            
+  }
   
 }
 
@@ -193,13 +240,13 @@ void keyPressed() {
   }  
   
   if (key == 'j') {
-    relAngle+= PI/900;
+    relAngle+= PI/90.0;
     println("angle " + relAngle*180/PI);
     
     //projector = rotateRel(projector, PI/900, new Vec3D(0,1,0));
   }
   if (key == 'k') {
-    relAngle -= PI/1800;
+    relAngle -= PI/180.0;
     println("angle " + relAngle*180/PI);
     //projector=rotateAbs(projector, -PI/1800, new Vec3D(0,1,0));
   }
@@ -233,6 +280,32 @@ void keyPressed() {
 
 ///////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////
+/// utility functions
+
+Matrix4x4 rotateAbs(Matrix4x4 rot, float df, Vec3D axis) {
+  Quaternion quat = new Quaternion(cos(df/2), 
+                          new Vec3D(axis.x*sin(df/2),
+                                    axis.y*sin(df/2),
+                                    axis.z*sin(df/2)) );
+                                    
+  rot = rot.multiply(quat.getMatrix());
+  return rot;
+}
+
+
+///////////////////
+Matrix4x4 rotateRel(Matrix4x4 rot, float df, Vec3D axis) {
+  Quaternion quat = new Quaternion(cos(df/2), 
+                          new Vec3D(axis.x*sin(df/2),
+                                    axis.y*sin(df/2),
+                                    axis.z*sin(df/2)) );
+                                    
+  rot = quat.getMatrix().multiply(rot);
+  return rot;
+}
+////
+
 void apply(Matrix4x4 m) {
  applyMatrix( (float)m.matrix[0][0], (float)m.matrix[0][1], (float)m.matrix[0][2], 0,  
                  (float)m.matrix[1][0], (float)m.matrix[1][1], (float)m.matrix[1][2], 0,  
@@ -250,6 +323,9 @@ float relAngle = 15.0/180.0*PI;
 
 //////////////////////////////////////////////////////////////
 void draw() {
+  
+  lights();
+  pointLight(projPos.x,projPos.y,projPos.z, 255,0,0);
   
   /// only do this synchronously with drawing
   if (switchTex) {
@@ -296,7 +372,6 @@ void draw() {
     imind = 0;
   }
   
-  
   if (drawLine) {
     stroke(255,255,255);
     line(projPos.x,projPos.y, projPos.z, 
@@ -313,10 +388,15 @@ void draw() {
 int counttemp = 0;
 /// TBD make this work non-orthogonally
 float texScale = 0.25;
-void vertexProj(Vec3D v,boolean verbose) {
+Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
   
   Vec3D rel = v.sub(projPos);
-  Vec3D uv = projector.apply(rel);
+  
+  Vec3D uv = new Vec3D();
+ 
+  //if (rel.dot(n) < 0) return uv;
+ 
+  uv = projector.apply(rel);
   
    uv = uv.scale(texScale);
    
@@ -325,20 +405,26 @@ void vertexProj(Vec3D v,boolean verbose) {
   uv.x = uv.x+0.5;
   uv.y = (uv.y)*yscale+0.5;
   
-  counttemp++;
+    if (counttemp == 0) {
+      println("uv " + uv.y + " " + uv.x); 
+   }
+  //counttemp++;
   
-  //vertex(v.x, v.y, v.z, pt.x*10, pt.y *10);
-  gl.glTexCoord2f(uv.y,uv.x );
-  gl.glVertex3f(v.x,v.y,v.z);
-  
+
   //vertex(v.x,v.y,v.z);//, uv.x,uv.y);
+    //vertex(v.x, v.y, v.z, pt.x*10, pt.y *10);
+    gl.glTexCoord2f(uv.y,uv.x );
+    gl.glVertex3f(v.x,v.y,v.z);
+    gl.glNormal3f(n.x,n.y,n.z);
   
   if (verbose) println(uv.x + " " + uv.y);
+  
+  return uv;
 }
 
-void vertexProj(Vec3D v) {
-  vertexProj(v,false);
-}
+//void vertexProj(Vec3D v) {
+//  vertexProj(v,false);
+//}
 
 /// draw an object with texture projected onto it
 void drawObject(Texture tex) {
@@ -359,6 +445,25 @@ void drawObject(Texture tex) {
   println();
   */
   
+  //model.texture(tex);
+  
+  /*
+  for (int i = 0; i < model.getVertexSize(); i++) {
+    PVector v = model.getVertex(i);
+    PVector n = model.getNormal(i);
+    
+    if (counttemp == 0) { 
+      println(i + ", " + v.x + " " + v.y + " " + v.z + ", " + n.x + " " + n.y + " " + n.z + " " );
+    }
+    
+    Vec3D uv = vertexProj(new Vec3D(v.x,v.y,v.z), new Vec3D(n.x,n.y,n.z), false);  
+    model.setUV(i, new PVector(uv.y,uv.x));
+  }
+ 
+  model.draw();
+  */
+   counttemp++;
+  
   if (true) {
   PGraphicsOpenGL pgl = (PGraphicsOpenGL) g;  
   GL gl = pgl.beginGL();  
@@ -369,7 +474,7 @@ void drawObject(Texture tex) {
   // beginShape(QUADS);
   // texture(tex);
  
-  gl.glBegin(GL.GL_QUADS);
+  gl.glBegin(GL.GL_TRIANGLES);
   //gl.glNormal3f( 0.0f, 0.0f, 1.0f); 
   
    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
@@ -386,14 +491,17 @@ void drawObject(Texture tex) {
   // tiling all the way around the cube)
   
   // +Z "front" face
-  for (int i = 0; i < faces.length; i++) {
-    vertexProj(vs[faces[i][0]]);
-    vertexProj(vs[faces[i][1]]);
-    vertexProj(vs[faces[i][2]]);
-    vertexProj(vs[faces[i][3]]);
+  for (int i = 0; i < faces.length-1; i++) {
+    //Vec3D uv;
+    
+    //println( (faces[i][0]-1) + " " +  (faces[i][1]-1) + " " + (faces[i][2]-1));
+   
+    vertexProj(vs[faces[i][0]-1], vn[faces[i][0]-1],false);
+    vertexProj(vs[faces[i][1]-1], vn[faces[i][1]-1],false);
+    vertexProj(vs[faces[i][2]-1], vn[faces[i][2]-1],false);
+
+    //vertexProj(vs[faces[i][3]]);
   }
-  
-  
   
   gl.glEnd();
   //println();
@@ -403,6 +511,7 @@ void drawObject(Texture tex) {
   pgl.endGL();
   
   }
+  
 }
 
 void mouseDragged() {
