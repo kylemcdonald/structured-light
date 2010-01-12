@@ -16,12 +16,16 @@ import javax.media.opengl.*;
 import processing.opengl.*;
 import com.sun.opengl.util.texture.*;  
 import toxi.geom.*;
+import java.nio.*;
+import com.sun.opengl.util.*;
+import javax.media.opengl.glu.*; 
 
 GL gl;
-
+GLU glu;
 //OBJModel model;
 
-int numPeriods = 3;
+
+int numPeriods = 5;
 int numPhases = 3;
 
 Texture tex[] = new Texture[numPeriods*numPhases];
@@ -43,7 +47,7 @@ Vec3D[] vs;
 Vec3D[] vn;
 int[][] faces;
 
-
+float objScale = 90.0;
     
 /////////////////////////////////////////////////////////////
 void setup() 
@@ -57,7 +61,7 @@ void setup()
    //model.showModelInfo();
    
    
-   String[] lines = loadStrings("test2.obj");
+   String[] lines = loadStrings("weird_01.obj");
    
    vs = new Vec3D[1];
    vn = new Vec3D[1];
@@ -107,7 +111,7 @@ void setup()
          faces[fcount][2] =Integer.parseInt(nums[0]);
 
          
-         println("face " + fcount + " " + faces[fcount][0] + " " + faces[fcount][1] + " " + faces[fcount][2]);
+         //println("face " + fcount + " " + faces[fcount][0] + " " + faces[fcount][1] + " " + faces[fcount][2]);
          fcount++;
          int[][] nfaces = new int[fcount+1][3];
          arraycopy(faces,nfaces,faces.length);
@@ -282,6 +286,14 @@ void keyPressed() {
     saveIm = true;
   }
   
+  if (key =='n') {
+     objScale *= 1.02;
+     
+  }
+  if (key == 'm') {
+     objScale *= 0.99; 
+  }
+  
 }
 
 ///////////////////////////////////////////////
@@ -364,7 +376,7 @@ void draw() {
   rotateX(roty);
   */
 
-  scale(90);
+  scale(objScale);
   
   gl.glEnable(gl.GL_LIGHTING);
   gl.glEnable(gl.GL_LIGHT0);
@@ -384,7 +396,59 @@ void draw() {
     saveFrame(name);
     println("saving " + name);
     
+    /// save the depth buffer
+    if (imind == 0) {
+      
+      float[] newData = new float[width*height];
+      byte[] data = new byte[(width*height)*4];
+      
+      FloatBuffer fb = BufferUtil.newFloatBuffer(width*height);
+      gl.glReadPixels(0, 0, width, height, GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, fb); 
+      fb.rewind();
+   
+      int viewport[] = new int[4]; 
+      double[] proj  = new double[16];
+      double[] model = new double[16];
+      gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
+      gl.glGetDoublev(GL.GL_PROJECTION_MATRIX, proj,0);
+      gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, model,0);
+      
+      double[] pos=new double[4];
+    
+      for (int j = 0; j < height; j++) {
+      for (int i = 0; i < width; i++) {
+      // framebuffer has opposite vertical coord  
+        int ind = j*width+i;
+        
+        float rawd = 0;
+        
+        int ind1 = (height-j-1)*width+i;
+        rawd = fb.get(ind1);
+
+         glu.gluUnProject(i,height-j,rawd, model,0,proj,0,viewport,0,pos,0); 
+         float d = (float)-pos[2];
+               
+         data = floatToBytes(data, ind*4, d);
+         
+        //if (d < mind) mind = d;
+        //if (d > maxd) maxd = d; 
+        
+        //d+= (maxd-mind)/15.0 * noise((float)j/2.0,(float)i/2.0,f*10);
+          
+        //if (d > fard) d = fard;
+        //if (d < neard) d = neard;
+        
+        //float distf=  1.0 - ((d-neard)/(fard-neard));   
+
+        //tx.pixels[ind] = makecolor(distf); //color(distf*255); //   
+      }}
+   
+    
+      saveBytes("heightdata.dat",data);
+      }
+    
     imind++;  
+ 
   } 
   if (imind >= numPeriods*numPhases) { 
     saveIm = false;
@@ -398,10 +462,19 @@ void draw() {
          projPos.y+15.0*(float)projector.matrix[2][1], 
          projPos.z+15.0*(float)projector.matrix[2][2]);
   }
-   
- 
 }
 
+byte[] floatToBytes(byte[] rv, int i, float val) {
+    //byte[] rv = new byte[4];
+    
+      int bits = Float.floatToIntBits(val);
+      rv[i+3] = (byte) ((bits >> 24) & 0xff);
+      rv[i+2] = (byte) ((bits >> 16) & 0xff);
+      rv[i+1] = (byte) ((bits >> 8)  & 0xff);
+      rv[i+0] = (byte) ((bits >> 0)  & 0xff);
+      
+      return rv;
+}
 ///////////////////////////////////////////////////
 
 int counttemp = 0;
@@ -486,7 +559,8 @@ void drawObject(Texture tex) {
   
   if (true) {
   PGraphicsOpenGL pgl = (PGraphicsOpenGL) g;  
-  GL gl = pgl.beginGL();  
+  GL gl = pgl.beginGL(); 
+  glu = ((PGraphicsOpenGL)g).glu;  
    
   tex.bind();  
   tex.enable();  
