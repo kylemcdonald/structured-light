@@ -23,12 +23,12 @@ unwrapped_angles(1,:) = unwrapped_angles1;
 [t,angles(5,:),unwrapped_angles(5,:),pd]=structuredlight('../Processing/SimThreePhase/phase1013.jpg','../Processing/SimThreePhase/phase1014.jpg','../Processing/SimThreePhase/phase1015.jpg');
 
 flat_angles = [1:len1]/len1;
-flat_angles = flat_angles*1.6+1;
+flat_angles = flat_angles*1.73+1;
 
 maxi = size(angles,1);
 for i = [1:maxi]
     uangles(i,:) = unwrapped_angles(i,:)/(2^(i-1)) - flat_angles;
-    uangles(i,:) = uangles(i,:) - uangles(i,end/2)
+    uangles(i,:) = uangles(i,:) - uangles(i,end/2);
     unwrapped_angles(i,:) = unwrapped_angles(i,:); %/(2^(i-1));
     
     angles(i,:) = angles(i,:)+i*1.2;
@@ -38,7 +38,7 @@ end
 
 figure(1);
 subplot(2,1,1),plot(t,angles);
-subplot(2,1,2),plot(t,unwrapped_angles)
+subplot(2,1,2),plot(t,unwrapped_angles);
 
 figure(2);
 plot(t(end/4:end-end/4),uangles(:,end/4:end-end/4),t(end/4:end-end/4),pd(end/4:end-end/4)/(13.0*max(max(abs(pd(end/4:end-end/4))))));
