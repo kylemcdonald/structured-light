@@ -1,4 +1,4 @@
-function [angles,unwrapped_angles,p1]=structured_light;
+function [t,angles,unwrapped_angles,pd]=structuredlight(p1name,p2name,p3name);
 % binarymillenium Jan 2010
 % GNU GPL v3.0
 
@@ -8,22 +8,36 @@ function [angles,unwrapped_angles,p1]=structured_light;
 % 
 % Copying from https://binarymillenium.googlecode.com/svn/trunk/processing/simstructuredlight
 % 
-% p1 = rot90(double( rgb2gray(imread('data/00003phase1.jpg'))));
-% p2 = rot90(double( rgb2gray(imread('data/00003phase2.jpg'))));
-% p3 = rot90(double( rgb2gray(imread('data/00003phase3.jpg'))));
 
-p1 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase1.jpg'))));
-p2 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase2.jpg'))));
-p3 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase3.jpg'))));
+p1 = rot90(double( rgb2gray(imread(p1name))));
+p2 = rot90(double( rgb2gray(imread(p2name))));
+p3 = rot90(double( rgb2gray(imread(p3name))));
 
+fid = fopen('heightdata.dat');
+pd = (double( fread( fid,flipdim(size(p3),1), 'float' )));
 
+%pd = (pd < 0.5e4).*pd + (pd >= 0.5e4).*max(max(pd));
+%pd = pd - pd(end/2,end/2);
+
+figure(2),%mesh(pd) 
+
+pdlin = reshape(pd,[prod(size(pd)),1]);
+[n,x] = hist(pdlin,40);
+%plot(x,n);
+
+pd = (pd < x(2)).*pd + (pd >= x(2)).*x(2);
+pd = -(pd-pd(end/2,end/2));
+%mesh(pd);
+axis equal
 figure(10);
 colormap('gray')
 image(p1/4);
 
-p1 = p1(end/2, end/4:3*end/4);
-p2 = p2(end/2, end/4:3*end/4);
-p3 = p3(end/2, end/4:3*end/4);
+
+p1 = p1(end/2, :);
+p2 = p2(end/2, :);
+p3 = p3(end/2, :);
+pd = pd(end/2, :);
 
 % p1 = double( rgb2gray(imread('data/i1.png')));
 % p2 = double( rgb2gray(imread('data/i2.png')));
@@ -44,10 +58,10 @@ figure(1);
 
 %colormap('gray')
 %image(pavg/4);
-plot(p1);
+%plot(p1);
 
 
-figure(2);
+%figure(2);
 
 angles = get_angle_full(p); %p(1:1,1:end/8,:));
 
@@ -59,19 +73,26 @@ p3sub = p3(1:1,:); %1:end/8);
 
 % subplot(2,1,1), plot(x,p1sub, x,p2sub, x,p3sub);
 % subplot(2,1,2), plot(x,angles(1:1,1:floor(end/8)));
-figure(3),
+%figure(3),
 %subplot(1,2,1), image(p1/4);
 %subplot(1,2,2),
 
-plot(angles);
+%plot(angles);
 %image(255/4*angles/max(max(angles)));
 %colormap('gray');
 
-figure(4),
+%figure(4),
 
 unwrapped_angles = get_unwrapped(angles);
+
+flat_angles = [1:length(unwrapped_angles)]/length(unwrapped_angles);
+flat_angles = unwrapped_angles(1) + (flat_angles )*(unwrapped_angles(end)-unwrapped_angles(1));
 % TBD the offsets are just arbitrary to the images I'm using
-plot(unwrapped_angles);
+t = [1:length(unwrapped_angles)];
+t2 = [1:length(pd)];
+%subplot(3,1,1),plot(t,unwrapped_angles,t, flat_angles)
+%subplot(3,1,2),plot(t,unwrapped_angles-flat_angles);
+%subplot(3,1,3),plot(t2, pd);
 %image(255/4*(unwrapped_angles+4)/12);
 %colormap('gray');
 
@@ -83,7 +104,7 @@ plot(unwrapped_angles);
 
 %%
 if (0)
-figure(2);
+%figure(2);
 
 p1_fft = fft((p1));
 
@@ -105,7 +126,7 @@ peak_f = ofs + find(ofs_avgf == max(ofs_avgf));
 display(['peak freq at ' num2str(peak_f)]);
 
 
-figure(3);
+%figure(3);
 
 flatp1 = double(reshape(p1,prod(size(p1)),1));
 flatp2 = double(reshape(p2,prod(size(p2)),1));
@@ -252,7 +273,6 @@ do_loop = 1;
 tot = prod(size(unwrapped_angles));
 count = 0;
 
-figure(4);
 while (do_loop == 1)    
     [unwrapped_angles,has_unwrapped, queue] = unwrap(unwrapped_angles,has_unwrapped, queue, queue(1,:));
     queue = queue(2:end,:);
@@ -264,3 +284,6 @@ while (do_loop == 1)
         do_loop = 0
     end
 end
+
+% need to make it so this happens automatically
+unwrapped_angles = unwrapped_angles - unwrapped_angles(end/2);
