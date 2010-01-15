@@ -7,7 +7,7 @@
 % p2 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase2.jpg'))));
 % p3 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase3.jpg'))));
 
-[t,angles1,unwrapped_angles1,pd]=structuredlight('../Processing/SimThreePhase/phase1001.jpg','../Processing/SimThreePhase/phase1002.jpg','../Processing/SimThreePhase/phase1003.jpg');
+[t,angles1,unwrapped_angles1,pd]=structuredlight('../Processing/SimThreePhase/phase1001.jpg','../Processing/SimThreePhase/phase1002.jpg','../Processing/SimThreePhase/phase1003.jpg', '../Processing/SimThreePhase/heightdata.dat');
 
 len1 = length(angles1);
 angles = zeros(5,len1);
@@ -17,10 +17,10 @@ uangles = unwrapped_angles;
 unwrapped_angles(1,:) = unwrapped_angles1;
 
 
-[t,angles(2,:),unwrapped_angles(2,:),pd]=structuredlight('../Processing/SimThreePhase/phase1004.jpg','../Processing/SimThreePhase/phase1005.jpg','../Processing/SimThreePhase/phase1006.jpg');
-[t,angles(3,:),unwrapped_angles(3,:),pd]=structuredlight('../Processing/SimThreePhase/phase1007.jpg','../Processing/SimThreePhase/phase1008.jpg','../Processing/SimThreePhase/phase1009.jpg');
-[t,angles(4,:),unwrapped_angles(4,:),pd]=structuredlight('../Processing/SimThreePhase/phase1010.jpg','../Processing/SimThreePhase/phase1011.jpg','../Processing/SimThreePhase/phase1012.jpg');
-[t,angles(5,:),unwrapped_angles(5,:),pd]=structuredlight('../Processing/SimThreePhase/phase1013.jpg','../Processing/SimThreePhase/phase1014.jpg','../Processing/SimThreePhase/phase1015.jpg');
+[t,angles(2,:),unwrapped_angles(2,:),pd]=structuredlight('../Processing/SimThreePhase/phase1004.jpg','../Processing/SimThreePhase/phase1005.jpg','../Processing/SimThreePhase/phase1006.jpg', '../Processing/SimThreePhase/heightdata.dat');
+[t,angles(3,:),unwrapped_angles(3,:),pd]=structuredlight('../Processing/SimThreePhase/phase1007.jpg','../Processing/SimThreePhase/phase1008.jpg','../Processing/SimThreePhase/phase1009.jpg', '../Processing/SimThreePhase/heightdata.dat');
+[t,angles(4,:),unwrapped_angles(4,:),pd]=structuredlight('../Processing/SimThreePhase/phase1010.jpg','../Processing/SimThreePhase/phase1011.jpg','../Processing/SimThreePhase/phase1012.jpg', '../Processing/SimThreePhase/heightdata.dat');
+[t,angles(5,:),unwrapped_angles(5,:),pd]=structuredlight('../Processing/SimThreePhase/phase1013.jpg','../Processing/SimThreePhase/phase1014.jpg','../Processing/SimThreePhase/phase1015.jpg', '../Processing/SimThreePhase/heightdata.dat');
 
 flat_angles = [1:len1]/len1;
 flat_angles = flat_angles*1.73+1;
