@@ -1,4 +1,4 @@
-function [t,angles,unwrapped_angles,pd]=structuredlight(p1name,p2name,p3name);
+function [t,angles,unwrapped_angles,pd]=structuredlight(p1name,p2name,p3name,hgtname);
 % binarymillenium Jan 2010
 % GNU GPL v3.0
 
@@ -9,11 +9,15 @@ function [t,angles,unwrapped_angles,pd]=structuredlight(p1name,p2name,p3name);
 % Copying from https://binarymillenium.googlecode.com/svn/trunk/processing/simstructuredlight
 % 
 
-p1 = rot90(double( rgb2gray(imread(p1name))));
-p2 = rot90(double( rgb2gray(imread(p2name))));
-p3 = rot90(double( rgb2gray(imread(p3name))));
+% p1 = rot90(double( rgb2gray(imread(p1name))));
+% p2 = rot90(double( rgb2gray(imread(p2name))));
+% p3 = rot90(double( rgb2gray(imread(p3name))));
 
-fid = fopen('heightdata.dat');
+p1 = rot90(double( sum(imread(p1name),3)/3));
+p2 = rot90(double( sum(imread(p2name),3)/3));
+p3 = rot90(double( sum(imread(p3name),3)/3));
+
+fid = fopen(hgtname);
 pd = (double( fread( fid,flipdim(size(p3),1), 'float' )));
 
 %pd = (pd < 0.5e4).*pd + (pd >= 0.5e4).*max(max(pd));
