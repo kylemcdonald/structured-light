@@ -22,6 +22,7 @@ import javax.media.opengl.glu.*;
 
 GL gl;
 GLU glu;
+boolean useRawGL = false;
 //OBJModel model;
 
 
@@ -29,7 +30,7 @@ int numPeriods = 5;
 int numPhases = 3;
 
 Texture tex[] = new Texture[numPeriods*numPhases];
-//PImage tex[] = new PImage[numPeriods*numPhases];
+PImage texp[] = new PImage[numPeriods*numPhases];
 
 float rotx = PI/4;
 float roty = PI/4;
@@ -53,6 +54,7 @@ float objScale = 90.0;
 void setup() 
 {
   size(480, 640, OPENGL);
+     
   perspective(PI/16, float(width)/float(height), 1, 20000);
   
    //model = new OBJModel(this, "cube.obj");
@@ -67,6 +69,8 @@ void setup()
    vn = new Vec3D[1];
    
    faces = new int[1][3];
+   
+
    
    int vcount = 0;
    int vncount = 0;
@@ -119,6 +123,8 @@ void setup()
          
        }
      }
+     
+
    } 
   
   if (true) { 
@@ -155,17 +161,16 @@ void setup()
   }}
   */
   
-  gl=((PGraphicsOpenGL)g).gl;
    
   for (int i = 0; i < numPeriods; i++) {
   for (int j = 0; j < numPhases; j++) {
     int ind = i*numPhases+j;
     println("loading " + ind + ", " + i + " " + j + " ");
     try {  
-      String name = dataPath(patterns.pnames[i][j]);
+      String name =dataPath(patterns.pnames[i][j]);
       println(name);
       tex[ind] = TextureIO.newTexture(new File(name),true); 
-      //tex[ind] = loadImage(name);
+      texp[ind] = loadImage(name);
     }
     catch(Exception e) { println(e); } 
     
@@ -342,10 +347,14 @@ float relAngle = 15.0/180.0*PI;
 //////////////////////////////////////////////////////////////
 void draw() {
   
-
+   
+   PGraphicsOpenGL pgl = (PGraphicsOpenGL) g;   
+   glu = ((PGraphicsOpenGL)g).glu;  
+   GL gl = pgl.beginGL();
+      
+   perspective(PI/16, float(width)/float(height), 1, 20000);
   
-  
-  
+   
   /// only do this synchronously with drawing
   if (switchTex) {
     imind++;
@@ -362,7 +371,7 @@ void draw() {
   background(0);
   noStroke();
   
-  translate(width/2.0, height/2.0, -2400);
+  translate(width, height, -2400);
   
   
   rotateZ(PI/2); 
@@ -370,6 +379,27 @@ void draw() {
   projector=rotateRel(view, relAngle, new Vec3D(0,1,0));
   //Matrix4x4 view = rotateRel(projector, relAngle, new Vec3D(0,1,0) );
 
+  if (useRawGL) {
+  gl.glEnable(gl.GL_LIGHTING);
+  gl.glEnable(gl.GL_LIGHT0);
+  
+  float position[] = { -100,100,10,1.0f};
+  //projPos.x,  projPos.y,  projPos.z, 1.0f };
+  
+  float diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+  float amb[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+  gl.glLightfv(gl.GL_LIGHT0, gl.GL_AMBIENT, amb,0);
+  gl.glLightfv(gl.GL_LIGHT0, gl.GL_POSITION,  position ,0);
+  gl.glLightfv(gl.GL_LIGHT0, gl.GL_DIFFUSE, diffuse,0 );
+  } else {
+    Vec3D p = new Vec3D(1000.0*(float)projector.matrix[2][0],
+    1000.0*(float)projector.matrix[2][1],
+    1000.0*(float)projector.matrix[2][2]);
+    ambientLight( 5,5,5,p.x,p.y,p.z);
+    pointLight( 255,255,255,p.x,p.y,p.z); //projPos.x,projPos.y,projPos.z);
+    //println(p);
+  }
+  
   apply(view);
   /*rotateZ(PI/2); 
   rotateY(-rotx);     
@@ -378,18 +408,11 @@ void draw() {
 
   scale(objScale);
   
-  gl.glEnable(gl.GL_LIGHTING);
-  gl.glEnable(gl.GL_LIGHT0);
-  
-  float position[] = { projPos.x,  projPos.y,  projPos.z, 1.0f };
-  float diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-  gl.glLightfv(gl.GL_LIGHT0, gl.GL_POSITION,  position ,0);
-  gl.glLightfv(gl.GL_LIGHT0, gl.GL_DIFFUSE, diffuse,0 );
-  
+
   //lights();
   //pointLight(projPos.x,projPos.y,projPos.z, 255,0,0);
   
-  drawObject(tex[imind]);
+  drawObject(tex[imind], texp[imind]);
   
   if (saveIm) {
     String name = "phase" + (imind + 1001) + ".jpg";
@@ -399,6 +422,9 @@ void draw() {
     /// save the depth buffer
     if (imind == 0) {
       
+      
+
+  
       float[] newData = new float[width*height];
       byte[] data = new byte[(width*height)*4];
       
@@ -455,14 +481,21 @@ void draw() {
     imind = 0;
   }
   
+
   if (drawLine) {
+    noLights();
+    strokeWeight(3.0);
     stroke(255,255,255);
     line(projPos.x,projPos.y, projPos.z, 
          projPos.x+15.0*(float)projector.matrix[2][0],
          projPos.y+15.0*(float)projector.matrix[2][1], 
          projPos.z+15.0*(float)projector.matrix[2][2]);
   }
+  
+    pgl.endGL();
 }
+
+/////////////////////////////////////////////////////
 
 byte[] floatToBytes(byte[] rv, int i, float val) {
     //byte[] rv = new byte[4];
@@ -480,6 +513,7 @@ byte[] floatToBytes(byte[] rv, int i, float val) {
 int counttemp = 0;
 /// TBD make this work non-orthogonally
 float texScale = 0.25;
+
 Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
   
   Vec3D rel = v.sub(projPos);
@@ -492,7 +526,12 @@ Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
   
    uv = uv.scale(texScale);
    
-   float yscale = (float)tex[imind].getHeight()/(float)tex[imind].getWidth();
+   float yscale;
+   if (useRawGL) {
+  yscale = (float)tex[imind].getHeight()/(float)tex[imind].getWidth();
+   } else {
+      yscale = (float)texp[imind].height/(float)texp[imind].width;
+   }
   if (counttemp ==0)println(yscale);
   uv.x = uv.x+0.5;
   uv.y = (uv.y)*yscale+0.5;
@@ -501,13 +540,16 @@ Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
       println("uv " + uv.y + " " + uv.x); 
    }
   //counttemp++;
-  
-
-  //vertex(v.x,v.y,v.z);//, uv.x,uv.y);
-    //vertex(v.x, v.y, v.z, pt.x*10, pt.y *10);
-    gl.glTexCoord2f(uv.y,uv.x );
-       gl.glNormal3f(n.x,n.y,n.z);
+ 
+    if (useRawGL) {
+    gl.glNormal3f(n.x,n.y,n.z);
+    gl.glTexCoord2f(uv.y,uv.x );    
     gl.glVertex3f(v.x,v.y,v.z);
+    } else {
+      normal(n.x,n.y,n.z);
+       vertex(v.x,v.y,v.z, uv.y,uv.x);
+    //vertex(v.x, v.y, v.z, pt.x*10, pt.y *10);
+    }
  
   
   if (verbose) println(uv.x + " " + uv.y);
@@ -520,7 +562,7 @@ Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
 //}
 
 /// draw an object with texture projected onto it
-void drawObject(Texture tex) {
+void drawObject(Texture tex,PImage texp) {
   
   /*
   fill(255);
@@ -557,32 +599,23 @@ void drawObject(Texture tex) {
   */
    counttemp++;
   
-  if (true) {
-  PGraphicsOpenGL pgl = (PGraphicsOpenGL) g;  
-  GL gl = pgl.beginGL(); 
-  glu = ((PGraphicsOpenGL)g).glu;  
+
    
-  tex.bind();  
-  tex.enable();  
-   
-  // beginShape(QUADS);
-  // texture(tex);
+
  
-  gl.glBegin(GL.GL_TRIANGLES);
-  //gl.glNormal3f( 0.0f, 0.0f, 1.0f); 
+  if (useRawGL) {
+    tex.bind();  
+    tex.enable();  
+     gl.glBegin(GL.GL_TRIANGLES);
+   //gl.glNormal3f( 0.0f, 0.0f, 1.0f); 
   
    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP );
    gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP );
-  
-  // Given one texture and six faces, we can easily set up the uv coordinates
-  // such that four of the faces tile "perfectly" along either u or v, but the other
-  // two faces cannot be so aligned.  This code tiles "along" u, "around" the X/Z faces
-  // and fudges the Y faces - the Y faces are arbitrarily aligned such that a
-  // rotation along the X axis will put the "top" of either texture at the "top"
-  // of the screen, but is not otherwised aligned with the X/Z faces. (This
-  // just affects what type of symmetry is required if you need seamless
-  // tiling all the way around the cube)
+  } else {  
+    beginShape(TRIANGLES);
+    texture(texp);
+  }
   
   // +Z "front" face
   for (int i = 0; i < faces.length-1; i++) {
@@ -597,13 +630,13 @@ void drawObject(Texture tex) {
     //vertexProj(vs[faces[i][3]]);
   }
   
+  if (useRawGL) {
   gl.glEnd();
-  //println();
-  //endShape();
-
-  tex.disable();
-  pgl.endGL();
   
+  tex.disable();
+//   / 
+  } else {
+    endShape();
   }
   
 }
