@@ -12,7 +12,6 @@ http://code.google.com/p/structured-light/
 */
 
 import javax.media.opengl.*;
-//import saito.objloader.*;
 import processing.opengl.*;
 import com.sun.opengl.util.texture.*;  
 import toxi.geom.*;
@@ -22,14 +21,11 @@ import javax.media.opengl.glu.*;
 
 GL gl;
 GLU glu;
-boolean useRawGL = false;
-//OBJModel model;
 
-
-int numPeriods = 5;
+int numPeriods = 1;
 int numPhases = 3;
+int startPeriod = 14; //8;
 
-Texture tex[] = new Texture[numPeriods*numPhases];
 PImage texp[] = new PImage[numPeriods*numPhases];
 
 float rotx = PI/4;
@@ -44,9 +40,8 @@ Matrix4x4 view;
 Matrix4x4 projector;
 Vec3D projPos;
 
-Vec3D[] vs;
-Vec3D[] vn;
-int[][] faces;
+ObjLoader ref;
+ObjLoader trg;
 
 float objScale = 90.0;
     
@@ -56,112 +51,12 @@ void setup()
   size(480, 640, OPENGL);
      
   perspective(PI/16, float(width)/float(height), 1, 20000);
-  
-   //model = new OBJModel(this, "cube.obj");
    
-   //model.debugMode();
-   //model.showModelInfo();
+  ref = new ObjLoader("cube.obj");
+  trg = new ObjLoader("weird_01.obj");
    
-   
-   String[] lines = loadStrings("weird_01.obj");
-   
-   vs = new Vec3D[1];
-   vn = new Vec3D[1];
-   
-   faces = new int[1][3];
-   
+  patterns = new XPatternGen(width, height,startPeriod, numPhases,numPeriods ); 
 
-   
-   int vcount = 0;
-   int vncount = 0;
-   int fcount = 0;
-   for (int i=0; i< lines.length; i++) {
-     String[] toks = splitTokens(lines[i]);
-     if (toks.length > 2) {
-       if (toks[0].equals("v")) {
-         //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
-         vs[vcount] = new Vec3D(Float.parseFloat(toks[1]),
-                               Float.parseFloat(toks[2]),
-                               Float.parseFloat(toks[3]));
-         
-         vcount++;
-         Vec3D[] nvs = new Vec3D[vcount+1];
-         arraycopy(vs,nvs,vs.length);
-         vs = nvs;
-         
-       }
-       
-       if (toks[0].equals("vn")) {
-         //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
-         vn[vncount] = new Vec3D(Float.parseFloat(toks[1]),
-                               Float.parseFloat(toks[2]),
-                               Float.parseFloat(toks[3]));
-         
-         vncount++;
-         Vec3D[] nvn = new Vec3D[vncount+1];
-         arraycopy(vn,nvn,vn.length);
-         vn = nvn;
-       }
-       
-       if (toks[0].equals("f")) {
-         //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
-         
-         String[] nums;
-         nums = splitTokens(toks[1],"/");
-         faces[fcount][0] =Integer.parseInt(nums[0]);
-         nums = splitTokens(toks[2],"/");
-         faces[fcount][1] =Integer.parseInt(nums[0]);
-         nums = splitTokens(toks[3],"/");
-         faces[fcount][2] =Integer.parseInt(nums[0]);
-
-         
-         //println("face " + fcount + " " + faces[fcount][0] + " " + faces[fcount][1] + " " + faces[fcount][2]);
-         fcount++;
-         int[][] nfaces = new int[fcount+1][3];
-         arraycopy(faces,nfaces,faces.length);
-         faces = nfaces;
-         
-       }
-     }
-     
-
-   } 
-  
-  if (true) { 
-  patterns = new XPatternGen(width, height,8, numPhases,numPeriods );
-  
-  
-  /*
-  /// generate random object
-  /// TBD load obj
-  float sc = 1;
-  
-  int mx = 28;
-  vs = new Vec3D[mx*mx];
-  faces = new int[(mx-1)*(mx)][4];
-  for (int i = 0; i < mx; i++) {
-     for (int j = 0; j < mx; j++) {
-       float lat = i/(float)(mx-1)*PI-PI/2;
-       float lng = j/(float)(mx-1)*PI*2-PI;
-       
-       int ind = i*mx+j;
-       float r = 1.5+1.0*noise(i/12.0,j/12.0);
-       vs[ind] = new Vec3D( r*cos(lat)*cos(lng), r*cos(lat)*sin(lng),  r*sin(lat) ); 
-       //vs[ind] = vs[ind].scale(10);
-      
-      if ((j>0) && (i >0)) {
-        int find = (i-1)*mx + (j-1);
-        //faces[find] = new int[4];
-        
-        faces[find][0] = ind;
-        faces[find][1] = ind-1;
-        faces[find][2] = ind-1-mx;
-        faces[find][3] = ind - mx;
-      }
-  }}
-  */
-  
-   
   for (int i = 0; i < numPeriods; i++) {
   for (int j = 0; j < numPhases; j++) {
     int ind = i*numPhases+j;
@@ -169,14 +64,9 @@ void setup()
     try {  
       String name =dataPath(patterns.pnames[i][j]);
       println(name);
-      tex[ind] = TextureIO.newTexture(new File(name),true); 
       texp[ind] = loadImage(name);
     }
     catch(Exception e) { println(e); } 
-    
-    //tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_R,GL.GL_REPEAT);    
-    //tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_S,GL.GL_REPEAT);
-   // tex[ind].setTexParameteri(GL.GL_TEXTURE_WRAP_T,GL.GL_REPEAT);
   }}
  
   textureMode(NORMALIZED);
@@ -202,7 +92,7 @@ void setup()
                             0,0,1,0,
                             0,0,0,1);
                             
-  }
+  
   
 }
 
@@ -372,26 +262,15 @@ void draw() {
   noStroke();
   
   translate(width, height, -2400);
-  
-  
+   
+
   rotateZ(PI/2); 
-  //println(relAngle);
   projector=rotateRel(view, relAngle, new Vec3D(0,1,0));
   //Matrix4x4 view = rotateRel(projector, relAngle, new Vec3D(0,1,0) );
 
-  if (useRawGL) {
-  gl.glEnable(gl.GL_LIGHTING);
-  gl.glEnable(gl.GL_LIGHT0);
-  
-  float position[] = { -100,100,10,1.0f};
-  //projPos.x,  projPos.y,  projPos.z, 1.0f };
-  
-  float diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-  float amb[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-  gl.glLightfv(gl.GL_LIGHT0, gl.GL_AMBIENT, amb,0);
-  gl.glLightfv(gl.GL_LIGHT0, gl.GL_POSITION,  position ,0);
-  gl.glLightfv(gl.GL_LIGHT0, gl.GL_DIFFUSE, diffuse,0 );
-  } else {
+  apply(view);
+ 
+   {
     Vec3D p = new Vec3D(1000.0*(float)projector.matrix[2][0],
     1000.0*(float)projector.matrix[2][1],
     1000.0*(float)projector.matrix[2][2]);
@@ -399,12 +278,6 @@ void draw() {
     pointLight( 255,255,255,p.x,p.y,p.z); //projPos.x,projPos.y,projPos.z);
     //println(p);
   }
-  
-  apply(view);
-  /*rotateZ(PI/2); 
-  rotateY(-rotx);     
-  rotateX(roty);
-  */
 
   scale(objScale);
   
@@ -412,7 +285,7 @@ void draw() {
   //lights();
   //pointLight(projPos.x,projPos.y,projPos.z, 255,0,0);
   
-  drawObject(tex[imind], texp[imind]);
+  drawObject(trg,texp[imind]);
   
   if (saveIm) {
     String name = "phase" + (imind + 1001) + ".jpg";
@@ -527,11 +400,9 @@ Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
    uv = uv.scale(texScale);
    
    float yscale;
-   if (useRawGL) {
-  yscale = (float)tex[imind].getHeight()/(float)tex[imind].getWidth();
-   } else {
+ 
       yscale = (float)texp[imind].height/(float)texp[imind].width;
-   }
+   
   if (counttemp ==0)println(yscale);
   uv.x = uv.x+0.5;
   uv.y = (uv.y)*yscale+0.5;
@@ -541,15 +412,10 @@ Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
    }
   //counttemp++;
  
-    if (useRawGL) {
-    gl.glNormal3f(n.x,n.y,n.z);
-    gl.glTexCoord2f(uv.y,uv.x );    
-    gl.glVertex3f(v.x,v.y,v.z);
-    } else {
+ 
       normal(n.x,n.y,n.z);
        vertex(v.x,v.y,v.z, uv.y,uv.x);
-    //vertex(v.x, v.y, v.z, pt.x*10, pt.y *10);
-    }
+   
  
   
   if (verbose) println(uv.x + " " + uv.y);
@@ -562,82 +428,30 @@ Vec3D vertexProj(Vec3D v,Vec3D n, boolean verbose) {
 //}
 
 /// draw an object with texture projected onto it
-void drawObject(Texture tex,PImage texp) {
+void drawObject(ObjLoader o, PImage texp) {
   
-  /*
-  fill(255);
-  stroke(255);
-  beginShape(LINES);
-  for (int i = 0; i < faces.length; i++) {
-    vertexProj(vs[faces[i][0]]);
-    vertexProj(vs[faces[i][1]]);
-    vertexProj(vs[faces[i][2]]);
-    vertexProj(vs[faces[i][3]]);
-    
-    println(vs[faces[i][0]]);
-  }
-  endShape();
-  println();
-  */
-  
-  //model.texture(tex);
-  
-  /*
-  for (int i = 0; i < model.getVertexSize(); i++) {
-    PVector v = model.getVertex(i);
-    PVector n = model.getNormal(i);
-    
-    if (counttemp == 0) { 
-      println(i + ", " + v.x + " " + v.y + " " + v.z + ", " + n.x + " " + n.y + " " + n.z + " " );
-    }
-    
-    Vec3D uv = vertexProj(new Vec3D(v.x,v.y,v.z), new Vec3D(n.x,n.y,n.z), false);  
-    model.setUV(i, new PVector(uv.y,uv.x));
-  }
- 
-  model.draw();
-  */
    counttemp++;
-  
 
-   
-
- 
-  if (useRawGL) {
-    tex.bind();  
-    tex.enable();  
-     gl.glBegin(GL.GL_TRIANGLES);
-   //gl.glNormal3f( 0.0f, 0.0f, 1.0f); 
-  
-   gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP );
-   gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP );
-   gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_R, GL.GL_CLAMP );
-  } else {  
     beginShape(TRIANGLES);
     texture(texp);
-  }
+  
   
   // +Z "front" face
-  for (int i = 0; i < faces.length-1; i++) {
+  for (int i = 0; i < o.faces.length-1; i++) {
     //Vec3D uv;
     
     //println( (faces[i][0]-1) + " " +  (faces[i][1]-1) + " " + (faces[i][2]-1));
    
-    vertexProj(vs[faces[i][0]-1], vn[faces[i][0]-1],false);
-    vertexProj(vs[faces[i][1]-1], vn[faces[i][1]-1],false);
-    vertexProj(vs[faces[i][2]-1], vn[faces[i][2]-1],false);
+    vertexProj(o.vs[o.faces[i][0]-1], o.vn[o.faces[i][0]-1],false);
+    vertexProj(o.vs[o.faces[i][1]-1], o.vn[o.faces[i][1]-1],false);
+    vertexProj(o.vs[o.faces[i][2]-1], o.vn[o.faces[i][2]-1],false);
 
     //vertexProj(vs[faces[i][3]]);
   }
   
-  if (useRawGL) {
-  gl.glEnd();
-  
-  tex.disable();
-//   / 
-  } else {
+
     endShape();
-  }
+  
   
 }
 
