@@ -22,9 +22,11 @@ import javax.media.opengl.glu.*;
 GL gl;
 GLU glu;
 
-int numPeriods = 1;
+int numPeriods = 5;
 int numPhases = 3;
-int startPeriod = 14; //8;
+int startPeriod = 8;
+
+boolean drawRef = false;
 
 PImage texp[] = new PImage[numPeriods*numPhases];
 
@@ -40,10 +42,12 @@ Matrix4x4 view;
 Matrix4x4 projector;
 Vec3D projPos;
 
+Matrix4x4 refView;
+
 ObjLoader ref;
 ObjLoader trg;
 
-float objScale = 90.0;
+float objScale = 250.0;
     
 /////////////////////////////////////////////////////////////
 void setup() 
@@ -53,7 +57,7 @@ void setup()
   perspective(PI/16, float(width)/float(height), 1, 20000);
    
   ref = new ObjLoader("cube.obj");
-  trg = new ObjLoader("weird_01.obj");
+  trg = new ObjLoader("weird_01.obj");//"jessica_face__47_render_01.obj");
    
   patterns = new XPatternGen(width, height,startPeriod, numPhases,numPeriods ); 
 
@@ -72,8 +76,7 @@ void setup()
   textureMode(NORMALIZED);
   fill(255);
   stroke(color(44,48,32));
-  
-  
+   
   float angle = PI/2;
   projPos = new Vec3D(0,0,0);
   
@@ -91,6 +94,11 @@ void setup()
                             0,1,0,0,
                             0,0,1,0,
                             0,0,0,1);
+                            
+  refView = new Matrix4x4(1,0,0,0,
+                          0,1,0,0,
+                          0,0,1,0,
+                          0,0,0,1);
                             
   
   
@@ -125,6 +133,7 @@ void keyPressed() {
   }
   if (key == 'l') {
     texScale *= 0.98;
+    println("texScale " + texScale);
   }
   /// reset
   if (key == 'r') {
@@ -143,6 +152,17 @@ void keyPressed() {
     
     texScale = 0.14;
   }  
+  
+  if (key == '1') {
+     view = rotateRel(view, -PI/2, new Vec3D(0,1,0));
+  //view = rotateRel(view, roty, new Vec3D(1,0,0)); 
+  }
+  if (key == '2') {
+    view = rotateRel(view, -PI/2, new Vec3D(1,0,0));
+  }
+  if (key == '3') {
+    view = rotateRel(view, PI/2, new Vec3D(0,0,1));
+  }
   
   if (key == 'j') {
     relAngle+= PI/90.0;
@@ -179,6 +199,8 @@ void keyPressed() {
   
   if (key == 'g') {
     saveIm = true;
+    imind = numPeriods*numPhases-1;
+    drawRef = true;
   }
   
   if (key =='n') {
@@ -187,11 +209,28 @@ void keyPressed() {
   }
   if (key == 'm') {
      objScale *= 0.99; 
+     println("objScale " + objScale);
+  }
+  
+  if (key =='e') {
+     drawRef = !drawRef; 
   }
   
 }
 
 ///////////////////////////////////////////////
+
+void mouseDragged() {
+  float rate = 0.005;
+  rotx = (pmouseY-mouseY) * rate;
+  roty = (mouseX-pmouseX) * rate;
+  
+  //projector = rotateRel(projector, -rotx, new Vec3D(0,1,0));
+  //projector = rotateRel(projector, roty, new Vec3D(1,0,0));
+  
+  view = rotateRel(view, -rotx, new Vec3D(0,1,0));
+  view = rotateRel(view, roty, new Vec3D(1,0,0));
+}
 
 //////////////////////////////////////////////////////////
 /// utility functions
@@ -236,15 +275,13 @@ float relAngle = 15.0/180.0*PI;
 
 //////////////////////////////////////////////////////////////
 void draw() {
-  
-   
+
    PGraphicsOpenGL pgl = (PGraphicsOpenGL) g;   
    glu = ((PGraphicsOpenGL)g).glu;  
    GL gl = pgl.beginGL();
       
    perspective(PI/16, float(width)/float(height), 1, 20000);
   
-   
   /// only do this synchronously with drawing
   if (switchTex) {
     imind++;
@@ -265,10 +302,16 @@ void draw() {
    
 
   rotateZ(PI/2); 
-  projector=rotateRel(view, relAngle, new Vec3D(0,1,0));
-  //Matrix4x4 view = rotateRel(projector, relAngle, new Vec3D(0,1,0) );
+ 
+  
 
-  apply(view);
+  if (drawRef) {
+     projector=rotateRel(refView, relAngle, new Vec3D(0,1,0));
+    apply(refView);
+  } else {
+     projector=rotateRel(view, relAngle, new Vec3D(0,1,0));
+    apply(view);
+  }
  
    {
     Vec3D p = new Vec3D(1000.0*(float)projector.matrix[2][0],
@@ -285,18 +328,22 @@ void draw() {
   //lights();
   //pointLight(projPos.x,projPos.y,projPos.z, 255,0,0);
   
-  drawObject(trg,texp[imind]);
+  if (drawRef) {
+    drawObject(ref,texp[imind]);
+  } else {
+    drawObject(trg,texp[imind]);
+  }
   
+  ////////////////
   if (saveIm) {
+    
     String name = "phase" + (imind + 1001) + ".jpg";
+    if (drawRef) name = "ref.jpg";
     saveFrame(name);
     println("saving " + name);
     
     /// save the depth buffer
-    if (imind == 0) {
-      
-      
-
+    if ((imind == 0) && (drawRef == false)) {
   
       float[] newData = new float[width*height];
       byte[] data = new byte[(width*height)*4];
@@ -346,14 +393,20 @@ void draw() {
       saveBytes("heightdata.dat",data);
       }
     
-    imind++;  
+    
+      imind++;  
+    
+    if (drawRef == false) { 
+      if (imind >= numPeriods*numPhases) { 
+        saveIm = false;
+        imind = 0;
+      }     
+    }
+    imind %= numPeriods*numPhases;   
+    drawRef = false;
  
   } 
-  if (imind >= numPeriods*numPhases) { 
-    saveIm = false;
-    imind = 0;
-  }
-  
+
 
   if (drawLine) {
     noLights();
@@ -455,14 +508,3 @@ void drawObject(ObjLoader o, PImage texp) {
   
 }
 
-void mouseDragged() {
-  float rate = 0.005;
-  rotx = (pmouseY-mouseY) * rate;
-  roty = (mouseX-pmouseX) * rate;
-  
-  //projector = rotateRel(projector, -rotx, new Vec3D(0,1,0));
-  //projector = rotateRel(projector, roty, new Vec3D(1,0,0));
-  
-  view = rotateRel(view, -rotx, new Vec3D(0,1,0));
-  view = rotateRel(view, roty, new Vec3D(1,0,0));
-}
