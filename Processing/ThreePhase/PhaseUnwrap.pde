@@ -15,7 +15,7 @@ void phaseUnwrap() {
 
   toProcess = new LinkedList();
   toProcess.add(new int[]{startX, startY});
-  process[startX][startY] = false;
+  process[startY][startX] = false;
 
   while (!toProcess.isEmpty()) {
     int[] xy = (int[]) toProcess.remove();
