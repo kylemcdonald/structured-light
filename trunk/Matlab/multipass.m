@@ -1,18 +1,24 @@
 
-% p1 = rot90(double( rgb2gray(imread('data/00003phase1.jpg'))));
-% p2 = rot90(double( rgb2gray(imread('data/00003phase2.jpg'))));
-% p3 = rot90(double( rgb2gray(imread('data/00003phase3.jpg'))));
 
 % p1 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase1.jpg'))));
 % p2 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase2.jpg'))));
 % p3 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase3.jpg'))));
 
+numphases = 5;
+div = (2^(numphases-1))
+[skew,scale, refangle,refuangle]=skewfromref('../Processing/SimThreePhase/ref.jpg',1.0,div);
+
+skew
+scale
+%figure(20),plot(refangle);
+%figure(21),plot(refuangle);
+
 [t,angles1,unwrapped_angles1,pd]=structuredlight('../Processing/SimThreePhase/phase1001.jpg','../Processing/SimThreePhase/phase1002.jpg','../Processing/SimThreePhase/phase1003.jpg', '../Processing/SimThreePhase/heightdata.dat');
 
 len1 = length(angles1);
-angles = zeros(5,len1);
+angles = zeros(numphases,len1);
 angles(1,:) = angles1;
-unwrapped_angles = zeros(5,len1);
+unwrapped_angles = zeros(numphases,len1);
 uangles = unwrapped_angles;
 unwrapped_angles(1,:) = unwrapped_angles1;
 unwrapped_angles_norm = unwrapped_angles;
@@ -44,10 +50,13 @@ end
 
 figure(1);
 subplot(2,1,1),plot(t,staggered_angles);
-subplot(2,1,2),plot(t,unwrapped_angles);
+subplot(2,1,2),plot(t,unwrapped_angles,t(1:end-1), refuangle);
 
 figure(2);
-plot(t, flat_angles, t, unwrapped_angles_norm);
+%plot(t, flat_angles, t, unwrapped_angles_norm, t(end-1), refuangle/div);
+plot(t, unwrapped_angles_norm,  t(1:end-1), refuangle/div);
+
+
 
 figure(3);
 plot(t(end/4:end-end/4),uangles(:,end/4:end-end/4),t(end/4:end-end/4),pd(end/4:end-end/4) );
