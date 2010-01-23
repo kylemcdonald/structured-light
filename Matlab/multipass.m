@@ -1,3 +1,5 @@
+clear all;
+format compact;
 
 
 % p1 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase1.jpg'))));
@@ -5,13 +7,19 @@
 % p3 = rot90(double( rgb2gray(imread('../Processing/ThreePhase/img/phase3.jpg'))));
 
 numphases = 5;
-div = (2^(numphases-1))
-[skew,scale, refangle,refuangle]=skewfromref('../Processing/SimThreePhase/ref.jpg',1.0,div);
+div = (2^(numphases-1));
 
+% this will get the period of the highest frequency phase
+[skew,scale, period,refuangle]=skewfromref('../Processing/SimThreePhase/ref1001.jpg',1.0,div);
+
+period
 skew
 scale
-%figure(20),plot(refangle);
-%figure(21),plot(refuangle);
+
+[t,refangles,refunwrapped_angles,pd]=structuredlight('../Processing/SimThreePhase/ref1001.jpg','../Processing/SimThreePhase/ref1002.jpg','../Processing/SimThreePhase/ref1003.jpg', '../Processing/SimThreePhase/heightdata.dat');
+
+%figure(40),
+%plot(t,refangles)
 
 [t,angles1,unwrapped_angles1,pd]=structuredlight('../Processing/SimThreePhase/phase1001.jpg','../Processing/SimThreePhase/phase1002.jpg','../Processing/SimThreePhase/phase1003.jpg', '../Processing/SimThreePhase/heightdata.dat');
 
@@ -32,36 +40,45 @@ unwrapped_angles_norm = unwrapped_angles;
 %%
 % increasing skew will tend to tilt the unwrapped angles to the left,
 % decreasing will tilt to the right
-skew = 0.9465;
-scale = 2900;
+skew = 1.57; %0.9465;
+scale = 1.5804e+003;
 
 flat_angles = [1:len1]/len1;
 flat_angles = flat_angles - flat_angles(end/2);
-flat_angles = flat_angles*skew;
+
+skewp = polyfit(flat_angles(end/4:end-end/4),(refunwrapped_angles(end/4:end-end/4)/div),1);
+flat_angles_skewed = flat_angles*skew; %skewp(1) + skewp(2);%refunwrapped_angles/div;
 
 maxi = size(angles,1);
 for i = [1:maxi]
-    uangles(i,:) = scale*(unwrapped_angles(i,:)/(2^(i-1)) - flat_angles);
+    uangles(i,:) = scale*(unwrapped_angles(i,:)/(2^(i-1)) - flat_angles_skewed);
     uangles(i,:) = uangles(i,:) - uangles(i,end/2);
     unwrapped_angles_norm(i,:) = unwrapped_angles(i,:)/(2^(i-1));
     
     staggered_angles(i,:) = angles(i,:)+i*1.2;
 end
 
+median_uangles = median(uangles,1);
+% true_scale = polyfit(median_uangles(ind), pd(ind),1);
+
 figure(1);
 subplot(2,1,1),plot(t,staggered_angles);
-subplot(2,1,2),plot(t,unwrapped_angles,t(1:end-1), refuangle);
+subplot(2,1,2),plot(t,unwrapped_angles, t, refunwrapped_angles );
 
 figure(2);
-%plot(t, flat_angles, t, unwrapped_angles_norm, t(end-1), refuangle/div);
-plot(t, unwrapped_angles_norm,  t(1:end-1), refuangle/div);
-
-
+subplot(2,1,1),plot(t, unwrapped_angles_norm, t, refuangle/div, t, refunwrapped_angles/div,t,flat_angles_skewed );
+subplot(2,1,2), plot(t, median(unwrapped_angles_norm,1),t,flat_angles_skewed, t , flat_angles*skewp(1) + skewp(2) );
 
 figure(3);
-plot(t(end/4:end-end/4),uangles(:,end/4:end-end/4),t(end/4:end-end/4),pd(end/4:end-end/4) );
-axis([1*size(angles,2)/4 3*size(angles,2)/4 -100 max(pd(end/4:end-end/4))]); %min(pd(end/4:end-end/4))
+ind = length(t)/4:length(t)-length(t)/4;
+tm = t(ind);
+subplot(2,1,1),
+plot(tm,uangles(:,ind),tm,pd(ind));
+axis([1*size(angles,2)/4 3*size(angles,2)/4 -100 max(pd(ind))]); %min(pd(end/4:end-end/4))
+%subplot(2,1,2),plot( tm , refunwrapped_angles(end/4:end-end/4));
 
-figure(4)
-plot(t(end/4:end-end/4),median(uangles(:,end/4:end-end/4),1), t(end/4:end-end/4), pd(end/4:end-end/4) );
+
+
+subplot(2,1,2),plot(tm,median_uangles(:,ind), tm, pd(ind) );
+axis([1*size(angles,2)/4 3*size(angles,2)/4 -100 max(pd(ind))]);
 %axis([1*size(angles,2)/4 3*size(angles,2)/4 -10 max(pd(end/4:end-end/4))]); %min(pd(end/4:end-end/4))

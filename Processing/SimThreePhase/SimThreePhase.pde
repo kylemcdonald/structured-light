@@ -22,9 +22,11 @@ import javax.media.opengl.glu.*;
 GL gl;
 GLU glu;
 
-int numPeriods = 5;
+int numPeriods = 1;
 int numPhases = 3;
 int startPeriod = 8;
+
+float fov = PI/6;
 
 boolean drawRef = false;
 
@@ -53,12 +55,9 @@ float objScale = 250.0;
 void setup() 
 {
   size(480, 640, OPENGL);
-     
-  perspective(PI/16, float(width)/float(height), 1, 20000);
    
   ref = new ObjLoader("cube.obj");
   trg = new ObjLoader("weird_01.obj");//"jessica_face__47_render_01.obj");
-   
   patterns = new XPatternGen(width, height,startPeriod, numPhases,numPeriods ); 
 
   for (int i = 0; i < numPeriods; i++) {
@@ -98,10 +97,7 @@ void setup()
   refView = new Matrix4x4(1,0,0,0,
                           0,1,0,0,
                           0,0,1,0,
-                          0,0,0,1);
-                            
-  
-  
+                          0,0,0,1);  
 }
 
 //////////////////////////////////////////////////////////////////
@@ -199,7 +195,7 @@ void keyPressed() {
   
   if (key == 'g') {
     saveIm = true;
-    imind = numPeriods*numPhases-1;
+    imind = (numPeriods-1)*numPhases;
     drawRef = true;
   }
   
@@ -216,6 +212,14 @@ void keyPressed() {
      drawRef = !drawRef; 
   }
   
+  
+  if (key == '[') {
+     fov *= 1.05; 
+     println(fov);
+  }
+  if (key == ']') {
+     fov *= 0.97; 
+  }
 }
 
 ///////////////////////////////////////////////
@@ -279,8 +283,8 @@ void draw() {
    PGraphicsOpenGL pgl = (PGraphicsOpenGL) g;   
    glu = ((PGraphicsOpenGL)g).glu;  
    GL gl = pgl.beginGL();
-      
-   perspective(PI/16, float(width)/float(height), 1, 20000);
+     
+   perspective(fov, float(width)/float(height), 1, 20000);
   
   /// only do this synchronously with drawing
   if (switchTex) {
@@ -338,7 +342,7 @@ void draw() {
   if (saveIm) {
     
     String name = "phase" + (imind + 1001) + ".jpg";
-    if (drawRef) name = "ref.jpg";
+    if (drawRef) name = "ref" + + (imind-((numPeriods-1)*numPhases) + 1001) + ".jpg";
     saveFrame(name);
     println("saving " + name);
     
@@ -402,8 +406,13 @@ void draw() {
         imind = 0;
       }     
     }
-    imind %= numPeriods*numPhases;   
-    drawRef = false;
+    
+    if ((drawRef == true) && (imind == numPeriods*numPhases)) {   
+      drawRef = false;
+      imind = 0;
+    }
+    imind %= numPeriods*numPhases;
+   
  
   } 
 

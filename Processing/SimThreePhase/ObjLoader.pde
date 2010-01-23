@@ -12,6 +12,9 @@
    Vec3D[] vn;
    int[][] faces;
 
+  float xmin,ymin,zmin=1e6;
+  float xmax,ymax,zmax=-1e6;
+
    ObjLoader(String fname) {
      
      String[] lines = loadStrings(fname);
@@ -29,9 +32,19 @@
      if (toks.length > 2) {
        if (toks[0].equals("v")) {
          //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
-         vs[vcount] = new Vec3D(Float.parseFloat(toks[1]),
-                               Float.parseFloat(toks[2]),
-                               Float.parseFloat(toks[3]));
+         float x,y,z;
+         x = Float.parseFloat(toks[1]);
+         y = Float.parseFloat(toks[2]);
+         z = Float.parseFloat(toks[3]);
+         
+         vs[vcount] = new Vec3D(x,y,z);
+                               
+         if (x < xmin) xmin = x;
+         if (y < ymin) ymin = y;
+         if (z < zmin) zmin = z;
+         if (x > xmax) xmax = x;
+         if (y > ymax) ymax = y;
+         if (z > zmax) zmax = z;
          
          vcount++;
          Vec3D[] nvs = new Vec3D[vcount+1];
@@ -39,6 +52,7 @@
          vs = nvs;
          
        }
+       
        
        if (toks[0].equals("vn")) {
          //println(i + " " + toks[1] + " " + toks[2] + " " + toks[3]);
@@ -73,9 +87,22 @@
        }
      }
      
+     
 
    } 
+   
+    println("min " + xmin + " " + ymin + " " + zmin + ", max " + xmax + " " + ymax + " " + zmax);
+    
+   if (true) {
+    /// now move the object so it is centered
+    float zmov = (zmax-zmin)/2;
+    /// TBD probably need to scale the whole thing to be within -1,1
+    for (int i = 0; i < vs.length-1; i++) {
+      vs[i] = new Vec3D(vs[i].x,vs[i].y, vs[i].z+zmov);
+      
+    }
+   }
   
- } 
+ } /// objloader
    
  }
