@@ -28,10 +28,9 @@ void phaseWrap() {
       
       float phaseRange = max(phase1, phase2, phase3) - min(phase1, phase2, phase3);
       
-      // ignore noise
-      distance[y][x] = 1 - phaseRange;
       mask[y][x] = phaseRange <= noiseThreshold;
       process[y][x] = !mask[y][x];
+      distance[y][x] = phaseRange;
 
       // this equation can be found in Song Zhang's
       // "Recent progresses on real-time 3D shape measurement..."
@@ -44,4 +43,21 @@ void phaseWrap() {
       colors[y][x] = blendColor(blendColor(color1, color2, LIGHTEST), color3, LIGHTEST);
     }
   }
+  
+  for (int y = 1; y < inputHeight - 1; y++) {
+    for (int x = 1; x < inputWidth - 1; x++) {
+      if(!mask[y][x]) {
+        distance[y][x] = (
+          diff(phase[y][x], phase[y][x - 1]) +
+          diff(phase[y][x], phase[y][x + 1]) +
+          diff(phase[y][x], phase[y - 1][x]) +
+          diff(phase[y][x], phase[y + 1][x])) / distance[y][x];
+      }
+    }
+  }
+}
+
+float diff(float a, float b) {
+  float d = a < b ? b - a : a - b;
+  return d < .5 ? d : 1 - d;
 }

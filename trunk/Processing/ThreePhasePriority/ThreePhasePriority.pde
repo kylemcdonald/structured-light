@@ -36,6 +36,7 @@ void draw () {
     phaseWrap();
     phaseUnwrap();
     update = false;
+    //saveImage(order, "order.png"); // uncomment to visualize the unwrapping order
   }
   
   noFill();
@@ -52,4 +53,18 @@ void draw () {
     saveFrame(day() + " " + hour() + " " + minute() + " " + second() + ".png");
     takeScreenshot = false;
   }
+}
+
+void saveImage(float[][] ref, String name) {
+  pushStyle();
+  colorMode(RGB, 1.0);
+  PImage img = createImage(inputWidth, inputHeight, GRAY);
+  img.loadPixels();
+  for(int y = 0; y < inputHeight; y++) {
+    for(int x = 0; x < inputWidth; x++) {
+      img.pixels[y * inputWidth + x] = color(ref[y][x] * 16 % 1.);
+    }
+  }
+  img.save(name);
+  popStyle();
 }
