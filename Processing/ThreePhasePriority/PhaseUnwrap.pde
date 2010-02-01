@@ -8,8 +8,7 @@
 */
 
 PriorityQueue toProcess;
-
-long position = 0;
+long position;
 
 void phaseUnwrap() {
   int startX = inputWidth / 2;
@@ -27,9 +26,9 @@ void phaseUnwrap() {
     if(process[y][x]) {
       phase[y][x] = cur.phase;
       process[y][x] = false;
-      order[y][x] = position++ / total;
       float d = cur.distance;
       float r = phase[y][x];
+      order[y][x] = position++ / (float) (inputWidth * inputHeight);
       if (y > 0)
         phaseUnwrap(x, y-1, d, r);
       if (y < inputHeight-1)
