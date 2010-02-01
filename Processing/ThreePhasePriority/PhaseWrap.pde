@@ -22,9 +22,9 @@ void phaseWrap() {
       color color2 = phase2Image.pixels[i];
       color color3 = phase3Image.pixels[i];
       
-      float phase1 = brightness(color1) / 255.;
-      float phase2 = brightness(color2) / 255.;
-      float phase3 = brightness(color3) / 255.;
+      float phase1 = averageBrightness(color1);
+      float phase2 = averageBrightness(color2);
+      float phase3 = averageBrightness(color3);
       
       float phaseRange = max(phase1, phase2, phase3) - min(phase1, phase2, phase3);
       
@@ -55,6 +55,10 @@ void phaseWrap() {
       }
     }
   }
+}
+
+float averageBrightness(color c) {
+  return (red(c) + green(c) + blue(c)) / (255 * 3);
 }
 
 float diff(float a, float b) {
