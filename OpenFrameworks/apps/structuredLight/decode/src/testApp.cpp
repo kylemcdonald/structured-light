@@ -20,14 +20,17 @@ void testApp::setup(){
 	panel.setWhichPanel("input");
 
 	inputList.listDir("input");
-	panel.addFileLister("input", &inputList, 240, 500);
+	panel.addFileLister("input", &inputList, 240, 440);
 	panel.addSlider("camera rate", "cameraRate", 1, 1, 6, true);
 	panel.addSlider("camera offset", "cameraOffset", 0, 0, 5, true);
+	panel.addSlider("play rate", "playRate", 1, 1, 60, true);
 
 	panel.setWhichPanel("decode");
 
+	panel.addToggle("stop motion", "stopMotion", false);
 	panel.addToggle("play sequence", "playSequence", false);
 	panel.addSlider("jump to", "jumpTo", 0, 0, 100, false);
+	panel.addToggle("phase persistence", "phasePersistence", false);
 
 	styles.push_back("cloud");
 	styles.push_back("mesh");
@@ -147,6 +150,9 @@ testApp::~testApp() {
 void testApp::nextFrame() {
 	int cameraRate = panel.getValueI("cameraRate");
 	int cameraOffset = panel.getValueI("cameraOffset");
+
+	unsigned totalFrames = (totalImages - cameraOffset) / cameraRate;
+
 	int cameraFrame = (sequenceFrame * cameraRate) + cameraOffset;
 	cameraFrame %= totalImages;
 	if(usingDirectory) {
@@ -157,11 +163,11 @@ void testApp::nextFrame() {
 		movieInput.setFrame(cameraFrame);
 		threePhase->set(sequenceFrame % 3, movieInput.getPixels());
 	}
-	if(sequenceFrame > (totalImages / cameraRate)) {
-		sequenceFrame = 0;
-		cout << "Looping sequence." << endl;
-	} else
-		sequenceFrame++;
+
+	sequenceFrame = (sequenceFrame + 1) % totalFrames;
+
+	if(sequenceFrame == 0)
+		cout << "Starting sequence over." << endl;
 }
 
 void testApp::jumpTo(unsigned frame) {
@@ -199,9 +205,12 @@ void testApp::update(){
 	float curFilterMin = panel.getValueF("filterMin");
 	float curFilterMax = panel.getValueF("filterMax");
 	bool curPlaySequence = panel.getValueB("playSequence");
+	int curPlayRate = panel.getValueI("playRate");
 	float curJumpTo = panel.getValueF("jumpTo");
+	bool curPhasePersistence = panel.getValueB("phasePersistence");
 	int curCameraRate = panel.getValueI("cameraRate");
 	int curCameraOffset = panel.getValueI("cameraOffset");
+	bool curStopMotion = panel.getValueB("stopMotion");
 
 	bool reload = inputList.selectedHasChanged();
 	if(reload) {
@@ -209,20 +218,41 @@ void testApp::update(){
 		inputList.clearChangedFlag();
 	}
 
+	unsigned totalFrames = (totalImages - curCameraOffset) / curCameraRate;
+
 	if(threePhase != NULL) {
 		threePhase->setDepthScale(curDepthScale);
 		threePhase->setDepthSkew(curDepthSkew);
 		threePhase->setRangeThreshold(curRangeThreshold);
 		threePhase->setOrientation(curOrientation == 0 ? PHASE_HORIZONTAL : PHASE_VERTICAL);
+		threePhase->setPhasePersistence(curPhasePersistence);
 
-		unsigned targetFrame = (unsigned) ofMap(lastJumpTo, 0, 100, 0, totalImages / curCameraRate);
+		if(curPhasePersistence != lastPhasePersistence)
+			threePhase->clearLastPhase();
 
 		if(curJumpTo != lastJumpTo) {
-			jumpTo(targetFrame);
-			reload = true;
-		} else if(curPlaySequence || curCameraRate != lastCameraRate || curCameraOffset != lastCameraOffset) {
-			nextFrame();
-			panel.setValueF("jumpTo", ofMap(sequenceFrame, 0, totalImages / curCameraRate, 0, 100));
+			// map slider to entire range of input images
+			unsigned targetFrame = (unsigned) ofMap(lastJumpTo, 0, 100, 0, totalFrames);
+			// clamp to amaxmimum of last image - 3, so you don't try reading in a loop
+			targetFrame = (unsigned) ofClamp(targetFrame, 0, totalFrames - 3);
+			// quantize location if stop motion is enabled
+			if(curStopMotion)
+				targetFrame = (targetFrame / 3) * 3;
+			// so long as we're not just jumping to the same place
+			if((targetFrame + 3) % totalFrames != sequenceFrame) {
+				jumpTo(targetFrame);
+				reload = true;
+			}
+		} else if(ofGetFrameNum() % curPlayRate == 0 &&
+			(curPlaySequence || curCameraRate != lastCameraRate || curCameraOffset != lastCameraOffset)) {
+			if(curStopMotion) {
+				// make sure to quantize current frame, in case we're switching from non-stop-motion
+				sequenceFrame = (sequenceFrame / 3) * 3;
+				for(int i = 0; i < 3; i++)
+					nextFrame();
+			} else
+					nextFrame();
+			panel.setValueF("jumpTo", ofMap(sequenceFrame, 0, totalFrames, 0, 100));
 			curJumpTo = panel.getValueF("jumpTo");
 			reload = true;
 		}
@@ -268,6 +298,7 @@ void testApp::update(){
 	lastJumpTo = curJumpTo;
 	lastCameraRate = curCameraRate;
 	lastCameraOffset = curCameraOffset;
+	lastPhasePersistence = curPhasePersistence;
 }
 
 void testApp::getBounds(ofxPoint3f& min, ofxPoint3f& max) {
