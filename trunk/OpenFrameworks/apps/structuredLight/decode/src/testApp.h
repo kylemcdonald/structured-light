@@ -59,6 +59,7 @@ public:
 	int lastRangeThreshold, lastOrientation;
 	float lastJumpTo;
 	int lastCameraRate, lastCameraOffset;
+	bool lastPhasePersistence;
 
 	int sequenceFrame;
 
