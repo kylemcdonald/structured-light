@@ -14,6 +14,7 @@ public:
 	void setMaxPasses(int maxPasses);
 	void setMinRemaining(float minRemaining);
 	void setPhasePersistence(bool phasePersistence);
+	void clearLastPhase();
 	void set(int i, byte* image);
 	void makeDepth();
 	void decode();

@@ -114,6 +114,10 @@ void PhaseDecoder::setPhasePersistence(bool phasePersistence) {
 	this->phasePersistence = phasePersistence;
 }
 
+void PhaseDecoder::clearLastPhase() {
+	memset(lastPhase, 0, sizeof(float) * width * height);
+}
+
 void PhaseDecoder::makeDepth() {
 	int n = width * height;
 	if(orientation == PHASE_VERTICAL) {
