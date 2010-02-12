@@ -3,7 +3,7 @@ import peasy.*;
 PeasyCam cam;
 
 int inputWidth, inputHeight;
-float[][] phase;
+float[][] phase, distance, order;
 boolean[][] mask, process;
 color[][] colors;
 
@@ -16,6 +16,8 @@ void setup() {
   inputWidth = phase1Image.width;
   inputHeight = phase1Image.height;
   phase = new float[inputHeight][inputWidth];
+  distance = new float[inputHeight][inputWidth];
+  order = new float[inputHeight][inputWidth];
   mask = new boolean[inputHeight][inputWidth];
   process = new boolean[inputHeight][inputWidth];
   colors = new color[inputHeight][inputWidth];
@@ -34,6 +36,7 @@ void draw () {
     phaseWrap();
     phaseUnwrap();
     update = false;
+    //saveImage(order, "order.png"); // uncomment to visualize the unwrapping order
   }
   
   noFill();
@@ -52,3 +55,16 @@ void draw () {
   }
 }
 
+void saveImage(float[][] ref, String name) {
+  pushStyle();
+  colorMode(RGB, 1.0);
+  PImage img = createImage(inputWidth, inputHeight, GRAY);
+  img.loadPixels();
+  for(int y = 0; y < inputHeight; y++) {
+    for(int x = 0; x < inputWidth; x++) {
+      img.pixels[y * inputWidth + x] = color(ref[y][x] * 16 % 1.);
+    }
+  }
+  img.save(name);
+  popStyle();
+}
