@@ -1,48 +1,76 @@
 /*
   Use the wrapped phase information,  and propagate it across the boundaries.
-  This implementation uses a flood-fill propagation algorithm.
+  This implementation uses a priority-based propagation algorithm.
   
   Because the algorithm starts in the center and propagates outwards,
   so if you have noise (e.g.: a black background, a shadow) in
   the center, then it may not reconstruct your image.
 */
 
-LinkedList toProcess;
+PriorityQueue toProcess;
+long position;
 
 void phaseUnwrap() {
   int startX = inputWidth / 2;
   int startY = inputHeight / 2;
+  
+  float total = (float) (inputWidth * inputHeight);
 
-  toProcess = new LinkedList();
-  toProcess.add(new int[]{startX, startY});
-  process[startY][startX] = false;
-
-  while (!toProcess.isEmpty()) {
-    int[] xy = (int[]) toProcess.remove();
-    int x = xy[0];
-    int y = xy[1];
-    float r = phase[y][x];
-    
-    if (y > 0)
-      phaseUnwrap(r, x, y-1);
-    if (y < inputHeight-1)
-      phaseUnwrap(r, x, y+1);
-    if (x > 0)
-      phaseUnwrap(r, x-1, y);
-    if (x < inputWidth-1)
-      phaseUnwrap(r, x+1, y);
+  toProcess = new PriorityQueue();
+  toProcess.add(new WrappedPixel(startX, startY, 0, phase[startY][startX]));
+  
+  while(!toProcess.isEmpty()) {
+    WrappedPixel cur = (WrappedPixel) toProcess.poll();
+    int x = cur.x;
+    int y = cur.y;
+    if(process[y][x]) {
+      phase[y][x] = cur.phase;
+      process[y][x] = false;
+      float d = cur.distance;
+      float r = phase[y][x];
+      order[y][x] = position++ / (float) (inputWidth * inputHeight);
+      if (y > 0)
+        phaseUnwrap(x, y-1, d, r);
+      if (y < inputHeight-1)
+        phaseUnwrap(x, y+1, d, r);
+      if (x > 0)
+        phaseUnwrap(x-1, y, d, r);
+      if (x < inputWidth-1)
+        phaseUnwrap(x+1, y, d, r);
+    }
   }
 }
 
-void phaseUnwrap(float basePhase, int x, int y) {
+void phaseUnwrap(int x, int y, float d, float r) {
   if(process[y][x]) {
-    float diff = phase[y][x] - (basePhase - (int) basePhase);
+    float diff = phase[y][x] - (r - (int) r);
     if (diff > .5)
       diff--;
     if (diff < -.5)
       diff++;
-    phase[y][x] = basePhase + diff;
-    process[y][x] = false;
-    toProcess.add(new int[]{x, y});
+    toProcess.add(new WrappedPixel(x, y, d + distance[y][x], r + diff));
+  }
+}
+
+class WrappedPixel implements Comparable {
+  public int x, y;
+  public float distance, phase;
+  WrappedPixel(int x, int y, float distance, float phase) {
+    this.x = x;
+    this.y = y;
+    this.distance = distance;
+    this.phase = phase;
+  }
+  int compareTo(Object o) {
+    if(o instanceof WrappedPixel) {
+      WrappedPixel w = (WrappedPixel) o;
+      if(w.distance == distance)
+        return 0;
+      if(w.distance < distance)
+        return 1;
+      else
+        return -1;
+    } else
+      return 0;
   }
 }
