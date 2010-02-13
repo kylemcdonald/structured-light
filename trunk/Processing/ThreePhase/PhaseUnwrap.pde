@@ -13,8 +13,6 @@ long position;
 void phaseUnwrap() {
   int startX = inputWidth / 2;
   int startY = inputHeight / 2;
-  
-  float total = (float) (inputWidth * inputHeight);
 
   toProcess = new PriorityQueue();
   toProcess.add(new WrappedPixel(startX, startY, 0, phase[startY][startX]));
@@ -28,7 +26,6 @@ void phaseUnwrap() {
       process[y][x] = false;
       float d = cur.distance;
       float r = phase[y][x];
-      order[y][x] = position++ / (float) (inputWidth * inputHeight);
       if (y > 0)
         phaseUnwrap(x, y-1, d, r);
       if (y < inputHeight-1)
@@ -49,6 +46,15 @@ void phaseUnwrap(int x, int y, float d, float r) {
     if (diff < -.5)
       diff++;
     toProcess.add(new WrappedPixel(x, y, d + distance[y][x], r + diff));
+  }
+}
+
+void makeDepth() {
+  for (int y = 0; y < inputHeight; y += renderDetail) {
+    float planephase = 0.5 - (y - (inputHeight / 2)) / zskew;
+    for (int x = 0; x < inputWidth; x += renderDetail)
+      if (!mask[y][x])
+        depth[y][x] = (phase[y][x] - planephase) * zscale;
   }
 }
 

@@ -43,6 +43,8 @@ void setupControls() {
   control.addSlider("zskew", -64, 64, zskew, 10, y += 10, 256, 9).setWindow(controlWindow);
   control.addSlider("renderDetail", 1, 4, renderDetail, 10, y += 10, 256, 9).setWindow(controlWindow);
   control.addBang("screenshot", 10, y += 10, 9, 9).setWindow(controlWindow);
+  control.addBang("exportCloud", 80, y, 9, 9).setWindow(controlWindow);
+  control.addBang("exportMesh", 160, y, 9, 9).setWindow(controlWindow);
 }
 
 void noiseThreshold(float newThreshold) {
@@ -50,4 +52,8 @@ void noiseThreshold(float newThreshold) {
     noiseThreshold = newThreshold;
     update = true;
   }
+}
+
+String getTimestamp() {
+  return day() + " " + hour() + " " + minute() + " " + second();
 }
