@@ -18,10 +18,11 @@ PhaseDecoder::PhaseDecoder() :
 
 // This code should migrate to DepthDecoder, as it will
 // be used for allocating a gray coded image sequence also.
-void PhaseDecoder::setup(int width, int height, int sequenceSize) {
+void PhaseDecoder::setup(int width, int height, int sequenceSize, int numColorChan) {
 	this->width = width;
 	this->height = height;
 	this->sequenceSize = sequenceSize;
+	this->numColorChan = numColorChan;
 
 	colorSequence = new byte*[sequenceSize];
 	graySequence = new byte*[sequenceSize];
@@ -67,11 +68,21 @@ void PhaseDecoder::setMinRemaining(float minRemaining) {
 void PhaseDecoder::set(int position, byte* image) {
 	byte* curColor = colorSequence[position];
 	byte* curGray = graySequence[position];
-	memcpy(curColor, image, width * height * 3);
+
+    if (numColorChan == 3) {
+        memcpy(curColor, image, width * height * 3);
+    }
+
 	int n = width * height;
 	int i = 0;
 	int j = 0;
 	while(j < n) {
+	    if (numColorChan == 1) {
+            curColor[i]   = image[j];
+            curColor[i+1] = image[j];
+            curColor[i+2] = image[j];
+	    }
+
 		float sum =
 			(float) curColor[i++] +
 			(float) curColor[i++] +
