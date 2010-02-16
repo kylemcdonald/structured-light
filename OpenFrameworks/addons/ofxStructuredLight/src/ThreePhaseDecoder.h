@@ -24,7 +24,7 @@ class ThreePhaseDecoder : public PriorityDecoder {
 public:
 	ThreePhaseDecoder();
 	~ThreePhaseDecoder();
-	void setup(int width, int height);
+	void setup(int width, int height, int numColorChan);
 	float* getRange();
 	void setRangeThreshold(float rangeThreshold);
 protected:

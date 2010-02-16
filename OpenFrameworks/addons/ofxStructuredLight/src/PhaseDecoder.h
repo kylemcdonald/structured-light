@@ -38,7 +38,7 @@ protected:
 	bool phasePersistence;
 	float* lastPhase;
 
-	void setup(int width, int height, int sequenceSize);
+	void setup(int width, int height, int sequenceSize, int numColorChan);
 	virtual void makePhase() = 0;
 	virtual void unwrapPhase() = 0;
 	virtual void makeColor() = 0;

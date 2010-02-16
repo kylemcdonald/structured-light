@@ -10,8 +10,8 @@ ThreePhaseDecoder::~ThreePhaseDecoder() {
 	delete [] range;
 }
 
-void ThreePhaseDecoder::setup(int width, int height) {
-	PhaseDecoder::setup(width, height, 3);
+void ThreePhaseDecoder::setup(int width, int height, int numColorChan) {
+	PhaseDecoder::setup(width, height,3, numColorChan);
 	range = new float[width * height];
 }
 

@@ -23,4 +23,5 @@ protected:
 	int width, height;
 	bool* mask;
 	float* depth;
+	int numColorChan;
 };
