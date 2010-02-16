@@ -11,7 +11,7 @@ void testApp::setup(){
 	threePhase = NULL;
 
 	// setup control panel
-	panel.setup("control", 8, 8, 300, 700);
+	panel.setup("control", 8, 8, 300, 720);
 	panel.loadSettings("control.xml");
 	panel.addPanel("input", 1);
 	panel.addPanel("decode", 1);
@@ -31,6 +31,8 @@ void testApp::setup(){
 	panel.addToggle("play sequence", "playSequence", false);
 	panel.addSlider("jump to", "jumpTo", 0, 0, 100, false);
 	panel.addToggle("phase persistence", "phasePersistence", false);
+
+	panel.addToggle("reset view ", "resetView", false);
 
 	styles.push_back("cloud");
 	styles.push_back("mesh");
@@ -157,11 +159,15 @@ void testApp::nextFrame() {
 	cameraFrame %= totalImages;
 	if(usingDirectory) {
 		ofImage phase;
-		phase.loadImage(inputDir + imageList.getName(cameraFrame));
+		if (!phase.loadImage(inputDir + imageList.getName(cameraFrame))) {
+            cout << "couldn't load file " << (inputDir + imageList.getName(cameraFrame)) << endl;
+            return;
+		}
 		threePhase->set(sequenceFrame % 3, phase.getPixels());
+
 	} else {
 		movieInput.setFrame(cameraFrame);
-		threePhase->set(sequenceFrame % 3, movieInput.getPixels());
+		threePhase->set(sequenceFrame % 3, movieInput.getPixels()); // TBD can movies have different than 24 bpp?
 	}
 
 	sequenceFrame = (sequenceFrame + 1) % totalFrames;
@@ -186,13 +192,19 @@ void testApp::setupInput() {
 		inputDir = "input/" + name + "/";
 		totalImages = imageList.listDir(inputDir);
 		ofImage phase;
-		phase.loadImage(inputDir + imageList.getName(0));
-		threePhase->setup((int) phase.getWidth(), (int) phase.getHeight());
+		//  TBD
+		string imageName = imageList.getName(0);
+		if (!phase.loadImage(inputDir + imageName)) {
+            cout << "couldn't load file " << (inputDir + imageName) << endl;
+            delete threePhase;
+            return;
+		}
+		threePhase->setup((int) phase.getWidth(), (int) phase.getHeight(), phase.bpp/8);
 	} else {
 		movieInput.loadMovie("input/" + name);
 		movieInput.setVolume(0);
 		totalImages = movieInput.getTotalNumFrames();
-		threePhase->setup((int) movieInput.getWidth(), (int) movieInput.getHeight());
+		threePhase->setup((int) movieInput.getWidth(), (int) movieInput.getHeight(),3);
 	}
 	jumpTo(0);
 }
@@ -211,6 +223,12 @@ void testApp::update(){
 	int curCameraRate = panel.getValueI("cameraRate");
 	int curCameraOffset = panel.getValueI("cameraOffset");
 	bool curStopMotion = panel.getValueB("stopMotion");
+
+	bool curResetView = panel.getValueB("resetView");
+	if (curResetView) {
+            camera = ofxEasyCam();
+            panel.setValueB("resetView",false);
+	}
 
 	bool reload = inputList.selectedHasChanged();
 	if(reload) {
@@ -358,6 +376,7 @@ void testApp::boxOutline(ofxPoint3f min, ofxPoint3f max) {
 }
 
 void testApp::draw(){
+    ofBackground(128,128,128);
 	camera.place();
 	glEnable(GL_DEPTH_TEST);
 
