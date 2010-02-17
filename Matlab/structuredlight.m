@@ -1,4 +1,4 @@
-function [t,angles,unwrapped_angles,pd]=structuredlight(p1name,p2name,p3name,hgtname);
+function [t,angles,unwrapped_angles,p1,p2,p3,pd]=structuredlight(p1name,p2name,p3name,gamma,rotate,hgtname);
 % binarymillenium Jan 2010
 % GNU GPL v3.0
 
@@ -6,25 +6,51 @@ function [t,angles,unwrapped_angles,pd]=structuredlight(p1name,p2name,p3name,hgt
 % 
 % slight (need to rename to avoid collision with existing matlab slight) loads images and performs the structured light calculations on them.  It is very slow, so is best suited for only narrow strips of the images.
 % 
-% Copying from https://binarymillenium.googlecode.com/svn/trunk/processing/simstructuredlight
+% Copying from http://binarymillenium.googlecode.com/svn/trunk/processing/simstructuredlight
 % 
 
-% p1 = rot90(double( rgb2gray(imread(p1name))));
-% p2 = rot90(double( rgb2gray(imread(p2name))));
-% p3 = rot90(double( rgb2gray(imread(p3name))));
+p1 = imread(p1name);
+p2 = imread(p2name);
+p3 = imread(p3name);
 
-p1 = rot90(double( sum(imread(p1name),3)/3));
-p2 = rot90(double( sum(imread(p2name),3)/3));
-p3 = rot90(double( sum(imread(p3name),3)/3));
+wgt = [0.2989  0.5870  0.1140];
+if (size(p1,3) == 3)
+    p1 = p1(:,:,1)*wgt(1) + p1(:,:,2)*wgt(2) + p1(:,:,3)*wgt(3);
+    p2 = p2(:,:,1)*wgt(1) + p2(:,:,2)*wgt(2) + p2(:,:,3)*wgt(3);
+    p3 = p3(:,:,1)*wgt(1) + p3(:,:,2)*wgt(2) + p3(:,:,3)*wgt(3);
+    
+end
 
-fid = fopen(hgtname);
-pd = (double( fread( fid,flipdim(size(p3),1), 'float' )));
+% TBD replace with rotation parameter
+if (rotate)
+p1 = rot90( p1);
+p2 = rot90( p2);
+p3 = rot90( p3);
+end
+
+p1 = (double( p1));
+p2 = (double( p2));
+p3 = (double( p3));
+
+if (1)
+p1 = 255.0* doublegamma(p1/255.0,gamma);
+p2 = 255.0* doublegamma(p2/255.0,gamma);
+p3 = 255.0* doublegamma(p3/255.0,gamma);
+end
+
+if (nargin > 5)
+    fid = fopen(hgtname);
+    pd = (double( fread( fid,flipdim(size(p3),1), 'float' )));
+else 
+    pd = zeros(size(p3));
+end
 
 %pd = (pd < 0.5e4).*pd + (pd >= 0.5e4).*max(max(pd));
 %pd = pd - pd(end/2,end/2);
 
-figure(2),%mesh(pd) 
+%figure(2),%mesh(pd) 
 
+if (0)
 pdlin = reshape(pd,[prod(size(pd)),1]);
 [n,x] = hist(pdlin,40);
 %plot(x,n);
@@ -32,16 +58,17 @@ pdlin = reshape(pd,[prod(size(pd)),1]);
 pd = (pd < x(2)).*pd + (pd >= x(2)).*x(2);
 pd = -(pd-pd(end/2,end/2));
 %mesh(pd);
-axis equal
-figure(10);
-colormap('gray')
-image(p1/4);
+%axis equal
+end
 
-
-p1 = p1(end/2, :);
-p2 = p2(end/2, :);
-p3 = p3(end/2, :);
-pd = pd(end/2, :);
+% take only center strip
+frct = 0.5;
+p1 = p1(floor(frct*end), :);
+p2 = p2(floor(frct*end), :);
+p3 = p3(floor(frct*end), :);
+if (0)
+pd = pd(floor(frct*end), :);
+end
 
 % p1 = double( rgb2gray(imread('data/i1.png')));
 % p2 = double( rgb2gray(imread('data/i2.png')));
@@ -53,18 +80,21 @@ p(:,:,1) = p1;
 p(:,:,2) = p2;
 p(:,:,3) = p3;
 
-pavg = sum(p,3)/3;
+% TBD replace with averaging switch
+pavg = sum(p,3)/3; % max(p,[],3); 
 
-
+figure(10);
+subplot(2,1,1);
+colormap('gray')
+image(p1/4);
+subplot(2,1,2);
+colormap('gray')
+image(pavg/4);
 
 figure(1);
-
-
 %colormap('gray')
 %image(pavg/4);
 %plot(p1);
-
-
 %figure(2);
 
 angles = get_angle_full(p); %p(1:1,1:end/8,:));
@@ -285,7 +315,7 @@ while (do_loop == 1)
         display([ num2str(count/tot) ' ' num2str(size(queue,1)) ' ' num2str(sum(sum(has_unwrapped))/tot)] );
     end
     if (size(queue,1) < 1)
-        do_loop = 0
+        do_loop = 0;
     end
 end
 
