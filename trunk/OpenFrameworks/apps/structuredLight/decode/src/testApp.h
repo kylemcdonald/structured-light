@@ -57,6 +57,7 @@ public:
 	float lastDepthScale, lastDepthSkew;
 	float lastFilterMin, lastFilterMax;
 	int lastRangeThreshold, lastOrientation;
+	float lastGamma;
 	float lastJumpTo;
 	int lastCameraRate, lastCameraOffset;
 	bool lastPhasePersistence;
