@@ -47,7 +47,7 @@ void phaseWrap() {
       phase[y][x] = atan2(sqrt3 * (phase1 - phase3), 2 * phase2 - phase1 - phase3) / TWO_PI;
       
       // build color based on the lightest channels from all three images
-      colors[y][x] = blendColor(blendColor(color1, color2, LIGHTEST), color3, LIGHTEST);
+      colors[y][x] = getTexture(color1, color2, color3);
     }
   }
   
@@ -62,6 +62,17 @@ void phaseWrap() {
       }
     }
   }
+}
+
+float getTexture(float i1, float i2, float i3) {
+  return (i1 + i2 + i3 + sqrt(3 * sq(i1 - i3) + sq(2 * i2 - i1 - i3))) / 3;
+}
+
+color getTexture(color i1, color i2, color i3) {
+  return color(
+    getTexture(red(i1), red(i2), red(i3)),
+    getTexture(green(i1), green(i2), green(i3)),
+    getTexture(blue(i1), blue(i2), blue(i3)));
 }
 
 float averageBrightness(color c) {
