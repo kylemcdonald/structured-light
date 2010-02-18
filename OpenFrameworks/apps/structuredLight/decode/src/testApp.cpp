@@ -11,7 +11,7 @@ void testApp::setup(){
 	threePhase = NULL;
 
 	// setup control panel
-	panel.setup("control", 8, 8, 300, 720);
+	panel.setup("control", 8, 8, 300, 740);
 	panel.loadSettings("control.xml");
 	panel.addPanel("input", 1);
 	panel.addPanel("decode", 1);
@@ -42,6 +42,8 @@ void testApp::setup(){
 	orientation.push_back("horizontal");
 	orientation.push_back("vertical");
 	panel.addMultiToggle("orientation", "orientation", 0, orientation);
+
+    panel.addSlider("gamma", "gamma", 1, 0.0, 1.0, false);
 
 	panel.addSlider("range threshold", "rangeThreshold", 40, 0, 255, true);
 
@@ -224,6 +226,8 @@ void testApp::update(){
 	int curCameraOffset = panel.getValueI("cameraOffset");
 	bool curStopMotion = panel.getValueB("stopMotion");
 
+	float gamma = panel.getValueF("gamma");
+
 	bool curResetView = panel.getValueB("resetView");
 	if (curResetView) {
             camera = ofxEasyCam();
@@ -239,6 +243,7 @@ void testApp::update(){
 	unsigned totalFrames = (totalImages - curCameraOffset) / curCameraRate;
 
 	if(threePhase != NULL) {
+	    threePhase->setGamma(gamma);
 		threePhase->setDepthScale(curDepthScale);
 		threePhase->setDepthSkew(curDepthSkew);
 		threePhase->setRangeThreshold(curRangeThreshold);
@@ -276,6 +281,7 @@ void testApp::update(){
 		}
 
 		if(reload ||
+                gamma != lastGamma ||
 				curRangeThreshold != lastRangeThreshold || curOrientation != lastOrientation ||
 				curFilterMin != lastFilterMin || curFilterMax != lastFilterMax ||
 				curDepthScale != lastDepthScale || curDepthSkew != lastDepthSkew) {
@@ -307,6 +313,7 @@ void testApp::update(){
 		}
 	}
 
+    lastGamma = gamma;
 	lastDepthScale = curDepthScale;
 	lastDepthSkew = curDepthSkew;
 	lastRangeThreshold = curRangeThreshold;
