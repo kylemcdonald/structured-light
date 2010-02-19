@@ -11,11 +11,12 @@ void testApp::setup(){
 	threePhase = NULL;
 
 	// setup control panel
-	panel.setup("control", 8, 8, 300, 740);
+	panel.setup("control", 8, 8, 300, 760);
 	panel.loadSettings("control.xml");
 	panel.addPanel("input", 1);
 	panel.addPanel("decode", 1);
 	panel.addPanel("export", 1);
+	panel.addPanel("misc", 1);
 
 	panel.setWhichPanel("input");
 
@@ -36,14 +37,13 @@ void testApp::setup(){
 
 	styles.push_back("cloud");
 	styles.push_back("mesh");
+	styles.push_back("none");
 	panel.addMultiToggle("style", "style", 0, styles);
 
 	vector<string> orientation;
 	orientation.push_back("horizontal");
 	orientation.push_back("vertical");
 	panel.addMultiToggle("orientation", "orientation", 0, orientation);
-
-    panel.addSlider("gamma", "gamma", 1, 0.0, 1.0, false);
 
 	panel.addSlider("range threshold", "rangeThreshold", 40, 0, 255, true);
 
@@ -66,6 +66,11 @@ void testApp::setup(){
 	panel.addToggle("render movie", "renderMovie", false);
 	panel.addSlider("movie framerate", "movieFramerate", 60, 5, 60, true);
 
+    panel.setWhichPanel("misc");
+    panel.addSlider("gamma", "gamma", 1, 0.0, 1.0, false);
+    panel.addToggle("hud", "hud", false);
+    panel.addSlider("hudWidth", "hudWidth", 300.0, 0.0,2000.0, false);
+    panel.addSlider("hudHeightOffset", "hudHeightOffset", 0.0, -2000.0,2000.0, false);
 	ofBackground(0, 0, 0);
 }
 
@@ -92,6 +97,7 @@ void testApp::drawCloud() {
 	}
 	glEnd();
 }
+
 
 void testApp::drawMesh() {
 	bool* mask = threePhase->getMask();
@@ -202,6 +208,12 @@ void testApp::setupInput() {
             return;
 		}
 		threePhase->setup((int) phase.getWidth(), (int) phase.getHeight(), phase.bpp/8);
+
+        phaseUnwrapped.clear();
+        phaseUnwrapped.allocate(phase.getWidth(),phase.getHeight(),OF_IMAGE_GRAYSCALE);
+        phaseWrapped.clear();
+        phaseWrapped.allocate(phase.getWidth(),phase.getHeight(),OF_IMAGE_GRAYSCALE);
+
 	} else {
 		movieInput.loadMovie("input/" + name);
 		movieInput.setVolume(0);
@@ -384,6 +396,8 @@ void testApp::boxOutline(ofxPoint3f min, ofxPoint3f max) {
 
 void testApp::draw(){
     ofBackground(128,128,128);
+
+    glPushMatrix();
 	camera.place();
 	glEnable(GL_DEPTH_TEST);
 
@@ -406,15 +420,18 @@ void testApp::draw(){
 		}
 
 		ofSetColor(255, 255, 255);
-		bool useCloud = panel.getValueI("style") == 0;
-		if(useCloud) {
+		int useCloud = panel.getValueI("style");
+		if(useCloud==0) {
 			drawCloud();
-		} else {
+		} else if (useCloud ==1) {
 			drawMesh();
 		}
+
 	}
 
 	glDisable(GL_DEPTH_TEST);
+
+
 
 	camera.remove();
 
@@ -422,6 +439,54 @@ void testApp::draw(){
 		screenCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
 		movieOutput.addFrame(screenCapture.getPixels(), 1. / panel.getValueI("movieFramerate"));
 	}
+
+	glPopMatrix();
+
+
+		if ((threePhase != NULL) && panel.getValueB("hud")) {
+		 	bool* mask = threePhase->getMask();
+            float* depth = threePhase->getDepth();
+            byte* color = threePhase->getColor();
+            float* phase = threePhase->getPhase();
+            float* wrappedPhase = threePhase->getWrappedPhase();
+
+            int srcWidth = threePhase->getWidth();
+            int srcHeight = threePhase->getHeight();
+
+            unsigned char* upix = phaseUnwrapped.getPixels();
+            unsigned char* ppix = phaseWrapped.getPixels();
+            int i = 0;
+            for(int y = 0; y < srcHeight; y++) {
+            for(int x = 0; x < srcWidth; x++) {
+                ppix[y*srcWidth+x] = (char) ofMap(wrappedPhase[y*srcWidth+x],
+                                            0,1,
+                                            0,255);
+
+                float minPhase = threePhase->minPhase;
+                /// TBD need to convert filterMin to phase units (I think it's depth/range now
+                //if (panel.getValueF("filterMin") > minPhase) minPhase = mpanel.getValueF("filterMin");
+
+                float maxPhase = threePhase->maxPhase;
+                //if (panel.getValueF("filterMax") > maxPhase) maxPhase = mpanel.getValueF("filterMin");
+
+                upix[y*srcWidth+x] = (char) ofMap(phase[y*srcWidth+x],
+                                            minPhase,maxPhase,
+                                            0,255);
+
+                i++;
+            }}
+            phaseUnwrapped.update();
+            phaseWrapped.update();
+
+            int w = panel.getValueF("hudWidth");
+            int hOff = panel.getValueF("hudHeightOffset");
+            ofSetColor(255, 255, 255);
+            glColor3f(1,1,1);
+            float sc = (float)srcHeight/(float)srcWidth;
+            phaseWrapped.getTextureReference().draw(ofGetWidth()-w,hOff+0*w*sc,w,w*sc);
+            phaseUnwrapped.getTextureReference().draw(ofGetWidth()-w,hOff+1*w*sc,w,w*sc);
+
+		}
 }
 
 void testApp::keyPressed(int key) {

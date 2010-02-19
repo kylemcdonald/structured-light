@@ -62,6 +62,12 @@ public:
 	int lastCameraRate, lastCameraOffset;
 	bool lastPhasePersistence;
 
+	/// visualizations
+	ofImage range;
+	ofImage phaseWrapped;
+	ofImage phaseUnwrapped;
+	ofImage unwrapOrder;
+
 	int sequenceFrame;
 
 	ofxQtVideoSaver movieOutput;
