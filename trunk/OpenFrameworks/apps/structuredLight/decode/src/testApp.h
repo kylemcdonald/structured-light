@@ -66,14 +66,15 @@ public:
 	ofImage rangeIm;
 	ofImage phaseWrapped;
 	ofImage phaseUnwrapped;
+	ofImage depthIm;
 	ofImage unwrapOrderIm;
+	ofImage phaseWrappedPlot;
+	ofImage sourceImagesPlot;
 
 	int sequenceFrame;
 
 	ofxQtVideoSaver movieOutput;
 	ofImage screenCapture;
-
-
 
 	static const unsigned char scol[8][3];
 
