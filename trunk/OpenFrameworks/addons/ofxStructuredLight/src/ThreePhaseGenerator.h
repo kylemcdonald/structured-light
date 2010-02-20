@@ -8,6 +8,8 @@ private:
 	float wavelength;
 	phaseOrientation orientation;
 public:
+    int minBrightness;
+
 	ThreePhaseGenerator();
 	void setOrientation(phaseOrientation orientation);
 	void setWavelength(float wavelength);

@@ -13,7 +13,31 @@ ThreePhaseDecoder::~ThreePhaseDecoder() {
 void ThreePhaseDecoder::setup(int width, int height, int numColorChan) {
 	PhaseDecoder::setup(width, height,3, numColorChan);
 	range = new float[width * height];
+	unwrapOrder = new float[width * height];
 }
+
+float ThreePhaseDecoder::Gamma(float x, float gamma) {
+
+    if (gamma != oldGamma) {
+        for (int i = 0; i < LUT_SIZE; i++) {
+
+            float x = (float)i/(float)LUT_SIZE;
+            if (x < 0.5) {
+                gammaLut[i] =  0.5 * pow(2*x ,gamma);
+            } else {
+                /// could cut the size of the lut in half  with a little more work
+                gammaLut[i] = 1.0 - 0.5*pow(2*(1-x),gamma);
+            }
+        }
+    }
+    oldGamma = gamma;
+
+    if (x < 0) return gammaLut[0];
+    if (int(x*LUT_SIZE) >= LUT_SIZE) return gammaLut[LUT_SIZE-1];
+
+    return gammaLut[int(x*LUT_SIZE)];
+}
+
 
 void ThreePhaseDecoder::makePhase() {
 	int n = width * height;
@@ -22,6 +46,11 @@ void ThreePhaseDecoder::makePhase() {
 		i1 = (float) graySequence[0][i];
 		i2 = (float) graySequence[1][i];
 		i3 = (float) graySequence[2][i];
+
+		i1 = Gamma(i1/255.0,gamma)*255.0;
+		i2 = Gamma(i2/255.0,gamma)*255.0;
+		i3 = Gamma(i3/255.0,gamma)*255.0;
+
 		phase[i] = atan2f(sqrtf(3) * (i1 - i3), 2.f * i2 - i1 - i3) / (float) TWO_PI;
 		range[i] = range(i1, i2, i3);
 		mask[i] = range[i] < rangeThreshold;

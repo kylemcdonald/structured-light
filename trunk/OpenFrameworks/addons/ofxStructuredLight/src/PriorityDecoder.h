@@ -21,8 +21,15 @@ public:
 };
 
 class PriorityDecoder : public PhaseDecoder {
+    public:
+    float maxPhase;
+	float minPhase;
+	float* unwrapOrder;
 protected:
 	virtual void unwrapPhase();
+
+
+
 	void unwrapPhase(int target, float sourcePhase);
 	std::priority_queue<UnwrapPath, std::vector<UnwrapPath>, std::less<UnwrapPath> > toProcess;
 };

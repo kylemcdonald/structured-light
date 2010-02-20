@@ -2,6 +2,7 @@
 
 PhaseDecoder::PhaseDecoder() :
 	sequenceSize(0),
+	gamma(1.0),
 	colorSequence(NULL),
 	graySequence(NULL),
 	phase(NULL),
@@ -32,6 +33,7 @@ void PhaseDecoder::setup(int width, int height, int sequenceSize, int numColorCh
 		graySequence[i] = new byte[n];
 	}
 	phase = new float[n];
+	wrappedPhase = new float[n];
 	mask = new bool[n];
 	ready = new bool[n];
 	depth = new float[n];
@@ -94,6 +96,7 @@ void PhaseDecoder::set(int position, byte* image) {
 
 void PhaseDecoder::decode() {
 	makePhase();
+	memcpy( wrappedPhase,phase, sizeof(float) * width * height);
 	for(int pass = 0; pass < maxPasses; pass++) {
 		unwrapPhase();
 		if(minRemaining != 0 && getRemaining() < minRemaining)
@@ -107,6 +110,14 @@ void PhaseDecoder::decode() {
 
 float* PhaseDecoder::getPhase() {
 	return phase;
+}
+
+float* PhaseDecoder::getWrappedPhase() {
+    return wrappedPhase;
+}
+
+void PhaseDecoder::setGamma(float gamma) {
+    this->gamma = gamma;
 }
 
 void PhaseDecoder::setDepthScale(float depthScale) {

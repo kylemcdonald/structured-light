@@ -13,6 +13,10 @@ void ThreePhaseGenerator::setWavelength(float wavelength) {
 	this->wavelength = wavelength;
 }
 
+void ThreePhaseGenerator::setMinBrightness(float minBrightness) {
+    this->minBrightness = minBrightness;
+}
+
 void ThreePhaseGenerator::generate() {
 	allocateSequence(3);
 	float offsets[] = {-TWO_PI / 3, 0, +TWO_PI / 3};
