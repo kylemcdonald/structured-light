@@ -70,7 +70,7 @@ void testApp::setup(){
     panel.addSlider("gamma", "gamma", 1, 0.0, 1.0, false);
     panel.addToggle("hud", "hud", false);
     panel.addSlider("hudWidth", "hudWidth", 300.0, 0.0,2000.0, false);
-    panel.addSlider("hudHeightOffset", "hudHeightOffset", 0.0, -2000.0,2000.0, false);
+    panel.addSlider("hudHeightOffset", "hudHeightOffset", 0.0, 0.0,1.0, false);
 	ofBackground(0, 0, 0);
 }
 
@@ -207,12 +207,18 @@ void testApp::setupInput() {
             delete threePhase;
             return;
 		}
-		threePhase->setup((int) phase.getWidth(), (int) phase.getHeight(), phase.bpp/8);
+		int w = (int) phase.getWidth();
+		int h = (int) phase.getHeight();
+		threePhase->setup(w,h , phase.bpp/8);
 
         phaseUnwrapped.clear();
-        phaseUnwrapped.allocate(phase.getWidth(),phase.getHeight(),OF_IMAGE_GRAYSCALE);
+        phaseUnwrapped.allocate(w,h,OF_IMAGE_GRAYSCALE);
         phaseWrapped.clear();
-        phaseWrapped.allocate(phase.getWidth(),phase.getHeight(),OF_IMAGE_GRAYSCALE);
+        phaseWrapped.allocate(w,h,OF_IMAGE_GRAYSCALE);
+        rangeIm.clear();
+        rangeIm.allocate(w,h, OF_IMAGE_GRAYSCALE);
+        unwrapOrderIm.clear();
+        unwrapOrderIm.allocate(w,h, OF_IMAGE_GRAYSCALE);
 
 	} else {
 		movieInput.loadMovie("input/" + name);
@@ -449,16 +455,21 @@ void testApp::draw(){
             byte* color = threePhase->getColor();
             float* phase = threePhase->getPhase();
             float* wrappedPhase = threePhase->getWrappedPhase();
+            float* range = threePhase->getRange();
+            float* unwrapOrder = threePhase->unwrapOrder;
 
             int srcWidth = threePhase->getWidth();
             int srcHeight = threePhase->getHeight();
 
             unsigned char* upix = phaseUnwrapped.getPixels();
             unsigned char* ppix = phaseWrapped.getPixels();
+            unsigned char* rpix = rangeIm.getPixels();
+            unsigned char* opix = unwrapOrderIm.getPixels();
             int i = 0;
             for(int y = 0; y < srcHeight; y++) {
             for(int x = 0; x < srcWidth; x++) {
-                ppix[y*srcWidth+x] = (char) ofMap(wrappedPhase[y*srcWidth+x],
+                int pixInd = y*srcWidth+x;
+                ppix[pixInd] = (char) ofMap(wrappedPhase[pixInd],
                                             0,1,
                                             0,255);
 
@@ -469,23 +480,33 @@ void testApp::draw(){
                 float maxPhase = threePhase->maxPhase;
                 //if (panel.getValueF("filterMax") > maxPhase) maxPhase = mpanel.getValueF("filterMin");
 
-                upix[y*srcWidth+x] = (char) ofMap(phase[y*srcWidth+x],
+                upix[pixInd] = (char) ofMap(phase[pixInd],
                                             minPhase,maxPhase,
                                             0,255);
+
+                rpix[pixInd] = (char) range[pixInd];
+
+                opix[pixInd] = (char) (255.0-255.0*unwrapOrder[pixInd]/(float)(srcWidth*srcHeight));
 
                 i++;
             }}
             phaseUnwrapped.update();
             phaseWrapped.update();
+            rangeIm.update();
+            unwrapOrderIm.update();
 
-            int w = panel.getValueF("hudWidth");
-            int hOff = panel.getValueF("hudHeightOffset");
+            int w = (int)panel.getValueF("hudWidth");
+            float hOff = panel.getValueF("hudHeightOffset");
+
             ofSetColor(255, 255, 255);
             glColor3f(1,1,1);
             float sc = (float)srcHeight/(float)srcWidth;
-            phaseWrapped.getTextureReference().draw(ofGetWidth()-w,hOff+0*w*sc,w,w*sc);
-            phaseUnwrapped.getTextureReference().draw(ofGetWidth()-w,hOff+1*w*sc,w,w*sc);
+            hOff *= -2*w*sc;
 
+            phaseWrapped.getTextureReference().draw(ofGetWidth()-w, hOff+0*w*sc,w,w*sc);
+            phaseUnwrapped.getTextureReference().draw(ofGetWidth()-w, hOff+1*w*sc,w,w*sc);
+            rangeIm.getTextureReference().draw(ofGetWidth()-2*w, hOff+0*w*sc,w,w*sc);
+            unwrapOrderIm.getTextureReference().draw(ofGetWidth()-2*w, hOff+1*w*sc,w,w*sc);
 		}
 }
 
