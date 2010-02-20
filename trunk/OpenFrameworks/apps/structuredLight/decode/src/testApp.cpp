@@ -212,13 +212,13 @@ void testApp::setupInput() {
 		threePhase->setup(w,h , phase.bpp/8);
 
         phaseUnwrapped.clear();
-        phaseUnwrapped.allocate(w,h,OF_IMAGE_GRAYSCALE);
+        phaseUnwrapped.allocate(w,h,OF_IMAGE_COLOR);
         phaseWrapped.clear();
         phaseWrapped.allocate(w,h,OF_IMAGE_GRAYSCALE);
         rangeIm.clear();
         rangeIm.allocate(w,h, OF_IMAGE_GRAYSCALE);
         unwrapOrderIm.clear();
-        unwrapOrderIm.allocate(w,h, OF_IMAGE_GRAYSCALE);
+        unwrapOrderIm.allocate(w,h, OF_IMAGE_COLOR);
 
 	} else {
 		movieInput.loadMovie("input/" + name);
@@ -400,6 +400,8 @@ void testApp::boxOutline(ofxPoint3f min, ofxPoint3f max) {
 	ofPopMatrix();
 }
 
+
+
 void testApp::draw(){
     ofBackground(128,128,128);
 
@@ -480,13 +482,24 @@ void testApp::draw(){
                 float maxPhase = threePhase->maxPhase;
                 //if (panel.getValueF("filterMax") > maxPhase) maxPhase = mpanel.getValueF("filterMin");
 
-                upix[pixInd] = (char) ofMap(phase[pixInd],
-                                            minPhase,maxPhase,
-                                            0,255);
+
+                float mag;
+                ofColor col;
+
+                mag = ofMap(phase[pixInd],minPhase,maxPhase,0.0,1.0);
+                col = makeColor(mag);
+                upix[pixInd*3] =  col.r;
+                upix[pixInd*3+1] = col.g;
+                upix[pixInd*3+2] = col.b;
+
 
                 rpix[pixInd] = (char) range[pixInd];
 
-                opix[pixInd] = (char) (255.0-255.0*unwrapOrder[pixInd]/(float)(srcWidth*srcHeight));
+                mag = unwrapOrder[pixInd]/(float)(srcWidth*srcHeight);
+                col = makeColor(mag);
+                opix[pixInd*3] =  col.r;
+                opix[pixInd*3+1] = col.g;
+                opix[pixInd*3+2] = col.b;
 
                 i++;
             }}
@@ -525,4 +538,37 @@ void testApp::keyPressed(int key) {
 			}
 		}
 	}
+}
+
+	const unsigned char testApp::scol[8][3] = {{255,255,255},
+{255,0,0}, /// red is the warmest
+{255,255,0},
+{0,255,0},
+{0,255,255},
+{0,0,255},/// blue is the coolest, but purple comes later
+{255,0,255},
+{0,0,0}
+	};
+
+ofColor testApp::makeColor(float f)
+{
+  int i1 = 0;
+  int i2 = 1;
+  f = f*(8-1);
+
+  while (f > 1.0) {
+     f -= 1.0;
+     i1++;
+     i2++;
+  }
+
+   int r = int((1.0-f)*(float)scol[i1][0] + f*(float)scol[i2][0]);
+   int g = int((1.0-f)*(float)scol[i1][1] + f*(float)scol[i2][1]);
+   int b = int((1.0-f)*(float)scol[i1][2] + f*(float)scol[i2][2]);
+
+   ofColor rv;
+   rv.r = r;
+   rv.g = g;
+   rv.b = b;
+   return rv;
 }
