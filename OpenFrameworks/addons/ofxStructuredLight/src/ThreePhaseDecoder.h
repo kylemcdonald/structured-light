@@ -27,10 +27,21 @@ public:
 	void setup(int width, int height, int numColorChan);
 	float* getRange();
 	void setRangeThreshold(float rangeThreshold);
+	float Gamma(float x, float gamma);
+	float oldGamma;
+
+
+
 protected:
 	void makePhase();
 	void unwrapPhase();
 	void makeColor();
+
+
+
 	float* range;
 	static float rangeThreshold;
+
+    static const int LUT_SIZE = 16384;
+	float gammaLut[LUT_SIZE];
 };

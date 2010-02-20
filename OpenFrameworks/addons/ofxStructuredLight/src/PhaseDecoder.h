@@ -8,6 +8,7 @@ class PhaseDecoder : public DepthDecoder {
 public:
 	PhaseDecoder();
 	virtual ~PhaseDecoder();
+	void setGamma(float gamma);
 	void setDepthScale(float depthScale);
 	void setDepthSkew(float depthSkew);
 	void setOrientation(phaseOrientation orientation);
@@ -19,6 +20,7 @@ public:
 	void makeDepth();
 	void decode();
 	float* getPhase();
+	float* getWrappedPhase();
 	byte* getColor();
 	int* getBlur();
 	void exportCloud(string filename);
@@ -27,9 +29,11 @@ protected:
 	byte** colorSequence;
 	byte** graySequence;
 	float* phase;
+	float* wrappedPhase;
 	bool* ready;
 	byte* color;
 	int sequenceSize;
+	float gamma;
 	int maxPasses;
 	float minRemaining;
 	float depthScale, depthSkew;

@@ -1,6 +1,10 @@
 #include "PriorityDecoder.h"
 
 void PriorityDecoder::unwrapPhase() {
+
+    minPhase = 1e6;
+    maxPhase = -1e6;
+
 	int start = getStart();
 	if(phasePersistence) {
 		unwrapPhase(start, lastPhase[start]);
@@ -9,11 +13,17 @@ void PriorityDecoder::unwrapPhase() {
 		//unwrapPhase(start, 0);
 	}
 
+	int ind = 0;
+
 	while(!toProcess.empty()) {
 		const UnwrapPath& cur = toProcess.top();
 		int i = cur.target;
 		if(ready[i]) {
 			phase[i] = cur.resultPhase;
+			unwrapOrder[i] = ind;
+			ind++;
+			if (phase[i] > maxPhase) maxPhase = phase[i];
+			if (phase[i] < minPhase) minPhase = phase[i];
 			ready[i] = false;
 			float sourcePhase = cur.resultPhase;
 			toProcess.pop();
