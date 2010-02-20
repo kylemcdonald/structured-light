@@ -219,6 +219,8 @@ void testApp::setupInput() {
         rangeIm.allocate(w,h, OF_IMAGE_GRAYSCALE);
         unwrapOrderIm.clear();
         unwrapOrderIm.allocate(w,h, OF_IMAGE_COLOR);
+        depthIm.clear();
+        depthIm.allocate(w,h, OF_IMAGE_COLOR);
 
 	} else {
 		movieInput.loadMovie("input/" + name);
@@ -467,33 +469,45 @@ void testApp::draw(){
             unsigned char* ppix = phaseWrapped.getPixels();
             unsigned char* rpix = rangeIm.getPixels();
             unsigned char* opix = unwrapOrderIm.getPixels();
+            unsigned char* dpix = depthIm.getPixels();
             int i = 0;
             for(int y = 0; y < srcHeight; y++) {
             for(int x = 0; x < srcWidth; x++) {
                 int pixInd = y*srcWidth+x;
+
+                ///
                 ppix[pixInd] = (char) ofMap(wrappedPhase[pixInd],
                                             0,1,
                                             0,255);
 
+                ///
+                rpix[pixInd] = (char) range[pixInd];
+
+                ///
+                float mag;
+                ofColor col;
+
                 float minPhase = threePhase->minPhase;
                 /// TBD need to convert filterMin to phase units (I think it's depth/range now
                 //if (panel.getValueF("filterMin") > minPhase) minPhase = mpanel.getValueF("filterMin");
-
                 float maxPhase = threePhase->maxPhase;
                 //if (panel.getValueF("filterMax") > maxPhase) maxPhase = mpanel.getValueF("filterMin");
 
 
-                float mag;
-                ofColor col;
-
                 mag = ofMap(phase[pixInd],minPhase,maxPhase,0.0,1.0);
                 col = makeColor(mag);
-                upix[pixInd*3] =  col.r;
-                upix[pixInd*3+1] = col.g;
-                upix[pixInd*3+2] = col.b;
+                upix[pixInd*3] =  (char)col.r;
+                upix[pixInd*3+1] = (char)col.g;
+                upix[pixInd*3+2] = (char)col.b;
 
+                ///
+                mag = 1.0-ofMap(depth[pixInd],threePhase->minDepth,threePhase->maxDepth,0.0,1.0);
+                col = makeColor(mag);
+                dpix[pixInd*3] =  col.r;
+                dpix[pixInd*3+1] = col.g;
+                dpix[pixInd*3+2] = col.b;
 
-                rpix[pixInd] = (char) range[pixInd];
+                ///
 
                 mag = unwrapOrder[pixInd]/(float)(srcWidth*srcHeight);
                 col = makeColor(mag);
@@ -501,12 +515,15 @@ void testApp::draw(){
                 opix[pixInd*3+1] = col.g;
                 opix[pixInd*3+2] = col.b;
 
+                ///
+
                 i++;
             }}
             phaseUnwrapped.update();
             phaseWrapped.update();
             rangeIm.update();
             unwrapOrderIm.update();
+            depthIm.update();
 
             int w = (int)panel.getValueF("hudWidth");
             float hOff = panel.getValueF("hudHeightOffset");
@@ -518,6 +535,9 @@ void testApp::draw(){
 
             phaseWrapped.getTextureReference().draw(ofGetWidth()-w, hOff+0*w*sc,w,w*sc);
             phaseUnwrapped.getTextureReference().draw(ofGetWidth()-w, hOff+1*w*sc,w,w*sc);
+            depthIm.getTextureReference().draw(ofGetWidth()-w, hOff+2*w*sc,w,w*sc);
+
+
             rangeIm.getTextureReference().draw(ofGetWidth()-2*w, hOff+0*w*sc,w,w*sc);
             unwrapOrderIm.getTextureReference().draw(ofGetWidth()-2*w, hOff+1*w*sc,w,w*sc);
 		}
