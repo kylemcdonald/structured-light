@@ -141,6 +141,8 @@ void PhaseDecoder::clearLastPhase() {
 }
 
 void PhaseDecoder::makeDepth() {
+    maxDepth = -1e6;
+    minDepth = 1e6;
 	int n = width * height;
 	if(orientation == PHASE_VERTICAL) {
 		for (int i = 0; i < n; i++) {
@@ -151,6 +153,9 @@ void PhaseDecoder::makeDepth() {
 			} else {
 				depth[i] = 0;
 			}
+
+			if (depth[i] > maxDepth) maxDepth = depth[i];
+			if (depth[i] < minDepth) minDepth = depth[i];
 		}
 	} else if(orientation == PHASE_HORIZONTAL) {
 			for (int i = 0; i < n; i++) {
@@ -161,6 +166,9 @@ void PhaseDecoder::makeDepth() {
 				} else {
 					depth[i] = 0;
 			}
+
+			if (depth[i] > maxDepth) maxDepth = depth[i];
+			if (depth[i] < minDepth) minDepth = depth[i];
 		}
 	}
 }
