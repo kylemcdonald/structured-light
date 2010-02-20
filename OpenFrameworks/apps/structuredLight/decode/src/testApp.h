@@ -63,10 +63,10 @@ public:
 	bool lastPhasePersistence;
 
 	/// visualizations
-	ofImage range;
+	ofImage rangeIm;
 	ofImage phaseWrapped;
 	ofImage phaseUnwrapped;
-	ofImage unwrapOrder;
+	ofImage unwrapOrderIm;
 
 	int sequenceFrame;
 
