@@ -19,9 +19,13 @@ public:
 	void exportDepth(string filename);
 	virtual void exportCloud(string filename);
 	virtual void exportMesh(string filename);
+
+    float minDepth;
+	float maxDepth;
 protected:
 	int width, height;
 	bool* mask;
 	float* depth;
+
 	int numColorChan;
 };
