@@ -5,11 +5,11 @@ void PriorityDecoder::unwrapPhase() {
     minPhase = 1e6;
     maxPhase = -1e6;
 
-	int start = getStart();
+	startInd = getStart();
 	if(phasePersistence) {
-		unwrapPhase(start, lastPhase[start]);
+		unwrapPhase(startInd, lastPhase[startInd]);
 	} else {
-		unwrapPhase(start, phase[start]);
+		unwrapPhase(startInd, phase[startInd]);
 		//unwrapPhase(start, 0);
 	}
 

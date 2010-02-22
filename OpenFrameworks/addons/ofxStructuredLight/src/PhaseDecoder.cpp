@@ -143,12 +143,16 @@ void PhaseDecoder::clearLastPhase() {
 void PhaseDecoder::makeDepth() {
     maxDepth = -1e6;
     minDepth = 1e6;
+
 	int n = width * height;
 	if(orientation == PHASE_VERTICAL) {
+
+	    float planeZero = (float) (startInd % width)/width;
+
 		for (int i = 0; i < n; i++) {
 			if (!mask[i]) {
 				float x = (float) (i % width);
-				float planephase = ((x / width) - .5f) * depthSkew;
+				float planephase = ((x / width) - planeZero) * depthSkew;
 				depth[i] = (phase[i] - planephase) * depthScale;
 			} else {
 				depth[i] = 0;
@@ -158,10 +162,11 @@ void PhaseDecoder::makeDepth() {
 			if (depth[i] < minDepth) minDepth = depth[i];
 		}
 	} else if(orientation == PHASE_HORIZONTAL) {
+            float planeZero = (float) (startInd / width)/height;
 			for (int i = 0; i < n; i++) {
 				if (!mask[i]) {
 					float y = (float) (i / width);
-					float planephase = ((y / height) - .5f) * depthSkew;
+					float planephase = ((y / height) - planeZero) * depthSkew;
 					depth[i] = (phase[i] - planephase) * depthScale;
 				} else {
 					depth[i] = 0;
