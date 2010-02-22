@@ -42,6 +42,9 @@ protected:
 	bool phasePersistence;
 	float* lastPhase;
 
+	/// this is where phase unwrapping begins, and unwrapped phase will be zero
+	int startInd;
+
 	void setup(int width, int height, int sequenceSize, int numColorChan);
 	virtual void makePhase() = 0;
 	virtual void unwrapPhase() = 0;
