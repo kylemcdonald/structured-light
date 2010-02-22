@@ -19,7 +19,7 @@
 
 #include <fstream>
 
-class testApp : public ofBaseApp{
+class testApp : public ofBaseApp {
 
 public:
 	~testApp();
@@ -33,6 +33,7 @@ public:
 
 	void getBounds(ofxPoint3f& min, ofxPoint3f& max);
 	void boxOutline(ofxPoint3f min, ofxPoint3f max);
+	void drawAxes(float size);
 
 	void nextFrame();
 	void jumpTo(unsigned frame);
@@ -79,11 +80,6 @@ public:
 
 	static const unsigned char scol[8][3];
 
-
-
-    /// expects a 0-1.0 float
-    ofColor makeColor(float f);
-
-
-
+	/// expects a 0-1.0 float
+	ofColor makeColor(float f);
 };

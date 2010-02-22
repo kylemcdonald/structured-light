@@ -11,7 +11,7 @@ void testApp::setup() {
 	threePhase = NULL;
 
 	// setup control panel
-	panel.setup("control", 8, 8, 300, 760);
+	panel.setup("control", 0, 0, 300, 720);
 	panel.loadSettings("control.xml");
 	panel.addPanel("input", 1);
 	panel.addPanel("decode", 1);
@@ -74,8 +74,6 @@ void testApp::setup() {
 
 	panel.addSlider("maxPhase", "maxPhase", 10.0, 0.0, 100.0, false);
 	panel.addSlider("maxDepth power", "maxDepth", 3.0, 0.0, 5.0, false);
-
-	ofBackground(0, 0, 0);
 }
 
 void testApp::drawCloud() {
@@ -421,10 +419,35 @@ void testApp::boxOutline(ofxPoint3f min, ofxPoint3f max) {
 	ofPopMatrix();
 }
 
-
+void testApp::drawAxes(float size) {
+	ofPushMatrix();
+	ofScale(size, size, size);
+	ofPushStyle();
+	ofSetLineWidth(2.0);
+	ofSetColor(255, 0, 0);
+	glBegin(GL_LINES);
+	glVertex3s(0, 0, 0);
+	glVertex3s(1, 0, 0);
+	glEnd();
+	ofSetColor(0, 255, 0);
+	glBegin(GL_LINES);
+	glVertex3s(0, 0, 0);
+	glVertex3s(0, 1, 0);
+	glEnd();
+	ofSetColor(0, 0, 255);
+	glBegin(GL_LINES);
+	glVertex3s(0, 0, 0);
+	glVertex3s(0, 0, 1);
+	glEnd();
+	ofPopStyle();
+	ofPopMatrix();
+}
 
 void testApp::draw() {
-	ofBackground(128, 128, 128);
+	if (hidden)
+		ofBackground(0, 0, 0);
+	else
+		ofBackground(128, 128, 128);
 
 	glPushMatrix();
 	camera.place();
@@ -433,27 +456,8 @@ void testApp::draw() {
 	ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
 
 	if (threePhase != NULL) {
-		if (!hidden) {
-			/// XYZ axes
-			float axisLen = 500.0;
-			glLineWidth(2.0);
-			ofSetColor(255, 0, 0);
-			glBegin(GL_LINES);
-			glVertex3s(9, 0, 0);
-			glVertex3s((short) axisLen, 0, 0);
-			glEnd();
-			ofSetColor(0, 255, 0);
-			glBegin(GL_LINES);
-			glVertex3s(0, 0, 0);
-			glVertex3s(0, (short) axisLen, 0);
-			glEnd();
-			ofSetColor(0, 0, 255);
-			glBegin(GL_LINES);
-			glVertex3s(0, 0, 0);
-			glVertex3s(0, 0, (short) axisLen);
-			glEnd();
-			glLineWidth(1.0);
-		}
+		if (!hidden)
+			drawAxes(256); // major axes
 
 		ofTranslate(-threePhase->getWidth() / 2, -threePhase->getHeight() / 2);
 
@@ -482,8 +486,6 @@ void testApp::draw() {
 
 	glDisable(GL_DEPTH_TEST);
 
-
-
 	camera.remove();
 
 	if (panel.getValueB("renderMovie") && hidden) {
@@ -492,7 +494,6 @@ void testApp::draw() {
 	}
 
 	glPopMatrix();
-
 
 	if ((threePhase != NULL) && panel.getValueB("hud")) {
 
