@@ -63,6 +63,7 @@ public:
 	bool lastPhasePersistence;
 
 	/// visualizations
+	bool redraw;
 	ofImage rangeIm;
 	ofImage phaseWrapped;
 	ofImage phaseUnwrapped;
