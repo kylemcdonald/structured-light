@@ -3,8 +3,7 @@
 #include "FloodFillDecoder.h"
 #include "PriorityDecoder.h"
 
-#ifndef range
-	#define range(a, b, c) \
+#define findRange(a, b, c) \
 		(a < b ? \
 			(b < c ? c - a : \
 			(a < c ? b - a : \
@@ -12,7 +11,6 @@
 			(c < b ? a - c : \
 			(a < c ? c - b : \
 				(a - b))))
-#endif
 
 /*
 	Right now the decoders use decoding strategies via inheritance.
@@ -27,21 +25,19 @@ public:
 	void setup(int width, int height, int numColorChan);
 	float* getRange();
 	void setRangeThreshold(float rangeThreshold);
+	void setBrightness(float brightness);
 	float Gamma(float x, float gamma);
 	float oldGamma;
-
-
 
 protected:
 	void makePhase();
 	void unwrapPhase();
 	void makeColor();
 
-
-
 	float* range;
-	static float rangeThreshold;
+	float brightness;
+	float rangeThreshold;
 
-    static const int LUT_SIZE = 16384;
+	static const int LUT_SIZE = 16384;
 	float gammaLut[LUT_SIZE];
 };
