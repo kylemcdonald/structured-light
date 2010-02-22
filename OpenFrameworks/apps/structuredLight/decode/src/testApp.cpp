@@ -71,6 +71,10 @@ void testApp::setup(){
     panel.addToggle("hud", "hud", false);
     panel.addSlider("hudWidth", "hudWidth", 300.0, 0.0,2000.0, false);
     panel.addSlider("hudHeightOffset", "hudHeightOffset", 0.0, 0.0,1.0, false);
+
+    panel.addSlider("maxPhase", "maxPhase", 10.0, 0.0,100.0, false);
+    panel.addSlider("maxDepth power", "maxDepth", 3.0, 0.0,5.0, false);
+
 	ofBackground(0, 0, 0);
 }
 
@@ -91,6 +95,7 @@ void testApp::drawCloud() {
 			if(!mask[i]) {
 				glColor3ubv(&color[i * 3]);
 				glVertex3f(x, y, depth[i]);
+
 			}
 			i++;
 		}
@@ -308,6 +313,8 @@ void testApp::update(){
 			threePhase->decode();
 			if(curFilterMin != -1024 || curFilterMax != 1024)
 				threePhase->filterRange(curFilterMin, curFilterMax);
+
+            redraw = true;
 		}
 
 		// export handling
@@ -414,6 +421,25 @@ void testApp::draw(){
 	ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
 
 	if(threePhase != NULL) {
+	    if (!hidden) {
+	        /// XYZ axes
+            float axisLen = 500.0;
+            glLineWidth(2.0);
+			ofSetColor(255,0,0);
+			glBegin(GL_LINES);
+            glVertex3s(9,0,0); glVertex3s(axisLen,0,0);
+            glEnd();
+            ofSetColor(0,255,0);
+            glBegin(GL_LINES);
+            glVertex3s(0,0,0); glVertex3s(0,axisLen,0);
+            glEnd();
+            ofSetColor(0,0,255);
+            glBegin(GL_LINES);
+            glVertex3s(0,0,0); glVertex3s(0,0,axisLen);
+            glEnd();
+            glLineWidth(1.0);
+	    }
+
 		ofTranslate(-threePhase->getWidth() / 2, -threePhase->getHeight() / 2);
 
 		if(!hidden) {
@@ -454,6 +480,13 @@ void testApp::draw(){
 
 
 		if ((threePhase != NULL) && panel.getValueB("hud")) {
+
+		    int srcWidth = threePhase->getWidth();
+            int srcHeight = threePhase->getHeight();
+
+		    if (true /*redraw*/) {
+		        redraw = false;
+
 		 	bool* mask = threePhase->getMask();
             float* depth = threePhase->getDepth();
             byte* color = threePhase->getColor();
@@ -462,14 +495,21 @@ void testApp::draw(){
             float* range = threePhase->getRange();
             float* unwrapOrder = threePhase->unwrapOrder;
 
-            int srcWidth = threePhase->getWidth();
-            int srcHeight = threePhase->getHeight();
-
             unsigned char* upix = phaseUnwrapped.getPixels();
             unsigned char* ppix = phaseWrapped.getPixels();
             unsigned char* rpix = rangeIm.getPixels();
             unsigned char* opix = unwrapOrderIm.getPixels();
             unsigned char* dpix = depthIm.getPixels();
+
+            ///float minPhase = threePhase->minPhase;
+            ///float maxPhase = threePhase->maxPhase;
+            float minPhase = -panel.getValueF("maxPhase");
+            float maxPhase = -minPhase;
+
+            // threePhase->minDepth,threePhase->maxDepth
+            float maxDepth = pow(10,panel.getValueF("maxDepth"));
+            float minDepth = -maxDepth;
+
             int i = 0;
             for(int y = 0; y < srcHeight; y++) {
             for(int x = 0; x < srcWidth; x++) {
@@ -487,25 +527,30 @@ void testApp::draw(){
                 float mag;
                 ofColor col;
 
-                float minPhase = threePhase->minPhase;
-                /// TBD need to convert filterMin to phase units (I think it's depth/range now
-                //if (panel.getValueF("filterMin") > minPhase) minPhase = mpanel.getValueF("filterMin");
-                float maxPhase = threePhase->maxPhase;
-                //if (panel.getValueF("filterMax") > maxPhase) maxPhase = mpanel.getValueF("filterMin");
-
-
-                mag = ofMap(phase[pixInd],minPhase,maxPhase,0.0,1.0);
+                if (!mask[i]) {
+                    mag = ofMap(phase[pixInd],minPhase,maxPhase,0.0,1.0);
+                } else {
+                    mag = 0.5;
+                }
                 col = makeColor(mag);
+
                 upix[pixInd*3] =  (char)col.r;
                 upix[pixInd*3+1] = (char)col.g;
                 upix[pixInd*3+2] = (char)col.b;
 
+
                 ///
-                mag = 1.0-ofMap(depth[pixInd],threePhase->minDepth,threePhase->maxDepth,0.0,1.0);
+                mag = 1.0-ofMap(depth[pixInd],minDepth,maxDepth,0.0,1.0);
                 col = makeColor(mag);
+                //if ( mask[i]) {
                 dpix[pixInd*3] =  col.r;
                 dpix[pixInd*3+1] = col.g;
                 dpix[pixInd*3+2] = col.b;
+                /*} else {
+                    dpix[pixInd*3] =  (char)0;
+                    dpix[pixInd*3+1] = (char)0;
+                    dpix[pixInd*3+2] = (char)0;
+                }*/
 
                 ///
 
@@ -525,6 +570,8 @@ void testApp::draw(){
             unwrapOrderIm.update();
             depthIm.update();
 
+		    }
+
             int w = (int)panel.getValueF("hudWidth");
             float hOff = panel.getValueF("hudHeightOffset");
 
@@ -533,13 +580,12 @@ void testApp::draw(){
             float sc = (float)srcHeight/(float)srcWidth;
             hOff *= -2*w*sc;
 
-            phaseWrapped.getTextureReference().draw(ofGetWidth()-w, hOff+0*w*sc,w,w*sc);
-            phaseUnwrapped.getTextureReference().draw(ofGetWidth()-w, hOff+1*w*sc,w,w*sc);
-            depthIm.getTextureReference().draw(ofGetWidth()-w, hOff+2*w*sc,w,w*sc);
+            phaseUnwrapped.getTextureReference().draw(ofGetWidth()-w, hOff+0*w*sc,w,w*sc);
+            depthIm.getTextureReference().draw(ofGetWidth()-w, hOff+1*w*sc,w,w*sc);
+            rangeIm.getTextureReference().draw(ofGetWidth()-w, hOff+2*w*sc,w,w*sc);
 
-
-            rangeIm.getTextureReference().draw(ofGetWidth()-2*w, hOff+0*w*sc,w,w*sc);
-            unwrapOrderIm.getTextureReference().draw(ofGetWidth()-2*w, hOff+1*w*sc,w,w*sc);
+            unwrapOrderIm.getTextureReference().draw(ofGetWidth()-2*w, hOff+0*w*sc,w,w*sc);
+            phaseWrapped.getTextureReference().draw(ofGetWidth()-2*w, hOff+1*w*sc,w,w*sc);
 		}
 }
 
@@ -572,23 +618,27 @@ void testApp::keyPressed(int key) {
 
 ofColor testApp::makeColor(float f)
 {
-  int i1 = 0;
-  int i2 = 1;
-  f = f*(8-1);
+    /// or wrap around?
+    if (f> 1.0) f = 1.0;
+    if (f<0.0) f = 0.0;
 
-  while (f > 1.0) {
-     f -= 1.0;
-     i1++;
-     i2++;
-  }
+    int i1 = 0;
+    int i2 = 1;
+    f = f*(8-1);
 
-   int r = int((1.0-f)*(float)scol[i1][0] + f*(float)scol[i2][0]);
-   int g = int((1.0-f)*(float)scol[i1][1] + f*(float)scol[i2][1]);
-   int b = int((1.0-f)*(float)scol[i1][2] + f*(float)scol[i2][2]);
+    while (f > 1.0) {
+        f -= 1.0;
+        i1++;
+        i2++;
+    }
 
-   ofColor rv;
-   rv.r = r;
-   rv.g = g;
-   rv.b = b;
-   return rv;
+    int r = int((1.0-f)*(float)scol[i1][0] + f*(float)scol[i2][0]);
+    int g = int((1.0-f)*(float)scol[i1][1] + f*(float)scol[i2][1]);
+    int b = int((1.0-f)*(float)scol[i1][2] + f*(float)scol[i2][2]);
+
+    ofColor rv;
+    rv.r = r;
+    rv.g = g;
+    rv.b = b;
+    return rv;
 }
