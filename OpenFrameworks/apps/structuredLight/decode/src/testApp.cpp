@@ -5,7 +5,7 @@
 	then allow skipping to different locations in the sequence.
 */
 
-void testApp::setup(){
+void testApp::setup() {
 	hidden = false;
 	sequenceFrame = 0;
 	threePhase = NULL;
@@ -66,14 +66,14 @@ void testApp::setup(){
 	panel.addToggle("render movie", "renderMovie", false);
 	panel.addSlider("movie framerate", "movieFramerate", 60, 5, 60, true);
 
-    panel.setWhichPanel("misc");
-    panel.addSlider("gamma", "gamma", 1, 0.0, 1.0, false);
-    panel.addToggle("hud", "hud", false);
-    panel.addSlider("hudWidth", "hudWidth", 300.0, 0.0,2000.0, false);
-    panel.addSlider("hudHeightOffset", "hudHeightOffset", 0.0, 0.0,1.0, false);
+	panel.setWhichPanel("misc");
+	panel.addSlider("gamma", "gamma", 1, 0.0, 1.0, false);
+	panel.addToggle("hud", "hud", false);
+	panel.addSlider("hudWidth", "hudWidth", 300.0, 0.0, 2000.0, false);
+	panel.addSlider("hudHeightOffset", "hudHeightOffset", 0.0, 0.0, 1.0, false);
 
-    panel.addSlider("maxPhase", "maxPhase", 10.0, 0.0,100.0, false);
-    panel.addSlider("maxDepth power", "maxDepth", 3.0, 0.0,5.0, false);
+	panel.addSlider("maxPhase", "maxPhase", 10.0, 0.0, 100.0, false);
+	panel.addSlider("maxDepth power", "maxDepth", 3.0, 0.0, 5.0, false);
 
 	ofBackground(0, 0, 0);
 }
@@ -90,9 +90,9 @@ void testApp::drawCloud() {
 	glPointSize(3);
 	glBegin(GL_POINTS);
 	int i = 0;
-	for(int y = 0; y < srcHeight; y++) {
-		for(int x = 0; x < srcWidth; x++) {
-			if(!mask[i]) {
+	for (int y = 0; y < srcHeight; y++) {
+		for (int x = 0; x < srcWidth; x++) {
+			if (!mask[i]) {
 				glColor3ubv(&color[i * 3]);
 				glVertex3f(x, y, depth[i]);
 
@@ -113,14 +113,14 @@ void testApp::drawMesh() {
 	int srcHeight = threePhase->getHeight();
 
 	glBegin(GL_TRIANGLES);
-	for(int y = 0; y < srcHeight - 1; y++) {
-		for(int x = 0; x < srcWidth - 1; x++) {
+	for (int y = 0; y < srcHeight - 1; y++) {
+		for (int x = 0; x < srcWidth - 1; x++) {
 			int nw = y * srcWidth + x;
 			int ne = nw + 1;
 			int sw = nw + srcWidth;
 			int se = ne + srcWidth;
-			if(!mask[nw] && !mask[se]) {
-				if(!mask[ne]) { // nw, ne, se
+			if (!mask[nw] && !mask[se]) {
+				if (!mask[ne]) { // nw, ne, se
 					glColor3ubv(&color[nw * 3]);
 					glVertex3f(x, y, depth[nw]);
 					glColor3ubv(&color[ne * 3]);
@@ -128,7 +128,7 @@ void testApp::drawMesh() {
 					glColor3ubv(&color[se * 3]);
 					glVertex3f(x + 1, y + 1, depth[se]);
 				}
-				if(!mask[sw]) { // nw, se, sw
+				if (!mask[sw]) { // nw, se, sw
 					glColor3ubv(&color[nw * 3]);
 					glVertex3f(x, y, depth[nw]);
 					glColor3ubv(&color[se * 3]);
@@ -136,8 +136,8 @@ void testApp::drawMesh() {
 					glColor3ubv(&color[sw * 3]);
 					glVertex3f(x, y + 1, depth[sw]);
 				}
-			} else if(!mask[ne] && !mask[sw]) {
-				if(!mask[nw]) { // nw, ne, sw
+			} else if (!mask[ne] && !mask[sw]) {
+				if (!mask[nw]) { // nw, ne, sw
 					glColor3ubv(&color[nw * 3]);
 					glVertex3f(x, y, depth[nw]);
 					glColor3ubv(&color[ne * 3]);
@@ -145,7 +145,7 @@ void testApp::drawMesh() {
 					glColor3ubv(&color[sw * 3]);
 					glVertex3f(x, y + 1, depth[sw]);
 				}
-				if(!mask[se]) { // ne, se, sw
+				if (!mask[se]) { // ne, se, sw
 					glColor3ubv(&color[ne * 3]);
 					glVertex3f(x + 1, y, depth[ne]);
 					glColor3ubv(&color[se * 3]);
@@ -170,11 +170,11 @@ void testApp::nextFrame() {
 
 	int cameraFrame = (sequenceFrame * cameraRate) + cameraOffset;
 	cameraFrame %= totalImages;
-	if(usingDirectory) {
+	if (usingDirectory) {
 		ofImage phase;
 		if (!phase.loadImage(inputDir + imageList.getName(cameraFrame))) {
-            cout << "couldn't load file " << (inputDir + imageList.getName(cameraFrame)) << endl;
-            return;
+			cout << "couldn't load file " << (inputDir + imageList.getName(cameraFrame)) << endl;
+			return;
 		}
 		threePhase->set(sequenceFrame % 3, phase.getPixels());
 
@@ -185,58 +185,58 @@ void testApp::nextFrame() {
 
 	sequenceFrame = (sequenceFrame + 1) % totalFrames;
 
-	if(sequenceFrame == 0)
+	if (sequenceFrame == 0)
 		cout << "Starting sequence over." << endl;
 }
 
 void testApp::jumpTo(unsigned frame) {
 	sequenceFrame = frame;
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 		nextFrame();
 }
 
 void testApp::setupInput() {
-	if(threePhase != NULL)
+	if (threePhase != NULL)
 		delete threePhase;
 	threePhase = new ThreePhaseDecoder();
 	string name = inputList.getSelectedName();
 	usingDirectory = name.find('.') == string::npos;
-	if(usingDirectory) {
+	if (usingDirectory) {
 		inputDir = "input/" + name + "/";
 		totalImages = imageList.listDir(inputDir);
 		ofImage phase;
 		//  TBD
 		string imageName = imageList.getName(0);
 		if (!phase.loadImage(inputDir + imageName)) {
-            cout << "couldn't load file " << (inputDir + imageName) << endl;
-            delete threePhase;
-            return;
+			cout << "couldn't load file " << (inputDir + imageName) << endl;
+			delete threePhase;
+			return;
 		}
 		int w = (int) phase.getWidth();
 		int h = (int) phase.getHeight();
-		threePhase->setup(w,h , phase.bpp/8);
+		threePhase->setup(w, h , phase.bpp / 8);
 
-        phaseUnwrapped.clear();
-        phaseUnwrapped.allocate(w,h,OF_IMAGE_COLOR);
-        phaseWrapped.clear();
-        phaseWrapped.allocate(w,h,OF_IMAGE_GRAYSCALE);
-        rangeIm.clear();
-        rangeIm.allocate(w,h, OF_IMAGE_GRAYSCALE);
-        unwrapOrderIm.clear();
-        unwrapOrderIm.allocate(w,h, OF_IMAGE_COLOR);
-        depthIm.clear();
-        depthIm.allocate(w,h, OF_IMAGE_COLOR);
+		phaseUnwrapped.clear();
+		phaseUnwrapped.allocate(w, h, OF_IMAGE_COLOR);
+		phaseWrapped.clear();
+		phaseWrapped.allocate(w, h, OF_IMAGE_GRAYSCALE);
+		rangeIm.clear();
+		rangeIm.allocate(w, h, OF_IMAGE_GRAYSCALE);
+		unwrapOrderIm.clear();
+		unwrapOrderIm.allocate(w, h, OF_IMAGE_COLOR);
+		depthIm.clear();
+		depthIm.allocate(w, h, OF_IMAGE_COLOR);
 
 	} else {
 		movieInput.loadMovie("input/" + name);
 		movieInput.setVolume(0);
 		totalImages = movieInput.getTotalNumFrames();
-		threePhase->setup((int) movieInput.getWidth(), (int) movieInput.getHeight(),3);
+		threePhase->setup((int) movieInput.getWidth(), (int) movieInput.getHeight(), 3);
 	}
 	jumpTo(0);
 }
 
-void testApp::update(){
+void testApp::update() {
 	float curDepthScale = panel.getValueF("depthScale");
 	float curDepthSkew = panel.getValueF("depthSkew");
 	int curRangeThreshold = panel.getValueI("rangeThreshold");
@@ -255,84 +255,84 @@ void testApp::update(){
 
 	bool curResetView = panel.getValueB("resetView");
 	if (curResetView) {
-            camera = ofxEasyCam();
-            panel.setValueB("resetView",false);
+		camera = ofxEasyCam();
+		panel.setValueB("resetView", false);
 	}
 
 	bool reload = inputList.selectedHasChanged();
-	if(reload) {
+	if (reload) {
 		setupInput();
 		inputList.clearChangedFlag();
 	}
 
 	unsigned totalFrames = (totalImages - curCameraOffset) / curCameraRate;
 
-	if(threePhase != NULL) {
-	    threePhase->setGamma(gamma);
+	if (threePhase != NULL) {
+		threePhase->setGamma(gamma);
 		threePhase->setDepthScale(curDepthScale);
 		threePhase->setDepthSkew(curDepthSkew);
 		threePhase->setRangeThreshold(curRangeThreshold);
 		threePhase->setOrientation(curOrientation == 0 ? PHASE_HORIZONTAL : PHASE_VERTICAL);
 		threePhase->setPhasePersistence(curPhasePersistence);
 
-		if(curPhasePersistence != lastPhasePersistence)
+		if (curPhasePersistence != lastPhasePersistence)
 			threePhase->clearLastPhase();
 
-		if(curJumpTo != lastJumpTo) {
+		if (curJumpTo != lastJumpTo) {
 			// map slider to entire range of input images
 			unsigned targetFrame = (unsigned) ofMap(lastJumpTo, 0, 100, 0, totalFrames);
 			// clamp to amaxmimum of last image - 3, so you don't try reading in a loop
 			targetFrame = (unsigned) ofClamp(targetFrame, 0, totalFrames - 3);
 			// quantize location if stop motion is enabled
-			if(curStopMotion)
+			if (curStopMotion)
 				targetFrame = (targetFrame / 3) * 3;
 			// so long as we're not just jumping to the same place
-			if((targetFrame + 3) % totalFrames != sequenceFrame) {
+			if ((targetFrame + 3) % totalFrames != sequenceFrame) {
 				jumpTo(targetFrame);
 				reload = true;
 			}
-		} else if(ofGetFrameNum() % curPlayRate == 0 &&
-			(curPlaySequence || curCameraRate != lastCameraRate || curCameraOffset != lastCameraOffset)) {
-			if(curStopMotion) {
+		} else if (ofGetFrameNum() % curPlayRate == 0 &&
+		           (curPlaySequence || curCameraRate != lastCameraRate || curCameraOffset != lastCameraOffset)) {
+			if (curStopMotion) {
 				// make sure to quantize current frame, in case we're switching from non-stop-motion
 				sequenceFrame = (sequenceFrame / 3) * 3;
-				for(int i = 0; i < 3; i++)
+				for (int i = 0; i < 3; i++)
 					nextFrame();
 			} else
-					nextFrame();
+				nextFrame();
 			panel.setValueF("jumpTo", ofMap(sequenceFrame, 0, totalFrames, 0, 100));
 			curJumpTo = panel.getValueF("jumpTo");
 			reload = true;
 		}
 
-		if(reload ||
-                gamma != lastGamma ||
-				curRangeThreshold != lastRangeThreshold || curOrientation != lastOrientation ||
-				curFilterMin != lastFilterMin || curFilterMax != lastFilterMax ||
-				curDepthScale != lastDepthScale || curDepthSkew != lastDepthSkew) {
+		if (reload ||
+		    gamma != lastGamma ||
+		    curRangeThreshold != lastRangeThreshold || curOrientation != lastOrientation ||
+		    curFilterMin != lastFilterMin || curFilterMax != lastFilterMax ||
+		    curDepthScale != lastDepthScale || curDepthSkew != lastDepthSkew) {
 			threePhase->decode();
-			if(curFilterMin != -1024 || curFilterMax != 1024)
+			if (curFilterMin != -1024 || curFilterMax != 1024)
 				threePhase->filterRange(curFilterMin, curFilterMax);
 
-            redraw = true;
+			redraw = true;
 		}
 
 		// export handling
 		bool curExport = panel.getValueB("export");
 		bool curRecord = panel.getValueB("record");
-		if(curExport || curRecord) {
+		if (curExport || curRecord) {
 			string curFormat = exportFormats[panel.getValueI("exportFormat")];
 			string name = inputList.getSelectedName();
-			if(curRecord)
+			if (curRecord)
 				name += "-" + ofToString(sequenceFrame);
-			if(curFormat == ".png") {
+			if (curFormat == ".png") {
 				threePhase->exportDepth("output/" + name + "-depth.png");
 			} else {
 				int curStyle = panel.getValueI("style");
 				string outputFile = "output/" + name + "-" + styles[curStyle] + curFormat;
-				if(curStyle == 0) {
+				if (curStyle == 0) {
 					threePhase->exportCloud(outputFile);
-				} else if(curStyle == 1) {
+				} else if (curStyle == 1) {
 					threePhase->exportMesh(outputFile);
 				}
 			}
@@ -340,7 +340,7 @@ void testApp::update(){
 		}
 	}
 
-    lastGamma = gamma;
+	lastGamma = gamma;
 	lastDepthScale = curDepthScale;
 	lastDepthSkew = curDepthSkew;
 	lastRangeThreshold = curRangeThreshold;
@@ -364,20 +364,20 @@ void testApp::getBounds(ofxPoint3f& min, ofxPoint3f& max) {
 	max.set(0, 0, panel.getValueF("filterMin"));
 
 	int i = 0;
-	for(int y = 0; y < srcHeight; y++) {
-		for(int x = 0; x < srcWidth; x++) {
-			if(!mask[i]) {
-				if(x < min.x)
+	for (int y = 0; y < srcHeight; y++) {
+		for (int x = 0; x < srcWidth; x++) {
+			if (!mask[i]) {
+				if (x < min.x)
 					min.x = x;
-				if(x > max.x)
+				if (x > max.x)
 					max.x = x;
-				if(y < min.y)
+				if (y < min.y)
 					min.y = y;
-				if(y > max.y)
+				if (y > max.y)
 					max.y = y;
-				if(depth[i] < min.z)
+				if (depth[i] < min.z)
 					min.z = depth[i];
-				if(depth[i] > max.z)
+				if (depth[i] > max.z)
 					max.z = depth[i];
 			}
 			i++;
@@ -391,58 +391,73 @@ void testApp::boxOutline(ofxPoint3f min, ofxPoint3f max) {
 	ofScale(max.x - min.x, max.y - min.y, max.z - min.z);
 	glBegin(GL_LINES);
 	// back
-	glVertex3s(0,0,0); glVertex3s(1,0,0);
-	glVertex3s(0,0,0); glVertex3s(0,1,0);
-	glVertex3s(1,1,0); glVertex3s(1,0,0);
-	glVertex3s(1,1,0); glVertex3s(0,1,0);
+	glVertex3s(0, 0, 0);
+	glVertex3s(1, 0, 0);
+	glVertex3s(0, 0, 0);
+	glVertex3s(0, 1, 0);
+	glVertex3s(1, 1, 0);
+	glVertex3s(1, 0, 0);
+	glVertex3s(1, 1, 0);
+	glVertex3s(0, 1, 0);
 	// front
-	glVertex3s(0,0,1); glVertex3s(1,0,1);
-	glVertex3s(0,0,1); glVertex3s(0,1,1);
-	glVertex3s(1,1,1); glVertex3s(1,0,1);
-	glVertex3s(1,1,1); glVertex3s(0,1,1);
+	glVertex3s(0, 0, 1);
+	glVertex3s(1, 0, 1);
+	glVertex3s(0, 0, 1);
+	glVertex3s(0, 1, 1);
+	glVertex3s(1, 1, 1);
+	glVertex3s(1, 0, 1);
+	glVertex3s(1, 1, 1);
+	glVertex3s(0, 1, 1);
 	// extrusion
-	glVertex3s(0,0,0); glVertex3s(0,0,1);
-	glVertex3s(0,1,0); glVertex3s(0,1,1);
-	glVertex3s(1,0,0); glVertex3s(1,0,1);
-	glVertex3s(1,1,0); glVertex3s(1,1,1);
+	glVertex3s(0, 0, 0);
+	glVertex3s(0, 0, 1);
+	glVertex3s(0, 1, 0);
+	glVertex3s(0, 1, 1);
+	glVertex3s(1, 0, 0);
+	glVertex3s(1, 0, 1);
+	glVertex3s(1, 1, 0);
+	glVertex3s(1, 1, 1);
 	glEnd();
 	ofPopMatrix();
 }
 
 
 
-void testApp::draw(){
-    ofBackground(128,128,128);
+void testApp::draw() {
+	ofBackground(128, 128, 128);
 
-    glPushMatrix();
+	glPushMatrix();
 	camera.place();
 	glEnable(GL_DEPTH_TEST);
 
 	ofTranslate(ofGetWidth() / 2, ofGetHeight() / 2);
 
-	if(threePhase != NULL) {
-	    if (!hidden) {
-	        /// XYZ axes
-            float axisLen = 500.0;
-            glLineWidth(2.0);
-			ofSetColor(255,0,0);
+	if (threePhase != NULL) {
+		if (!hidden) {
+			/// XYZ axes
+			float axisLen = 500.0;
+			glLineWidth(2.0);
+			ofSetColor(255, 0, 0);
 			glBegin(GL_LINES);
-            glVertex3s(9,0,0); glVertex3s(axisLen,0,0);
-            glEnd();
-            ofSetColor(0,255,0);
-            glBegin(GL_LINES);
-            glVertex3s(0,0,0); glVertex3s(0,axisLen,0);
-            glEnd();
-            ofSetColor(0,0,255);
-            glBegin(GL_LINES);
-            glVertex3s(0,0,0); glVertex3s(0,0,axisLen);
-            glEnd();
-            glLineWidth(1.0);
-	    }
+			glVertex3s(9, 0, 0);
+			glVertex3s((short) axisLen, 0, 0);
+			glEnd();
+			ofSetColor(0, 255, 0);
+			glBegin(GL_LINES);
+			glVertex3s(0, 0, 0);
+			glVertex3s(0, (short) axisLen, 0);
+			glEnd();
+			ofSetColor(0, 0, 255);
+			glBegin(GL_LINES);
+			glVertex3s(0, 0, 0);
+			glVertex3s(0, 0, (short) axisLen);
+			glEnd();
+			glLineWidth(1.0);
+		}
 
 		ofTranslate(-threePhase->getWidth() / 2, -threePhase->getHeight() / 2);
 
-		if(!hidden) {
+		if (!hidden) {
 			ofxPoint3f min, max;
 			getBounds(min, max);
 			ofSetColor(255, 255, 255);
@@ -457,9 +472,9 @@ void testApp::draw(){
 
 		ofSetColor(255, 255, 255);
 		int useCloud = panel.getValueI("style");
-		if(useCloud==0) {
+		if (useCloud == 0) {
 			drawCloud();
-		} else if (useCloud ==1) {
+		} else if (useCloud == 1) {
 			drawMesh();
 		}
 
@@ -471,7 +486,7 @@ void testApp::draw(){
 
 	camera.remove();
 
-	if(panel.getValueB("renderMovie") && hidden) {
+	if (panel.getValueB("renderMovie") && hidden) {
 		screenCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
 		movieOutput.addFrame(screenCapture.getPixels(), 1. / panel.getValueI("movieFramerate"));
 	}
@@ -479,124 +494,125 @@ void testApp::draw(){
 	glPopMatrix();
 
 
-		if ((threePhase != NULL) && panel.getValueB("hud")) {
+	if ((threePhase != NULL) && panel.getValueB("hud")) {
 
-		    int srcWidth = threePhase->getWidth();
-            int srcHeight = threePhase->getHeight();
+		int srcWidth = threePhase->getWidth();
+		int srcHeight = threePhase->getHeight();
 
-		    if (true /*redraw*/) {
-		        redraw = false;
+		if (true /*redraw*/) {
+			redraw = false;
 
-		 	bool* mask = threePhase->getMask();
-            float* depth = threePhase->getDepth();
-            byte* color = threePhase->getColor();
-            float* phase = threePhase->getPhase();
-            float* wrappedPhase = threePhase->getWrappedPhase();
-            float* range = threePhase->getRange();
-            float* unwrapOrder = threePhase->unwrapOrder;
+			bool* mask = threePhase->getMask();
+			float* depth = threePhase->getDepth();
+			byte* color = threePhase->getColor();
+			float* phase = threePhase->getPhase();
+			float* wrappedPhase = threePhase->getWrappedPhase();
+			float* range = threePhase->getRange();
+			float* unwrapOrder = threePhase->unwrapOrder;
 
-            unsigned char* upix = phaseUnwrapped.getPixels();
-            unsigned char* ppix = phaseWrapped.getPixels();
-            unsigned char* rpix = rangeIm.getPixels();
-            unsigned char* opix = unwrapOrderIm.getPixels();
-            unsigned char* dpix = depthIm.getPixels();
+			unsigned char* upix = phaseUnwrapped.getPixels();
+			unsigned char* ppix = phaseWrapped.getPixels();
+			unsigned char* rpix = rangeIm.getPixels();
+			unsigned char* opix = unwrapOrderIm.getPixels();
+			unsigned char* dpix = depthIm.getPixels();
 
-            ///float minPhase = threePhase->minPhase;
-            ///float maxPhase = threePhase->maxPhase;
-            float minPhase = -panel.getValueF("maxPhase");
-            float maxPhase = -minPhase;
+			///float minPhase = threePhase->minPhase;
+			///float maxPhase = threePhase->maxPhase;
+			float minPhase = -panel.getValueF("maxPhase");
+			float maxPhase = -minPhase;
 
-            // threePhase->minDepth,threePhase->maxDepth
-            float maxDepth = pow(10,panel.getValueF("maxDepth"));
-            float minDepth = -maxDepth;
+			// threePhase->minDepth,threePhase->maxDepth
+			float maxDepth = pow(10, panel.getValueF("maxDepth"));
+			float minDepth = -maxDepth;
 
-            int i = 0;
-            for(int y = 0; y < srcHeight; y++) {
-            for(int x = 0; x < srcWidth; x++) {
-                int pixInd = y*srcWidth+x;
+			int i = 0;
+			for (int y = 0; y < srcHeight; y++) {
+				for (int x = 0; x < srcWidth; x++) {
+					int pixInd = y * srcWidth + x;
 
-                ///
-                ppix[pixInd] = (char) ofMap(wrappedPhase[pixInd],
-                                            0,1,
-                                            0,255);
+					///
+					ppix[pixInd] = (char) ofMap(wrappedPhase[pixInd],
+					                            0, 1,
+					                            0, 255);
 
-                ///
-                rpix[pixInd] = (char) range[pixInd];
+					///
+					rpix[pixInd] = (char) range[pixInd];
 
-                ///
-                float mag;
-                ofColor col;
+					///
+					float mag;
+					ofColor col;
 
-                if (!mask[i]) {
-                    mag = ofMap(phase[pixInd],minPhase,maxPhase,0.0,1.0);
-                } else {
-                    mag = 0.5;
-                }
-                col = makeColor(mag);
+					if (!mask[i]) {
+						mag = ofMap(phase[pixInd], minPhase, maxPhase, 0.0, 1.0);
+					} else {
+						mag = 0.5;
+					}
+					col = makeColor(mag);
 
-                upix[pixInd*3] =  (char)col.r;
-                upix[pixInd*3+1] = (char)col.g;
-                upix[pixInd*3+2] = (char)col.b;
+					upix[pixInd*3] =  (char)col.r;
+					upix[pixInd*3+1] = (char)col.g;
+					upix[pixInd*3+2] = (char)col.b;
 
 
-                ///
-                mag = 1.0-ofMap(depth[pixInd],minDepth,maxDepth,0.0,1.0);
-                col = makeColor(mag);
-                //if ( mask[i]) {
-                dpix[pixInd*3] =  col.r;
-                dpix[pixInd*3+1] = col.g;
-                dpix[pixInd*3+2] = col.b;
-                /*} else {
-                    dpix[pixInd*3] =  (char)0;
-                    dpix[pixInd*3+1] = (char)0;
-                    dpix[pixInd*3+2] = (char)0;
-                }*/
+					///
+					mag = 1.0 - ofMap(depth[pixInd], minDepth, maxDepth, 0.0, 1.0);
+					col = makeColor(mag);
+					//if ( mask[i]) {
+					dpix[pixInd*3] = (short) col.r;
+					dpix[pixInd*3+1] = (short) col.g;
+					dpix[pixInd*3+2] = (short) col.b;
+					/*} else {
+					    dpix[pixInd*3] =  (char)0;
+					    dpix[pixInd*3+1] = (char)0;
+					    dpix[pixInd*3+2] = (char)0;
+					}*/
 
-                ///
+					///
 
-                mag = unwrapOrder[pixInd]/(float)(srcWidth*srcHeight);
-                col = makeColor(mag);
-                opix[pixInd*3] =  col.r;
-                opix[pixInd*3+1] = col.g;
-                opix[pixInd*3+2] = col.b;
+					mag = unwrapOrder[pixInd] / (float)(srcWidth * srcHeight);
+					col = makeColor(mag);
+					opix[pixInd*3] = (short) col.r;
+					opix[pixInd*3+1] = (short) col.g;
+					opix[pixInd*3+2] = (short) col.b;
 
-                ///
+					///
 
-                i++;
-            }}
-            phaseUnwrapped.update();
-            phaseWrapped.update();
-            rangeIm.update();
-            unwrapOrderIm.update();
-            depthIm.update();
+					i++;
+				}
+			}
+			phaseUnwrapped.update();
+			phaseWrapped.update();
+			rangeIm.update();
+			unwrapOrderIm.update();
+			depthIm.update();
 
-		    }
-
-            int w = (int)panel.getValueF("hudWidth");
-            float hOff = panel.getValueF("hudHeightOffset");
-
-            ofSetColor(255, 255, 255);
-            glColor3f(1,1,1);
-            float sc = (float)srcHeight/(float)srcWidth;
-            hOff *= -2*w*sc;
-
-            phaseUnwrapped.getTextureReference().draw(ofGetWidth()-w, hOff+0*w*sc,w,w*sc);
-            depthIm.getTextureReference().draw(ofGetWidth()-w, hOff+1*w*sc,w,w*sc);
-            rangeIm.getTextureReference().draw(ofGetWidth()-w, hOff+2*w*sc,w,w*sc);
-
-            unwrapOrderIm.getTextureReference().draw(ofGetWidth()-2*w, hOff+0*w*sc,w,w*sc);
-            phaseWrapped.getTextureReference().draw(ofGetWidth()-2*w, hOff+1*w*sc,w,w*sc);
 		}
+
+		int w = (int)panel.getValueF("hudWidth");
+		float hOff = panel.getValueF("hudHeightOffset");
+
+		ofSetColor(255, 255, 255);
+		glColor3f(1, 1, 1);
+		float sc = (float)srcHeight / (float)srcWidth;
+		hOff *= -2 * w * sc;
+
+		phaseUnwrapped.getTextureReference().draw(ofGetWidth() - w, hOff + 0*w*sc, w, w*sc);
+		depthIm.getTextureReference().draw(ofGetWidth() - w, hOff + 1*w*sc, w, w*sc);
+		rangeIm.getTextureReference().draw(ofGetWidth() - w, hOff + 2*w*sc, w, w*sc);
+
+		unwrapOrderIm.getTextureReference().draw(ofGetWidth() - 2*w, hOff + 0*w*sc, w, w*sc);
+		phaseWrapped.getTextureReference().draw(ofGetWidth() - 2*w, hOff + 1*w*sc, w, w*sc);
+	}
 }
 
 void testApp::keyPressed(int key) {
-	if(key == 'f')
+	if (key == 'f')
 		ofToggleFullscreen();
-	if(key == '\t') {
+	if (key == '\t') {
 		hidden = !hidden;
 		panel.hidden = hidden;
-		if(panel.getValueB("renderMovie")) {
-			if(hidden) {
+		if (panel.getValueB("renderMovie")) {
+			if (hidden) {
 				screenCapture.allocate(ofGetWidth(), ofGetHeight(), OF_IMAGE_COLOR);
 				movieOutput.setup(ofGetWidth(), ofGetHeight(), "output/" + ofToString(ofGetFrameNum()) + ".mov");
 			} else {
@@ -606,39 +622,38 @@ void testApp::keyPressed(int key) {
 	}
 }
 
-	const unsigned char testApp::scol[8][3] = {{255,255,255},
-{255,0,0}, /// red is the warmest
-{255,255,0},
-{0,255,0},
-{0,255,255},
-{0,0,255},/// blue is the coolest, but purple comes later
-{255,0,255},
-{0,0,0}
-	};
+const unsigned char testApp::scol[8][3] = {{255, 255, 255},
+	{255, 0, 0}, /// red is the warmest
+	{255, 255, 0},
+	{0, 255, 0},
+	{0, 255, 255},
+	{0, 0, 255},/// blue is the coolest, but purple comes later
+	{255, 0, 255},
+	{0, 0, 0}
+};
 
-ofColor testApp::makeColor(float f)
-{
-    /// or wrap around?
-    if (f> 1.0) f = 1.0;
-    if (f<0.0) f = 0.0;
+ofColor testApp::makeColor(float f) {
+	/// or wrap around?
+	if (f > 1.0) f = 1.0;
+	if (f < 0.0) f = 0.0;
 
-    int i1 = 0;
-    int i2 = 1;
-    f = f*(8-1);
+	int i1 = 0;
+	int i2 = 1;
+	f = f * (8 - 1);
 
-    while (f > 1.0) {
-        f -= 1.0;
-        i1++;
-        i2++;
-    }
+	while (f > 1.0) {
+		f -= 1.0;
+		i1++;
+		i2++;
+	}
 
-    int r = int((1.0-f)*(float)scol[i1][0] + f*(float)scol[i2][0]);
-    int g = int((1.0-f)*(float)scol[i1][1] + f*(float)scol[i2][1]);
-    int b = int((1.0-f)*(float)scol[i1][2] + f*(float)scol[i2][2]);
+	int r = int((1.0 - f) * (float)scol[i1][0] + f * (float)scol[i2][0]);
+	int g = int((1.0 - f) * (float)scol[i1][1] + f * (float)scol[i2][1]);
+	int b = int((1.0 - f) * (float)scol[i1][2] + f * (float)scol[i2][2]);
 
-    ofColor rv;
-    rv.r = r;
-    rv.g = g;
-    rv.b = b;
-    return rv;
+	ofColor rv;
+	rv.r = r;
+	rv.g = g;
+	rv.b = b;
+	return rv;
 }
