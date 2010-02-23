@@ -22,6 +22,7 @@ public:
 	float* getPhase();
 	float* getWrappedPhase();
 	byte* getColor();
+	byte** getGraySequence();
 	int* getBlur();
 	void exportCloud(string filename);
 	void exportMesh(string filename);

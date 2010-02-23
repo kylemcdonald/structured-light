@@ -182,6 +182,10 @@ byte* PhaseDecoder::getColor() {
 	return color;
 }
 
+byte** PhaseDecoder::getGraySequence() {
+	return graySequence;
+}
+
 float PhaseDecoder::getRemaining() {
 	int n = width * height;
 	int readySum = 0;
