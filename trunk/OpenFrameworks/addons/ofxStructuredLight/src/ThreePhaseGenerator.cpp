@@ -28,7 +28,8 @@ void ThreePhaseGenerator::generate() {
 		int i = 0;
 		for(int j = 0; j < side; j++) {
 			float curPhase = (cosf(j * normalize + offsets[k]) + 1) / 2;
-			curPhase *= 256;
+			curPhase *= (256-minBrightness);
+			curPhase += minBrightness;
 			if(curPhase >= 256)
 				curPhase = 255;
 			unsigned char value = (unsigned char) curPhase;
