@@ -32,6 +32,8 @@ public:
 	int lastOrientation;
 	bool lastFullscreen;
 
+	int lastMinBrightness;
+
 	ofxThreadedVideoGrabber camera;
 	ofxImageSaver imageSaver;
 
