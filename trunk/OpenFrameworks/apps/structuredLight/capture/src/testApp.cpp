@@ -67,6 +67,8 @@ void testApp::setup(){
 	panel.addSlider("pattern rate", "patternRate", 1, 1, 6, true);
 	panel.addSlider("camera rate", "cameraRate", 1, 1, 6, true);
 	panel.addSlider("camera offset", "cameraOffset", 0, 0, 5, true);
+	panel.addSlider("min brightness", "minBrightness", 0, 0, 255, true);
+
 
 	panel.setWhichPanel("three phase");
 	panel.addSlider("wavelength", "wavelength", 64, 8, 512, true);
@@ -90,6 +92,9 @@ void testApp::setup(){
 	int captureTime = 15;
 	imageSaver.setup(cameraWidth, cameraHeight, captureTime * 60);
 
+	/// TBD this wasn't in original but seemed necessary for me, test it again
+	//ofSetVerticalSync(true);
+
 	ofBackground(0, 0, 0);
 }
 
@@ -102,6 +107,13 @@ void testApp::update(){
 		threePhase.generate();
 	}
 	lastWavelength = curWavelength;
+
+	int minBrightness = panel.getValueI("minBrightness");
+	if (minBrightness != lastMinBrightness) {
+		threePhase.setMinBrightness(minBrightness);
+		threePhase.generate();
+	}
+	lastMinBrightness = minBrightness;
 
 	int curOrientation = panel.getValueI("orientation");
 	if(curOrientation != lastOrientation) {
