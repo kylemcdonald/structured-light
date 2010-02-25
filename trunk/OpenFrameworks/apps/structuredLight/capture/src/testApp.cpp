@@ -92,8 +92,7 @@ void testApp::setup(){
 	int captureTime = 15;
 	imageSaver.setup(cameraWidth, cameraHeight, captureTime * 60);
 
-	/// TBD this wasn't in original but seemed necessary for me, test it again
-	//ofSetVerticalSync(true);
+	ofSetVerticalSync(true);
 
 	ofBackground(0, 0, 0);
 }
