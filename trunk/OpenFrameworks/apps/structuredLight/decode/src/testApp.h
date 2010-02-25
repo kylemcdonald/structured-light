@@ -12,8 +12,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxStructuredLight.h"
 #include "ofxEasyCam.h"
+#include "ofxStructuredLight.h"
 #include "ofxAutoControlPanel.h"
 #include "ofxQtVideoSaver.h"
 

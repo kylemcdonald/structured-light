@@ -11,19 +11,19 @@
     <val_0>0.000000</val_0>
 </jumpTo>
 <style>
-    <val_0>1.000000</val_0>
+    <val_0>0.000000</val_0>
 </style>
 <orientation>
     <val_0>0.000000</val_0>
 </orientation>
 <rangeThreshold>
-    <val_0>14.166667</val_0>
+    <val_0>15.583333</val_0>
 </rangeThreshold>
 <depthScale>
-    <val_0>77.777779</val_0>
+    <val_0>73.333336</val_0>
 </depthScale>
 <depthSkew>
-    <val_0>-25.555555</val_0>
+    <val_0>-32.222221</val_0>
 </depthSkew>
 <filterMin>
     <val_0>-1024.000000</val_0>
@@ -41,8 +41,38 @@
     <val_0>0.000000</val_0>
 </record>
 <renderMovie>
-    <val_0>1.000000</val_0>
+    <val_0>0.000000</val_0>
 </renderMovie>
 <movieFramerate>
     <val_0>60.000000</val_0>
 </movieFramerate>
+<playRate>
+    <val_0>1.000000</val_0>
+</playRate>
+<stopMotion>
+    <val_0>0.000000</val_0>
+</stopMotion>
+<phasePersistence>
+    <val_0>0.000000</val_0>
+</phasePersistence>
+<resetView>
+    <val_0>0.000000</val_0>
+</resetView>
+<gamma>
+    <val_0>0.322222</val_0>
+</gamma>
+<hud>
+    <val_0>0.000000</val_0>
+</hud>
+<hudWidth>
+    <val_0>211.111115</val_0>
+</hudWidth>
+<hudHeightOffset>
+    <val_0>0.000000</val_0>
+</hudHeightOffset>
+<maxPhase>
+    <val_0>13.333333</val_0>
+</maxPhase>
+<maxDepth>
+    <val_0>2.833333</val_0>
+</maxDepth>
