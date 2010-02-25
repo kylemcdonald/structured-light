@@ -146,6 +146,7 @@ void testApp::update(){
 	if(curEnableCamera != lastEnableCamera) {
 		if(curEnableCamera) {
 			camera.setup(cameraWidth, cameraHeight, this);
+			camera.setDesiredFrameRate(60);
 		} else {
 			camera.stopThread();
 			camera.close();
