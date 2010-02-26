@@ -3,9 +3,10 @@
 void testApp::frameReceived(ofVideoGrabber& cur) {
 	if(&cur == &grabber) {
 		grabber.getThreadedPixels(recent[curFrame].getPixels());
+		threePhase->set(curFrame, recent[curFrame].getPixels());
+		needsDecode = true;
 		needsUpdate[curFrame] = true;
 		curFrame = (curFrame + 1) % 3;
-		needsDecode = true;
 	}
 }
 
@@ -191,13 +192,6 @@ void testApp::update() {
 		if (curPhasePersistence != lastPhasePersistence)
 			threePhase->clearLastPhase();
 
-		if (gamma != lastGamma ||
-		    curRangeThreshold != lastRangeThreshold || curOrientation != lastOrientation ||
-		    curFilterMin != lastFilterMin || curFilterMax != lastFilterMax ||
-		    curDepthScale != lastDepthScale || curDepthSkew != lastDepthSkew) {
-			needsDecode = true;
-		}
-
 		/*
 		// export handling
 		bool curExport = panel.getValueB("export");
@@ -341,17 +335,11 @@ void testApp::draw() {
 		drawAxes(256); // major axes
 
 	if (threePhase != NULL) {
-		ofTranslate(-threePhase->getWidth() / 2, -threePhase->getHeight() / 2);
-
-		for(int i = 0; i < 3; i++)
-			if(needsUpdate[i])
-				threePhase->set(curFrame, recent[i].getPixels());
-
-		if(needsDecode) {
+		// can't guarantee this won't try decoding while the three phase images are being updated
+		if(needsDecode)
 			threePhase->decode();
-			//threePhase->filterRange(curFilterMin, curFilterMax);
-			needsDecode = false;
-		}
+
+		ofTranslate(-threePhase->getWidth() / 2, -threePhase->getHeight() / 2);
 
 		if (!hidden) {
 			ofxPoint3f min, max;
