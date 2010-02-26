@@ -12,20 +12,20 @@ void DepthExporter::exportDepth(string filename, int width, int height, const bo
 	unsigned char* pixels = img.getPixels();
 	int n = width * height;
 
-	float min = +numeric_limits<float>::max();
+	float min = + numeric_limits<float>::max();
 	float max = -numeric_limits<float>::max();
 
-	for(int i = 0; i < n; i++) {
-		if(!mask[i]) {
-			if(depth[i] < min)
+	for (int i = 0; i < n; i++) {
+		if (!mask[i]) {
+			if (depth[i] < min)
 				min = depth[i];
-			if(depth[i] > max)
+			if (depth[i] > max)
 				max = depth[i];
 		}
 	}
 
-	for(int i = 0; i < n; i++) {
-		if(mask[i]) {
+	for (int i = 0; i < n; i++) {
+		if (mask[i]) {
 			pixels[i] = 0;
 		} else {
 			pixels[i] = (unsigned char) ofClamp(ofMap(depth[i], min, max, 0, 255), 0, 255);
@@ -37,7 +37,7 @@ void DepthExporter::exportDepth(string filename, int width, int height, const bo
 
 string DepthExporter::getExtension(string filename) {
 	int i = filename.rfind('.');
-	if(i != string::npos){
+	if (i != string::npos) {
 		return filename.substr(i + 1);
 	} else {
 		return "";
@@ -46,18 +46,18 @@ string DepthExporter::getExtension(string filename) {
 
 void DepthExporter::exportCloud(string filename, int width, int height, const bool* mask, const float* depth,  const unsigned char* color) {
 	string extension = getExtension(filename);
-	if(extension == "obj") {
+	if (extension == "obj") {
 		exportObjCloud(filename, width, height, mask, depth, color);
-	} else if(extension == "ply") {
+	} else if (extension == "ply") {
 		exportPlyCloud(filename, width, height, mask, depth, color);
 	}
 }
 
 void DepthExporter::exportMesh(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	string extension = getExtension(filename);
-	if(extension == "obj") {
+	if (extension == "obj") {
 		exportObjMesh(filename, width, height, mask, depth, color);
-	} else if(extension == "ply") {
+	} else if (extension == "ply") {
 		exportPlyMesh(filename, width, height, mask, depth, color);
 	}
 }
@@ -70,19 +70,19 @@ inline void DepthExporter::exportObjVertex(ostream& obj, int x, int y, float z) 
 void DepthExporter::exportObjCloud(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	ofstream obj;
 	obj.open(ofToDataPath(filename).c_str(), ios::out);
-	if(obj.is_open()) {
+	if (obj.is_open()) {
 		int total = 0;
-		for(int y = 0; y < height; y++) {
-			for(int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
 				int i = y * width + x;
-				if(!mask[i]) {
+				if (!mask[i]) {
 					exportObjVertex(obj, x, y, depth[i]);
 					total++;
 				}
 			}
 		}
 		obj << "p";
-		for(int i = 1; i <= total; i++)
+		for (int i = 1; i <= total; i++)
 			obj << " " << i;
 		obj << endl;
 	}
@@ -91,36 +91,36 @@ void DepthExporter::exportObjCloud(string filename, int width, int height, const
 void DepthExporter::exportObjMesh(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	ofstream obj;
 	obj.open(ofToDataPath(filename).c_str(), ios::out);
-	if(obj.is_open()) {
+	if (obj.is_open()) {
 		int total = 0;
 		int nw, ne, sw, se;
-		for(int y = 0; y < height - 1; y++) {
-			for(int x = 0; x < width - 1; x++) {
+		for (int y = 0; y < height - 1; y++) {
+			for (int x = 0; x < width - 1; x++) {
 				nw = y * width + x;
 				ne = nw + 1;
 				sw = nw + width;
 				se = ne + width;
-				if(!mask[nw] && !mask[se]) {
-					if(!mask[ne]) {
+				if (!mask[nw] && !mask[se]) {
+					if (!mask[ne]) {
 						exportObjVertex(obj, x + 1, y + 1, depth[se]);
 						exportObjVertex(obj, x + 1, y, depth[ne]);
 						exportObjVertex(obj, x, y, depth[nw]);
 						obj << "f -3 -2 -1" << endl;
 					}
-					if(!mask[sw]) {
+					if (!mask[sw]) {
 						exportObjVertex(obj, x, y + 1, depth[sw]);
 						exportObjVertex(obj, x + 1, y + 1, depth[se]);
 						exportObjVertex(obj, x, y, depth[nw]);
 						obj << "f -3 -2 -1" << endl;
 					}
-				} else if(!mask[ne] && !mask[sw]) {
-					if(!mask[nw]) {
+				} else if (!mask[ne] && !mask[sw]) {
+					if (!mask[nw]) {
 						exportObjVertex(obj, x, y + 1, depth[sw]);
 						exportObjVertex(obj, x + 1, y, depth[ne]);
 						exportObjVertex(obj, x, y, depth[nw]);
 						obj << "f -3 -2 -1" << endl;
 					}
-					if(!mask[se]) {
+					if (!mask[se]) {
 						exportObjVertex(obj, x, y + 1, depth[sw]);
 						exportObjVertex(obj, x + 1, y + 1, depth[se]);
 						exportObjVertex(obj, x + 1, y, depth[ne]);
@@ -138,7 +138,7 @@ inline void DepthExporter::exportPlyVertex(ostream& ply, float x, float y, float
 	ply.write(reinterpret_cast<char*>(&x), sizeof(float));
 	ply.write(reinterpret_cast<char*>(&y), sizeof(float));
 	ply.write(reinterpret_cast<char*>(&z), sizeof(float));
-	if(color != NULL)
+	if (color != NULL)
 		ply.write((char*) color, sizeof(char) * 3);
 }
 
@@ -151,10 +151,10 @@ inline void DepthExporter::exportPlyFace(ostream& ply, unsigned int a, unsigned 
 
 int DepthExporter::exportPlyVertices(ostream& ply, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	int total = 0;
-	for(int y = 0; y < height; y++) {
+	for (int y = 0; y < height; y++) {
 		int i = y * width;
-		for(int x = 0; x < width; x++) {
-			if(!mask[i]) {
+		for (int x = 0; x < width; x++) {
+			if (!mask[i]) {
 				exportPlyVertex(ply, x, y, depth[i], color == NULL ? NULL : &color[i * 3]);
 				total++;
 			}
@@ -167,7 +167,7 @@ int DepthExporter::exportPlyVertices(ostream& ply, int width, int height, const 
 void DepthExporter::exportPlyCloud(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	ofstream ply;
 	ply.open(ofToDataPath(filename).c_str(), ios::out | ios::binary);
-	if(ply.is_open()) {
+	if (ply.is_open()) {
 		// create all the vertices
 		stringstream vertices(ios::in | ios::out | ios::binary);
 		int total = exportPlyVertices(vertices, width, height, mask, depth, color);
@@ -179,7 +179,7 @@ void DepthExporter::exportPlyCloud(string filename, int width, int height, const
 		ply << "property float x" << endl;
 		ply << "property float y" << endl;
 		ply << "property float z" << endl;
-		if(color != NULL) {
+		if (color != NULL) {
 			ply << "property uchar red" << endl;
 			ply << "property uchar green" << endl;
 			ply << "property uchar blue" << endl;
@@ -194,14 +194,14 @@ void DepthExporter::exportPlyCloud(string filename, int width, int height, const
 void DepthExporter::exportPlyMesh(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color) {
 	ofstream ply;
 	ply.open(ofToDataPath(filename).c_str(), ios::out | ios::binary);
-	if(ply.is_open()) {
+	if (ply.is_open()) {
 		int n = width * height;
 		unsigned int* names = new unsigned int[n];
 
 		// label all the vertices
 		int total = 0;
-		for(int i = 0; i < n; i++)
-			if(!mask[i])
+		for (int i = 0; i < n; i++)
+			if (!mask[i])
 				names[i] = total++;
 
 		// create all the vertices
@@ -212,27 +212,27 @@ void DepthExporter::exportPlyMesh(string filename, int width, int height, const 
 		int totalFaces = 0;
 		int nw, ne, sw, se;
 		stringstream faces(ios::in | ios::out | ios::binary);
-		for(int y = 0; y < height - 1; y++) {
-			for(int x = 0; x < width - 1; x++) {
+		for (int y = 0; y < height - 1; y++) {
+			for (int x = 0; x < width - 1; x++) {
 				nw = y * width + x;
 				ne = nw + 1;
 				sw = nw + width;
 				se = ne + width;
-				if(!mask[nw] && !mask[se]) {
-					if(!mask[ne]) {
+				if (!mask[nw] && !mask[se]) {
+					if (!mask[ne]) {
 						exportPlyFace(faces, names[se], names[ne], names[nw]);
 						totalFaces++;
 					}
-					if(!mask[sw]) {
+					if (!mask[sw]) {
 						exportPlyFace(faces, names[sw], names[se], names[nw]);
 						totalFaces++;
 					}
-				} else if(!mask[ne] && !mask[sw]) {
-					if(!mask[nw]) {
+				} else if (!mask[ne] && !mask[sw]) {
+					if (!mask[nw]) {
 						exportPlyFace(faces, names[sw], names[ne], names[nw]);
 						totalFaces++;
 					}
-					if(!mask[se]) {
+					if (!mask[se]) {
 						exportPlyFace(faces, names[sw], names[se], names[ne]);
 						totalFaces++;
 					}
@@ -247,7 +247,7 @@ void DepthExporter::exportPlyMesh(string filename, int width, int height, const 
 		ply << "property float x" << endl;
 		ply << "property float y" << endl;
 		ply << "property float z" << endl;
-		if(color != NULL) {
+		if (color != NULL) {
 			ply << "property uchar red" << endl;
 			ply << "property uchar green" << endl;
 			ply << "property uchar blue" << endl;

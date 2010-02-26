@@ -1,34 +1,33 @@
 #include "PhaseDecoder.h"
 
 PhaseDecoder::PhaseDecoder() :
-	sequenceSize(0),
-	gamma(1.0),
-	colorSequence(NULL),
-	graySequence(NULL),
-	phase(NULL),
-	ready(NULL),
-	depthScale(1),
-	depthSkew(1),
-	maxPasses(1),
-	minRemaining(0),
-	color(NULL),
-	orientation(PHASE_VERTICAL),
-	phasePersistence(false),
-	lastPhase(false) {
+		sequenceSize(0),
+		gamma(1.0),
+		colorSequence(NULL),
+		graySequence(NULL),
+		phase(NULL),
+		ready(NULL),
+		depthScale(1),
+		depthSkew(1),
+		maxPasses(1),
+		minRemaining(0),
+		color(NULL),
+		orientation(PHASE_VERTICAL),
+		phasePersistence(false),
+		lastPhase(false) {
 }
 
 // This code should migrate to DepthDecoder, as it will
 // be used for allocating a gray coded image sequence also.
-void PhaseDecoder::setup(int width, int height, int sequenceSize, int numColorChan) {
+void PhaseDecoder::setup(int width, int height, int sequenceSize) {
 	this->width = width;
 	this->height = height;
 	this->sequenceSize = sequenceSize;
-	this->numColorChan = numColorChan;
 
 	colorSequence = new byte*[sequenceSize];
 	graySequence = new byte*[sequenceSize];
 	int n = width * height;
-	for(int i = 0; i < sequenceSize; i++) {
+	for (int i = 0; i < sequenceSize; i++) {
 		colorSequence[i] = new byte[n * 3];
 		graySequence[i] = new byte[n];
 	}
@@ -45,10 +44,10 @@ void PhaseDecoder::setup(int width, int height, int sequenceSize, int numColorCh
 }
 
 PhaseDecoder::~PhaseDecoder() {
-	if(colorSequence != NULL) {
-		for(int i = 0; i < sequenceSize; i++) {
-				delete [] colorSequence[i];
-				delete [] graySequence[i];
+	if (colorSequence != NULL) {
+		for (int i = 0; i < sequenceSize; i++) {
+			delete [] colorSequence[i];
+			delete [] graySequence[i];
 		}
 		delete [] colorSequence;
 		delete [] graySequence;
@@ -67,42 +66,42 @@ void PhaseDecoder::setMinRemaining(float minRemaining) {
 	this->minRemaining = minRemaining;
 }
 
-void PhaseDecoder::set(int position, byte* image) {
+void PhaseDecoder::set(int position, byte* image, int channels) {
 	byte* curColor = colorSequence[position];
 	byte* curGray = graySequence[position];
-
-    if (numColorChan == 3) {
-        memcpy(curColor, image, width * height * 3);
-    }
 
 	int n = width * height;
 	int i = 0;
 	int j = 0;
-	while(j < n) {
-	    if (numColorChan == 1) {
-            curColor[i]   = image[j];
-            curColor[i+1] = image[j];
-            curColor[i+2] = image[j];
-	    }
-
-		float sum =
-			(float) curColor[i++] +
-			(float) curColor[i++] +
-			(float) curColor[i++];
-		sum /= 3;
-		curGray[j++] = (byte) sum;
+	if (channels == 3) {
+		while (j < n) {
+			memcpy(curColor, image, n * 3);
+			float sum =
+				(float) curColor[i++] +
+				(float) curColor[i++] +
+				(float) curColor[i++];
+			sum /= 3;
+			curGray[j++] = (byte) sum;
+		}
+	} else if(channels == 1) {
+		while(j < n) {
+			curColor[j] = image[i];
+			curColor[j+1] = image[i];
+			curColor[j+2] = image[i];
+			curGray[j++] = image[i];
+		}
 	}
 }
 
 void PhaseDecoder::decode() {
 	makePhase();
-	memcpy( wrappedPhase,phase, sizeof(float) * width * height);
-	for(int pass = 0; pass < maxPasses; pass++) {
+	memcpy( wrappedPhase, phase, sizeof(float) * width * height);
+	for (int pass = 0; pass < maxPasses; pass++) {
 		unwrapPhase();
-		if(minRemaining != 0 && getRemaining() < minRemaining)
+		if (minRemaining != 0 && getRemaining() < minRemaining)
 			break;
 	}
-	if(phasePersistence)
+	if (phasePersistence)
 		memcpy(lastPhase, phase, sizeof(float) * width * height);
 	makeColor();
 	makeDepth();
@@ -113,11 +112,11 @@ float* PhaseDecoder::getPhase() {
 }
 
 float* PhaseDecoder::getWrappedPhase() {
-    return wrappedPhase;
+	return wrappedPhase;
 }
 
 void PhaseDecoder::setGamma(float gamma) {
-    this->gamma = gamma;
+	this->gamma = gamma;
 }
 
 void PhaseDecoder::setDepthScale(float depthScale) {
@@ -141,13 +140,13 @@ void PhaseDecoder::clearLastPhase() {
 }
 
 void PhaseDecoder::makeDepth() {
-    maxDepth = -1e6;
-    minDepth = 1e6;
+	maxDepth = -1e6;
+	minDepth = 1e6;
 
 	int n = width * height;
-	if(orientation == PHASE_VERTICAL) {
+	if (orientation == PHASE_VERTICAL) {
 
-	    float planeZero = (float) (startInd % width)/width;
+		float planeZero = (float) (startInd % width) / width;
 
 		for (int i = 0; i < n; i++) {
 			if (!mask[i]) {
@@ -161,15 +160,15 @@ void PhaseDecoder::makeDepth() {
 			if (depth[i] > maxDepth) maxDepth = depth[i];
 			if (depth[i] < minDepth) minDepth = depth[i];
 		}
-	} else if(orientation == PHASE_HORIZONTAL) {
-            float planeZero = (float) (startInd / width)/height;
-			for (int i = 0; i < n; i++) {
-				if (!mask[i]) {
-					float y = (float) (i / width);
-					float planephase = ((y / height) - planeZero) * depthSkew;
-					depth[i] = (phase[i] - planephase) * depthScale;
-				} else {
-					depth[i] = 0;
+	} else if (orientation == PHASE_HORIZONTAL) {
+		float planeZero = (float) (startInd / width) / height;
+		for (int i = 0; i < n; i++) {
+			if (!mask[i]) {
+				float y = (float) (i / width);
+				float planephase = ((y / height) - planeZero) * depthSkew;
+				depth[i] = (phase[i] - planephase) * depthScale;
+			} else {
+				depth[i] = 0;
 			}
 
 			if (depth[i] > maxDepth) maxDepth = depth[i];
@@ -190,7 +189,7 @@ float PhaseDecoder::getRemaining() {
 	int n = width * height;
 	int readySum = 0;
 	int maskSum = 0;
-	for(int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) {
 		readySum += (unsigned char) ready[i];
 		maskSum += (unsigned char) mask[i];
 	}
@@ -202,8 +201,8 @@ int PhaseDecoder::getStart() {
 	int* sum = blur.getSum();
 	int max = 0;
 	int n = width * height;
-	for(int i = 0; i < n; i++)
-		if(sum[i] > sum[max])
+	for (int i = 0; i < n; i++)
+		if (sum[i] > sum[max])
 			max = i;
 	return max;
 }

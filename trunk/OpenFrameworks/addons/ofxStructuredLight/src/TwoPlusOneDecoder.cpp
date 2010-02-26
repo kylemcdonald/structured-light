@@ -1,8 +1,7 @@
 #include "TwoPlusOneDecoder.h"
 
 void TwoPlusOneDecoder::setup(int width, int height) {
-    // TBD should pass in real numColorChan
-	PhaseDecoder::setup(width, height, 3, 3);
+	PhaseDecoder::setup(width, height, 3);
 }
 
 void TwoPlusOneDecoder::makePhase() {

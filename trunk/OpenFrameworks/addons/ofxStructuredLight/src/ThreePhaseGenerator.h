@@ -7,7 +7,7 @@ class ThreePhaseGenerator : public PatternGenerator {
 private:
 	float wavelength;
 	phaseOrientation orientation;
-	int minBrightness;
+	float minBrightness;
 public:
 
 	void setMinBrightness(float minBrightness);
