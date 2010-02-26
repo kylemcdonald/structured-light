@@ -16,7 +16,7 @@ public:
 	void setMinRemaining(float minRemaining);
 	void setPhasePersistence(bool phasePersistence);
 	void clearLastPhase();
-	void set(int i, byte* image);
+	void set(int i, byte* image, int channels = 3);
 	void makeDepth();
 	void decode();
 	float* getPhase();
@@ -46,7 +46,7 @@ protected:
 	/// this is where phase unwrapping begins, and unwrapped phase will be zero
 	int startInd;
 
-	void setup(int width, int height, int sequenceSize, int numColorChan);
+	void setup(int width, int height, int sequenceSize);
 	virtual void makePhase() = 0;
 	virtual void unwrapPhase() = 0;
 	virtual void makeColor() = 0;

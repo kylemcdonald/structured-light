@@ -10,7 +10,7 @@ public:
 	virtual ~DepthDecoder();
 	int getWidth();
 	int getHeight();
-	virtual void set(int i, byte* image) = 0;
+	virtual void set(int i, byte* image, int channels) = 0;
 	virtual void decode() = 0;
 	bool* getMask();
 	float* getDepth();
@@ -20,12 +20,10 @@ public:
 	virtual void exportCloud(string filename);
 	virtual void exportMesh(string filename);
 
-    float minDepth;
+	float minDepth;
 	float maxDepth;
 protected:
 	int width, height;
 	bool* mask;
 	float* depth;
-
-	int numColorChan;
 };

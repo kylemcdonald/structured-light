@@ -1,14 +1,14 @@
 #include "DepthDecoder.h"
 
 DepthDecoder::DepthDecoder() :
-	width(0),
-	height(0),
-	mask(NULL),
-	depth(NULL) {
+		width(0),
+		height(0),
+		mask(NULL),
+		depth(NULL) {
 }
 
 DepthDecoder::~DepthDecoder() {
-	if(mask != NULL) {
+	if (mask != NULL) {
 		delete [] mask;
 		delete [] depth;
 	}
@@ -34,8 +34,8 @@ void DepthDecoder::filterDeviations(float deviations) {
 	int n = width * height;
 	int total = 0;
 	float mean = 0;
-	for(int i = 0; i < n; i++) {
-		if(!mask[i]) {
+	for (int i = 0; i < n; i++) {
+		if (!mask[i]) {
 			mean += depth[i];
 			total++;
 		}
@@ -44,8 +44,8 @@ void DepthDecoder::filterDeviations(float deviations) {
 
 	float sumSqDiff = 0;
 	float diff;
-	for(int i = 0; i < n; i++) {
-		if(!mask[i]) {
+	for (int i = 0; i < n; i++) {
+		if (!mask[i]) {
 			diff = mean - depth[i];
 			sumSqDiff += diff * diff;
 		}
@@ -68,8 +68,8 @@ void DepthDecoder::filterDeviations(float deviations) {
 */
 void DepthDecoder::filterRange(float min, float max) {
 	int n = width * height;
-	for(int i = 0; i < n; i++)
-		if(!mask[i] && (depth[i] < min || depth[i] > max))
+	for (int i = 0; i < n; i++)
+		if (!mask[i] && (depth[i] < min || depth[i] > max))
 			mask[i] = true;
 }
 
