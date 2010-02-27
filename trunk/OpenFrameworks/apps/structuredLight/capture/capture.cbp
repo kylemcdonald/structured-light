@@ -151,6 +151,8 @@
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\ThreePhaseGenerator.h" />
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\TwoPlusOneDecoder.cpp" />
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\TwoPlusOneDecoder.h" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\TwoPlusOneGenerator.cpp" />
+		<Unit filename="..\..\..\addons\ofxStructuredLight\src\TwoPlusOneGenerator.h" />
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\ofxStructuredLight.h" />
 		<Unit filename="..\..\..\addons\ofxThread\src\ofxThread.cpp" />
 		<Unit filename="..\..\..\addons\ofxThread\src\ofxThread.h" />
