@@ -59,7 +59,6 @@ void testApp::setup(){
 	panel.addToggle("camera settings", "cameraSettings", false);
 	panel.addToggle("fullscreen", "fullscreen", false);
 	panel.addToggle("frame by frame", "frameByFrame", false);
-	//panel.addToggle("frame by frame", "frameByFrame", false);
 
 	vector<string> patternTypes;
 	patternTypes.push_back("three phase");
