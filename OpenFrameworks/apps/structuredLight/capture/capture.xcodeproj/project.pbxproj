@@ -26,6 +26,7 @@
 		031CEAFD1139577C00EC790C /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 031CEAF71139577C00EC790C /* tinyxmlerror.cpp */; };
 		031CEAFE1139577C00EC790C /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 031CEAF81139577C00EC790C /* tinyxmlparser.cpp */; };
 		031CEAFF1139577C00EC790C /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 031CEAFA1139577C00EC790C /* ofxXmlSettings.cpp */; };
+		031CEB5011397CDB00EC790C /* TwoPlusOneGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 031CEB4E11397CDB00EC790C /* TwoPlusOneGenerator.cpp */; };
 		E45BE0AA0E8CC67C009D7055 /* GLee.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE0A90E8CC67C009D7055 /* GLee.a */; };
 		E45BE2E40E8CC69C009D7055 /* rtAudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE2E30E8CC69C009D7055 /* rtAudio.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
@@ -156,6 +157,11 @@
 		031CEAF81139577C00EC790C /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		031CEAFA1139577C00EC790C /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxXmlSettings.cpp; sourceTree = "<group>"; };
 		031CEAFB1139577C00EC790C /* ofxXmlSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
+		031CEB43113978A200EC790C /* ofxAutoControlPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxAutoControlPanel.h; sourceTree = "<group>"; };
+		031CEB44113978A200EC790C /* ofxImageSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxImageSaver.h; sourceTree = "<group>"; };
+		031CEB45113978A200EC790C /* ofxThreadedVideoGrabber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxThreadedVideoGrabber.h; sourceTree = "<group>"; };
+		031CEB4E11397CDB00EC790C /* TwoPlusOneGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TwoPlusOneGenerator.cpp; path = ../../../addons/ofxStructuredLight/src/TwoPlusOneGenerator.cpp; sourceTree = SOURCE_ROOT; };
+		031CEB4F11397CDB00EC790C /* TwoPlusOneGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TwoPlusOneGenerator.h; path = ../../../addons/ofxStructuredLight/src/TwoPlusOneGenerator.h; sourceTree = SOURCE_ROOT; };
 		E45BE0390E8CC647009D7055 /* FreeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FreeImage.h; path = ../../../libs/freeimage/include/FreeImage.h; sourceTree = SOURCE_ROOT; };
 		E45BE03F0E8CC650009D7055 /* fmod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmod.h; path = ../../../libs/fmodex/include/fmod.h; sourceTree = SOURCE_ROOT; };
 		E45BE0400E8CC650009D7055 /* fmod.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = fmod.hpp; path = ../../../libs/fmodex/include/fmod.hpp; sourceTree = SOURCE_ROOT; };
@@ -247,6 +253,8 @@
 		031CEA9D113955A700EC790C /* ofxStructuredLight */ = {
 			isa = PBXGroup;
 			children = (
+				031CEB4E11397CDB00EC790C /* TwoPlusOneGenerator.cpp */,
+				031CEB4F11397CDB00EC790C /* TwoPlusOneGenerator.h */,
 				031CEABC113956CE00EC790C /* DepthDecoder.cpp */,
 				031CEABD113956CE00EC790C /* DepthDecoder.h */,
 				031CEABE113956CE00EC790C /* DepthExporter.cpp */,
@@ -548,6 +556,9 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				031CEB43113978A200EC790C /* ofxAutoControlPanel.h */,
+				031CEB44113978A200EC790C /* ofxImageSaver.h */,
+				031CEB45113978A200EC790C /* ofxThreadedVideoGrabber.h */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* testApp.h */,
@@ -737,6 +748,7 @@
 				031CEAFD1139577C00EC790C /* tinyxmlerror.cpp in Sources */,
 				031CEAFE1139577C00EC790C /* tinyxmlparser.cpp in Sources */,
 				031CEAFF1139577C00EC790C /* ofxXmlSettings.cpp in Sources */,
+				031CEB5011397CDB00EC790C /* TwoPlusOneGenerator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
