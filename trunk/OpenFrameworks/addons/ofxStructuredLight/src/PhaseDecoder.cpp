@@ -74,8 +74,8 @@ void PhaseDecoder::set(int position, byte* image, int channels) {
 	int i = 0;
 	int j = 0;
 	if (channels == 3) {
+		memcpy(curColor, image, n * 3);
 		while (j < n) {
-			memcpy(curColor, image, n * 3);
 			float sum =
 				(float) curColor[i++] +
 				(float) curColor[i++] +
@@ -84,11 +84,12 @@ void PhaseDecoder::set(int position, byte* image, int channels) {
 			curGray[j++] = (byte) sum;
 		}
 	} else if(channels == 1) {
-		while(j < n) {
-			curColor[j] = image[i];
-			curColor[j+1] = image[i];
-			curColor[j+2] = image[i];
-			curGray[j++] = image[i];
+		while(i < n) {
+			curColor[j++] = image[i];
+			curColor[j++] = image[i];
+			curColor[j++] = image[i];
+			curGray[i] = image[i];
+			i++;
 		}
 	}
 }
