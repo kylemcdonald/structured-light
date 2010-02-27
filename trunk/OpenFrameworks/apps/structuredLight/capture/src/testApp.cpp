@@ -40,6 +40,10 @@ void testApp::setup(){
 	grayCode.setSubdivisions(10);
 	grayCode.generate();
 
+	twoPlusOne.setSize(1024, 768);
+	twoPlusOne.setWavelength(64);
+	twoPlusOne.generate();
+
 	gradient.setSize(1024, 768);
 	gradient.generate();
 
@@ -54,10 +58,14 @@ void testApp::setup(){
 	panel.addToggle("enable camera", "enableCamera", false);
 	panel.addToggle("camera settings", "cameraSettings", false);
 	panel.addToggle("fullscreen", "fullscreen", false);
+	panel.addToggle("frame by frame", "frameByFrame", false);
+	//panel.addToggle("frame by frame", "frameByFrame", false);
+
 	vector<string> patternTypes;
 	patternTypes.push_back("three phase");
 	patternTypes.push_back("gray code");
 	patternTypes.push_back("gradient");
+	patternTypes.push_back("two + one");
 	panel.addMultiToggle("pattern type", "patternType", 0, patternTypes);
 	vector<string> orientations;
 	orientations.push_back("vertical");
@@ -104,6 +112,8 @@ void testApp::update(){
 	if(curWavelength != lastWavelength) {
 		threePhase.setWavelength(curWavelength);
 		threePhase.generate();
+		twoPlusOne.setWavelength(curWavelength);
+		twoPlusOne.generate();
 	}
 	lastWavelength = curWavelength;
 
@@ -111,6 +121,8 @@ void testApp::update(){
 	if (minBrightness != lastMinBrightness) {
 		threePhase.setMinBrightness(minBrightness);
 		threePhase.generate();
+		twoPlusOne.setMinBrightness(minBrightness);
+		twoPlusOne.generate();
 	}
 	lastMinBrightness = minBrightness;
 
@@ -123,6 +135,8 @@ void testApp::update(){
 		grayCode.generate();
 		gradient.setOrientation(orientation);
 		gradient.generate();
+		twoPlusOne.setOrientation(orientation);
+		twoPlusOne.generate();
 	}
 	lastOrientation = curOrientation;
 
@@ -134,6 +148,7 @@ void testApp::update(){
 	lastSubdivisions = curSubdivisions;
 
 	threePhase.setReverse(panel.getValueB("reverse"));
+	twoPlusOne.setReverse(panel.getValueB("reverse"));
 	grayCode.setReverse(panel.getValueB("reverse"));
 
 	int curFullscreen = panel.getValueB("fullscreen");
@@ -164,13 +179,16 @@ void testApp::update(){
 			case 0: curGenerator = &threePhase; break;
 			case 1: curGenerator = &grayCode; break;
 			case 2: curGenerator = &gradient; break;
+			case 3: curGenerator = &twoPlusOne; break;
 		}
 	}
 	lastPatternType = curPatternType;
 }
 
 void testApp::draw(){
-	int patternFrame = ofGetFrameNum() / panel.getValueI("patternRate");
+	if(!panel.getValueB("frameByFrame")){
+		patternFrame = ofGetFrameNum() / panel.getValueI("patternRate");
+	}
 	curGenerator->get(patternFrame).draw(0, 0);
 	if(!hidden) {
 		int cameraRate = panel.getValueI("cameraRate");
@@ -215,5 +233,12 @@ void testApp::keyPressed(int key) {
 			ofShowCursor();
 		if(!hidden)
 			imageSaver.saveAll();
+	}
+	if(panel.getValueB("frameByFrame") && key == OF_KEY_LEFT){
+		patternFrame--;
+	}
+
+	if(panel.getValueB("frameByFrame") && key == OF_KEY_RIGHT){
+		patternFrame++;
 	}
 }
