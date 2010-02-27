@@ -5,6 +5,8 @@
 
 ofxStructuredLight is meant to be a collection of implementations of structured light generation and decoding algorithms, along with some basic helper methods.
 
+All of the required addons are available via this SVN, with the exception of ofx3DUtils, which is used in the decode and preview demo applications. http://code.google.com/p/ofx3dutils/
+
 = Decoding Usage =
 
 Basic use of ofxStructuredLight as a decoder requires the creation of a decoding object (e.g., ThreePhaseDecoder):
