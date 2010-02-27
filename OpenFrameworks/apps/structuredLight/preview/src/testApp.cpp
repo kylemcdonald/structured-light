@@ -174,7 +174,7 @@ void testApp::update() {
 		if (threePhase != NULL)
 			delete threePhase;
 		threePhase = new ThreePhaseDecoder();
-		threePhase->setup(cameraWidth, cameraHeight, 3);
+		threePhase->setup(cameraWidth, cameraHeight);
 		grabber.setup(cameraWidth, cameraHeight, this, false);
 		panel.setValueB("startCamera", false);
 	}
