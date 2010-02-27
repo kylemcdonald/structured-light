@@ -212,7 +212,7 @@ void testApp::setupInput() {
 		}
 		int w = (int) phase.getWidth();
 		int h = (int) phase.getHeight();
-		threePhase->setup(w, h , phase.bpp / 8);
+		threePhase->setup(w, h);
 
 		phaseUnwrapped.clear();
 		phaseUnwrapped.allocate(w, h, OF_IMAGE_COLOR);
@@ -229,7 +229,7 @@ void testApp::setupInput() {
 		movieInput.loadMovie("input/" + name);
 		movieInput.setVolume(0);
 		totalImages = movieInput.getTotalNumFrames();
-		threePhase->setup((int) movieInput.getWidth(), (int) movieInput.getHeight(), 3);
+		threePhase->setup((int) movieInput.getWidth(), (int) movieInput.getHeight());
 	}
 	jumpTo(0);
 }
