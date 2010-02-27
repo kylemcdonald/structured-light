@@ -58,7 +58,7 @@ void ofxQtVideoSaver::setup( int width , int height, string movieName){
 		/// kill a file and make a new one if needed:
 		FILE * pFile;
 		pFile = fopen (fileName.c_str(),"w");
-		fclose (pFile);
+	fclose (pFile);
 
 		Boolean isdir;
 		osErr = FSPathMakeRef((const UInt8*)fileName.c_str(), &fsref, &isdir);
@@ -274,7 +274,14 @@ void ofxQtVideoSaver::addAudioTrack(string audioPath)
 
 	char * p = new char[audioPath.length()+1];
     strcpy(p, audioPath.c_str());
+#ifdef TARGET_WIN32
     NativePathNameToFSSpec(p, &fileSpec, 0L);
+#endif
+#ifdef TARGET_OSX
+	Boolean isdir;
+	FSPathMakeRef((const UInt8*)p, &fsref, &isdir);
+	FSGetCatalogInfo(&fsref, kFSCatInfoNone, NULL, NULL, &fileSpec, NULL);
+#endif
 
 	err = OpenMovieFile(&fileSpec, &audioMovieRefNum, fsRdPerm);
 	err = NewMovieFromFile(&audioMovie, audioMovieRefNum, &audioMovieResId, NULL, newMovieActive, NULL);
