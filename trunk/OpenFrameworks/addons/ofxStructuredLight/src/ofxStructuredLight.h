@@ -6,6 +6,8 @@
 #include "RgbThreePhaseGenerator.h"
 #include "GrayCodeGenerator.h"
 #include "GradientGenerator.h"
+#include "TwoPlusOneGenerator.h"
 
 #include "ThreePhaseDecoder.h"
 #include "TwoPlusOneDecoder.h"
+
