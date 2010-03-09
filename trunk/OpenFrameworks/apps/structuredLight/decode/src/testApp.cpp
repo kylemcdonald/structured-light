@@ -325,6 +325,7 @@ void testApp::update() {
 				name += "-" + ofToString(sequenceFrame);
 			if (curFormat == ".png") {
 				threePhase->exportDepth("output/" + name + "-depth.png");
+				threePhase->exportTexture("output/" + name + "-texture.png");
 			} else {
 				int curStyle = panel.getValueI("style");
 				string outputFile = "output/" + name + "-" + styles[curStyle] + curFormat;
