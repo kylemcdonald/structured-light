@@ -219,3 +219,7 @@ void PhaseDecoder::exportCloud(string filename) {
 void PhaseDecoder::exportMesh(string filename) {
 	DepthExporter::exportMesh(filename, width, height, mask, depth, color);
 }
+
+void PhaseDecoder::exportTexture(string filename) {
+	DepthExporter::exportTexture(filename, width, height, mask, color);
+}

@@ -62,6 +62,27 @@ void DepthExporter::exportMesh(string filename, int width, int height, const boo
 	}
 }
 
+void DepthExporter::exportTexture(string filename, int width, int height, const bool* mask, const unsigned char* color) {
+	ofImage img;
+	img.allocate(width, height, OF_IMAGE_COLOR);
+	unsigned char* pixels = img.getPixels();
+	int n = width * height;
+
+	for (int i = 0; i < n; i++) {
+		if (mask[i]) {
+			pixels[i * 3 + 0] = 0;
+			pixels[i * 3 + 1] = 0;
+			pixels[i * 3 + 2] = 0;
+		} else {
+			pixels[i * 3 + 0] = color[i * 3 + 0];
+			pixels[i * 3 + 1] = color[i * 3 + 1];
+			pixels[i * 3 + 2] = color[i * 3 + 2];
+		}
+	}
+
+	img.saveImage(filename);
+}
+
 // Flipping the y is one way to orient the model correctly.
 inline void DepthExporter::exportObjVertex(ostream& obj, int x, int y, float z) {
 	obj << "v " << x << " " << -y << " " << z << endl;
