@@ -26,6 +26,7 @@ public:
 	int* getBlur();
 	void exportCloud(string filename);
 	void exportMesh(string filename);
+	void exportTexture(string filename);
 protected:
 	byte** colorSequence;
 	byte** graySequence;

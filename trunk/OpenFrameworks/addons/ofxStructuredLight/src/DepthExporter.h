@@ -9,6 +9,7 @@ public:
 	static void exportDepth(string filename, int width, int height, const bool* mask, const float* depth);
 	static void exportCloud(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color = NULL);
 	static void exportMesh(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color = NULL);
+	static void exportTexture(string filename, int width, int height, const bool* mask, const unsigned char* color);
 private:
 	static string getExtension(string filename);
 
