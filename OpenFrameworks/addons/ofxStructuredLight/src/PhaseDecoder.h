@@ -43,6 +43,7 @@ protected:
 	FastBlur blur;
 	bool phasePersistence;
 	float* lastPhase;
+	float* range;
 
 	/// this is where phase unwrapping begins, and unwrapped phase will be zero
 	int startInd;

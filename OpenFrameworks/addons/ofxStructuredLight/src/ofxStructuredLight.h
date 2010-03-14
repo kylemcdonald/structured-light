@@ -3,7 +3,6 @@
 #include "ofMain.h"
 
 #include "ThreePhaseGenerator.h"
-#include "RgbThreePhaseGenerator.h"
 #include "GrayCodeGenerator.h"
 #include "GradientGenerator.h"
 #include "TwoPlusOneGenerator.h"
