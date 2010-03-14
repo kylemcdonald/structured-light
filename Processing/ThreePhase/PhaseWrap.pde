@@ -36,7 +36,7 @@ void phaseWrap() {
       float phaseRange = max(phase1, phase2, phase3) - min(phase1, phase2, phase3);
       
       mask[y][x] = phaseRange <= noiseThreshold;
-      process[y][x] = !mask[y][x];
+      ready[y][x] = !mask[y][x];
       distance[y][x] = phaseRange;
 
       // this equation can be found in Song Zhang's
@@ -46,7 +46,6 @@ void phaseWrap() {
       // of allowing for simultaneous gamma correction.
       phase[y][x] = atan2(sqrt3 * (phase1 - phase3), 2 * phase2 - phase1 - phase3) / TWO_PI;
       
-      // build color based on the lightest channels from all three images
       colors[y][x] = getTexture(color1, color2, color3);
     }
   }
