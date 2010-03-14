@@ -7,16 +7,15 @@
 #define abs(x) (x < 0 ? -x : x)
 #endif
 
-class UnwrapPath {
+class WrappedPixel {
 public:
-	float diff;
 	int target;
-	float resultPhase;
-	UnwrapPath(float _diff, int _target, float _resultPhase) :
-			diff(_diff), target(_target), resultPhase(_resultPhase) {
-	};
-	bool operator<(const UnwrapPath& path) const {
-		return abs(diff) > abs(path.diff);
+	float distance, phase;
+	WrappedPixel(int target, float distance, float phase) :
+			target(target), phase(phase), distance(distance) {
+	}
+	bool operator<(const WrappedPixel& wrappedPixel) const {
+		return distance > wrappedPixel.distance;
 	}
 };
 
@@ -25,9 +24,15 @@ public:
 	float maxPhase;
 	float minPhase;
 	float* unwrapOrder;
+
+	PriorityDecoder();
+	~PriorityDecoder();
+
 protected:
 	virtual void unwrapPhase();
 
-	void unwrapPhase(int target, float sourcePhase);
-	std::priority_queue<UnwrapPath, std::vector<UnwrapPath>, std::less<UnwrapPath> > toProcess;
+	float* distance;
+	float diff(float a, float b);
+	void unwrapPhase(int target, float d, float r);
+	std::priority_queue<WrappedPixel, std::vector<WrappedPixel>, std::less<WrappedPixel> > toProcess;
 };

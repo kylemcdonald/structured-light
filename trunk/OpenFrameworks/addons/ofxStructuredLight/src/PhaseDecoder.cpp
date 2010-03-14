@@ -14,7 +14,8 @@ PhaseDecoder::PhaseDecoder() :
 		color(NULL),
 		orientation(PHASE_VERTICAL),
 		phasePersistence(false),
-		lastPhase(false) {
+		lastPhase(false),
+		range(NULL) {
 }
 
 // This code should migrate to DepthDecoder, as it will
@@ -55,6 +56,7 @@ PhaseDecoder::~PhaseDecoder() {
 		delete [] ready;
 		delete [] color;
 		delete [] lastPhase;
+		delete [] range;
 	}
 }
 

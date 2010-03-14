@@ -1,13 +1,11 @@
 #include "ThreePhaseDecoder.h"
 
 ThreePhaseDecoder::ThreePhaseDecoder() :
-	range(NULL),
 	brightness(.8),
 	rangeThreshold(20) {
 }
 
 ThreePhaseDecoder::~ThreePhaseDecoder() {
-	delete [] range;
 }
 
 void ThreePhaseDecoder::setup(int width, int height) {

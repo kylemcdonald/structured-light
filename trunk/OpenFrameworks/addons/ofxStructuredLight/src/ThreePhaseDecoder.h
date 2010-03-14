@@ -34,7 +34,6 @@ protected:
 	void unwrapPhase();
 	void makeColor();
 
-	float* range;
 	float brightness;
 	float rangeThreshold;
 
