@@ -21,11 +21,11 @@ void phaseUnwrap() {
     WrappedPixel cur = (WrappedPixel) toProcess.poll();
     int x = cur.x;
     int y = cur.y;
-    if(process[y][x]) {
+    if(ready[y][x]) {
       phase[y][x] = cur.phase;
-      process[y][x] = false;
+      ready[y][x] = false;
       float d = cur.distance;
-      float r = phase[y][x];
+      float r = cur.phase;
       if (y > 0)
         phaseUnwrap(x, y-1, d, r);
       if (y < inputHeight-1)
@@ -39,7 +39,7 @@ void phaseUnwrap() {
 }
 
 void phaseUnwrap(int x, int y, float d, float r) {
-  if(process[y][x]) {
+  if(ready[y][x]) {
     float diff = phase[y][x] - (r - (int) r);
     if (diff > .5)
       diff--;

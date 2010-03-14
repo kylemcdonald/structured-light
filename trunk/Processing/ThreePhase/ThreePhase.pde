@@ -4,7 +4,7 @@ PeasyCam cam;
 
 int inputWidth, inputHeight;
 float[][] phase, distance, depth;
-boolean[][] mask, process;
+boolean[][] mask, ready;
 color[][] colors;
 int[][] names;
 
@@ -20,7 +20,7 @@ void setup() {
   distance = new float[inputHeight][inputWidth];
   depth = new float[inputHeight][inputWidth];
   mask = new boolean[inputHeight][inputWidth];
-  process = new boolean[inputHeight][inputWidth];
+  ready = new boolean[inputHeight][inputWidth];
   colors = new color[inputHeight][inputWidth];
   names = new int[inputHeight][inputWidth];
   
