@@ -53,24 +53,10 @@ void testApp::setup() {
 	panel.addSlider("range threshold", "rangeThreshold", 40, 0, 255, true);
 
 	panel.addSlider("depth scale", "depthScale", 130, -200, 200, false);
-	panel.addSlider("depth skew", "depthSkew", -28, -50, 50, false);
+	panel.addSlider("depth skew", "depthSkew", -28, -150, 150, false);
 
 	panel.addSlider("filter min", "filterMin", -1024, -1024, 1024, false);
 	panel.addSlider("filter max", "filterMax", 1024, -1024, 1024, false);
-
-	panel.addPanel("export", 1);
-	panel.setWhichPanel("export");
-/*
-	exportFormats.push_back(".obj");
-	exportFormats.push_back(".ply");
-	exportFormats.push_back(".png");
-	panel.addMultiToggle("export format", "exportFormat", 0, exportFormats);
-	panel.addToggle("export", "export", false);*/
-
-	panel.addToggle("record", "record", false);
-
-	panel.addToggle("render movie", "renderMovie", false);
-	panel.addSlider("movie framerate", "movieFramerate", 60, 5, 60, true);
 }
 
 void testApp::drawCloud() {
@@ -191,30 +177,6 @@ void testApp::update() {
 
 		if (curPhasePersistence != lastPhasePersistence)
 			threePhase->clearLastPhase();
-
-		/*
-		// export handling
-		bool curExport = panel.getValueB("export");
-		bool curRecord = panel.getValueB("record");
-		if (curExport || curRecord) {
-			string curFormat = exportFormats[panel.getValueI("exportFormat")];
-			string name = inputList.getSelectedName();
-			if (curRecord)
-				name += "-" + ofToString(sequenceFrame);
-			if (curFormat == ".png") {
-				threePhase->exportDepth("output/" + name + "-depth.png");
-			} else {
-				int curStyle = panel.getValueI("style");
-				string outputFile = "output/" + name + "-" + styles[curStyle] + curFormat;
-				if (curStyle == 0) {
-					threePhase->exportCloud(outputFile);
-				} else if (curStyle == 1) {
-					threePhase->exportMesh(outputFile);
-				}
-			}
-			panel.setValueB("export", false);
-		}
-		*/
 	}
 
 	lastGamma = gamma;
@@ -335,7 +297,6 @@ void testApp::draw() {
 		drawAxes(256); // major axes
 
 	if (threePhase != NULL) {
-		// can't guarantee this won't try decoding while the three phase images are being updated
 		if(needsDecode)
 			threePhase->decode();
 
@@ -367,11 +328,6 @@ void testApp::draw() {
 
 	camera.remove();
 
-	if (panel.getValueB("renderMovie") && hidden) {
-		screenCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
-		movieOutput.addFrame(screenCapture.getPixels(), 1. / panel.getValueI("movieFramerate"));
-	}
-
 	if (!hidden) {
 		ofSetColor(255, 255, 255);
 
@@ -392,18 +348,12 @@ void testApp::draw() {
 }
 
 void testApp::keyPressed(int key) {
+	if (key == 's')
+		grabber.videoSettings();
 	if (key == 'f')
 		ofToggleFullscreen();
 	if (key == '\t') {
 		hidden = !hidden;
 		panel.hidden = hidden;
-		if (panel.getValueB("renderMovie")) {
-			if (hidden) {
-				screenCapture.allocate(ofGetWidth(), ofGetHeight(), OF_IMAGE_COLOR);
-				movieOutput.setup(ofGetWidth(), ofGetHeight(), "output/" + ofToString(ofGetFrameNum()) + ".mov");
-			} else {
-				movieOutput.finishMovie();
-			}
-		}
 	}
 }

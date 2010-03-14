@@ -38,7 +38,7 @@ public:
 	ThreePhaseDecoder* threePhase;
 
 	ofxAutoControlPanel panel;
-	vector<string> styles, exportFormats;
+	vector<string> styles;
 	bool hidden;
 
 	float lastDepthScale, lastDepthSkew;
@@ -46,7 +46,4 @@ public:
 	int lastRangeThreshold, lastOrientation;
 	float lastGamma;
 	bool lastPhasePersistence;
-
-	ofxQtVideoSaver movieOutput;
-	ofImage screenCapture;
 };
