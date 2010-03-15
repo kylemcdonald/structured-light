@@ -436,6 +436,8 @@ void ofxQtVideoSaver::finishMovie(){
 
 void ofxQtVideoSaver::addFrame(unsigned char* data, float frameLengthInSecs){
 
+    float timeForQt;
+
 	if (!bSetupForRecordingMovie) return;
 
 /*  Save the current GWorld and set the offscreen GWorld as current.
@@ -505,7 +507,7 @@ void ofxQtVideoSaver::addFrame(unsigned char* data, float frameLengthInSecs){
       ======================================  */
 
 	  // converting frame length to a time duration;
-	  float timeForQt = 1 / frameLengthInSecs;
+	  timeForQt = 1 / frameLengthInSecs;
 
       osErr = AddMediaSample
         (
