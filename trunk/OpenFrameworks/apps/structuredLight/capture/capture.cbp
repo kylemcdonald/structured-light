@@ -143,8 +143,6 @@
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\PhaseDecoder.h" />
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\PriorityDecoder.cpp" />
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\PriorityDecoder.h" />
-		<Unit filename="..\..\..\addons\ofxStructuredLight\src\RgbThreePhaseGenerator.cpp" />
-		<Unit filename="..\..\..\addons\ofxStructuredLight\src\RgbThreePhaseGenerator.h" />
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\ThreePhaseDecoder.cpp" />
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\ThreePhaseDecoder.h" />
 		<Unit filename="..\..\..\addons\ofxStructuredLight\src\ThreePhaseGenerator.cpp" />
