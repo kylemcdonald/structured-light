@@ -23,7 +23,6 @@ class PriorityDecoder : public PhaseDecoder {
 public:
 	float maxPhase;
 	float minPhase;
-	float* unwrapOrder;
 
 	PriorityDecoder();
 	~PriorityDecoder();

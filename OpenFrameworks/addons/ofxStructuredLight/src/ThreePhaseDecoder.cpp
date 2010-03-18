@@ -47,10 +47,12 @@ void ThreePhaseDecoder::makePhase() {
 		i2 = Gamma(i2 / 255.0, gamma) * 255.0;
 		i3 = Gamma(i3 / 255.0, gamma) * 255.0;
 
-		phase[i] = atan2f(sqrtf(3) * (i1 - i3), 2.f * i2 - i1 - i3) / (float) TWO_PI;
 		range[i] = findRange(i1, i2, i3);
-		mask[i] = range[i] < rangeThreshold;
+		mask[i] = range[i] <= rangeThreshold;
 		ready[i] = !mask[i];
+
+		if(ready[i])
+			phase[i] = atan2f(sqrtf(3) * (i1 - i3), 2.f * i2 - i1 - i3) / (float) TWO_PI;
 	}
 }
 
@@ -84,5 +86,5 @@ void ThreePhaseDecoder::setBrightness(float brightness) {
 }
 
 void ThreePhaseDecoder::unwrapPhase() {
-	PriorityDecoder::unwrapPhase();
+	FloodFillDecoder::unwrapPhase();
 }

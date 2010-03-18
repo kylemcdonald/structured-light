@@ -13,6 +13,37 @@ PatternGenerator::PatternGenerator() :
 	reverse(false) {
 }
 
+void PatternGenerator::applyLut(string filename) {
+	ifstream file;
+	file.open(filename.c_str());
+	if(!file.is_open())
+		cout << "Can't load LUT: " << filename << endl;
+	int lut[3][256];
+	string line;
+	int i = 0;
+	while(getline(file, line)) {
+		istringstream cur(line);
+		cur >> lut[0][i] >> ws >> lut[1][i] >> ws >> lut[2][i];
+		i++;
+	}
+	file.close();
+
+	for(int i = 0; i < size(); i++) {
+		ofImage& cur = sequence[i];
+		unsigned char* pixels = cur.getPixels();
+		int n = 3 * getWidth() * getHeight();
+		for(int j = 0; j < n;) {
+			pixels[j] = lut[0][pixels[j]];
+			j++;
+			pixels[j] = lut[1][pixels[j]];
+			j++;
+			pixels[j] = lut[2][pixels[j]];
+			j++;
+		}
+		cur.update();
+	}
+}
+
 void PatternGenerator::setSize(int width, int height) {
 	this->width = width;
 	this->height = height;
