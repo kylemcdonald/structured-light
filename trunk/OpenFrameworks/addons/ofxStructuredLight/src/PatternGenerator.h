@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include <fstream>
 
 class PatternGenerator {
 protected:
@@ -16,5 +17,6 @@ public:
 	int getWidth();
 	int getHeight();
 	int size();
+	void applyLut(string filename);
 	ofImage& get(int i);
 };

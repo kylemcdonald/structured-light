@@ -18,7 +18,7 @@
 	DecodingStrategy while ThreePhaseDecoder is just a phase generator
 	and color generator.
 */
-class ThreePhaseDecoder : public PriorityDecoder {
+class ThreePhaseDecoder : public FloodFillDecoder {
 public:
 	ThreePhaseDecoder();
 	~ThreePhaseDecoder();

@@ -27,6 +27,7 @@ public:
 	void exportCloud(string filename);
 	void exportMesh(string filename);
 	void exportTexture(string filename);
+	float* unwrapOrder;
 protected:
 	byte** colorSequence;
 	byte** graySequence;
