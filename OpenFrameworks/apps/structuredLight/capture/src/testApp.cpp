@@ -48,7 +48,7 @@ void testApp::setup(){
 	gradient.generate();
 
 	// setup panel
-	panel.setup("control", 8, 8, 300, 700);
+	panel.setup("control", 8, 8, 300, 740);
 	panel.loadSettings("control.xml");
 	panel.addPanel("capture", 1);
 	panel.addPanel("three phase", 1);
@@ -75,7 +75,7 @@ void testApp::setup(){
 	panel.addSlider("camera rate", "cameraRate", 1, 1, 6, true);
 	panel.addSlider("camera offset", "cameraOffset", 0, 0, 5, true);
 	panel.addSlider("min brightness", "minBrightness", 0, 0, 255, true);
-
+	panel.addToggle("use projector lut", "projectorLut", false);
 
 	panel.setWhichPanel("three phase");
 	panel.addSlider("wavelength", "wavelength", 64, 8, 512, true);
@@ -182,6 +182,11 @@ void testApp::update(){
 		}
 	}
 	lastPatternType = curPatternType;
+
+	if(panel.getValueB("projectorLut")) {
+		curGenerator->applyLut(ofToDataPath("projector-lut.tsv"));
+		panel.setValueB("projectorLut", false);
+	}
 }
 
 void testApp::draw(){
