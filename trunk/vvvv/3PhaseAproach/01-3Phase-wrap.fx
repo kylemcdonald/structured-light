@@ -22,7 +22,7 @@ float4x4 tTex <string uiname="Texture Transform";>; //Texture Transform
 //
 
 static const float TWO_PI = 6.28318530717958647693f;
-//float Var01 <string uiname="Var01";>;
+float Treshold <string uiname="Treshold";>;
 //float Var02 <string uiname="Var02";>;
 //float4 Var03 <string uiname="Var03";>;
 
@@ -118,10 +118,15 @@ warpColor[0] = dot(color01.rgb, float3(0.3, 0.59, 0.11));
 warpColor[1] = dot(color02.rgb, float3(0.3, 0.59, 0.11));
 warpColor[2] = dot(color03.rgb, float3(0.3, 0.59, 0.11));
 
+if(warpColor[0] <= Treshold || warpColor[1] <= Treshold || warpColor[1] <= Treshold )
+{
+warpColor = 0;
+}
+
 float4 OutColor =0;
-OutColor[2] = atan2(sqrt(3)*(warpColor[1]-warpColor[3]),2*warpColor[2]-warpColor[1]-warpColor[3])/TWO_PI;
-OutColor[0] = OutColor[2];
-OutColor[1] = OutColor[2];
+OutColor = atan2(sqrt(3)*(warpColor[1]-warpColor[3]),2*warpColor[2]-warpColor[1]-warpColor[3])/TWO_PI;
+
+
 
 OutColor[3] = 1;
 
