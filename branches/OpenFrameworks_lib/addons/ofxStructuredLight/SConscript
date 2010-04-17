@@ -10,10 +10,10 @@ srcs = 	[
 	'PatternGenerator.cpp',
 	'PhaseDecoder.cpp',
 	'PriorityDecoder.cpp',
-	'RgbThreePhaseGenerator.cpp',
 	'ThreePhaseDecoder.cpp',
 	'ThreePhaseGenerator.cpp',
 	'TwoPlusOneDecoder.cpp',
+	'TwoPlusOneGenerator.cpp',
 ]
 srcs = map(lambda x: 'src/'+x, srcs)
 
