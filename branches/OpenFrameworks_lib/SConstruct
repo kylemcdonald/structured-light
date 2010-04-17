@@ -45,16 +45,16 @@ env = Environment(
 		'addons/ofxVectorMath/src',
 		'addons/ofxXmlSettings/src',
 		'addons/ofxXmlSettings/libs',
-		'libs/fmodex/inc',
-		'libs/free_type_2.1.4/include',
-		'libs/free_type_2.1.4/include/freetype2',
-		'libs/freeImage',
+		'libs/fmodex/include',
+		'libs/FreeImage/include',
+		'libs/freetype/include',
+		'libs/freetype/include/freetype2',
 		'libs/glee/include',
-		'libs/glu',
-		'libs/glut',
-		'libs/Poco/include',
-		'libs/QtDevWin/CIncludes',
-		'libs/rtAudio/includes',
+		'libs/glu/include',
+		'libs/glut/include',
+		'libs/poco/include',
+		'libs/quicktime/include',
+		'libs/rtAudio/include',
 		'libs/videoInput/include',
 		'libs/addons',
 		'addons/ofx3DUtils/src',
@@ -63,14 +63,14 @@ env = Environment(
 	],
 	LIBPATH = [
 		'libs/fmodex/lib',
-		'libs/free_type_2.1.4/lib',
-		'libs/freeImage',
+		'libs/freetype/lib',
+		'libs/FreeImage',
 		'libs/glee/lib',
-		'libs/glu',
-		'libs/glut',
+		'libs/glu/lib',
+		'libs/glut/lib',
 		'libs/Poco/lib',
-		'libs/QtDevWin/Libraries',
-		'libs/rtAudio/libs/vs2008',
+		'libs/quicktime/lib',
+		'libs/rtAudio/lib/vs2008',
 		'libs/videoInput/lib',
 		'addons/ofxOpenCv/libs/opencv/lib/win32',
 		'addons/ofxOsc/libs/oscpack/lib/win32',
@@ -87,7 +87,7 @@ Help(vars.GenerateHelpText(env))
 if (env['OS']=='win32'):
 	t = Tool('msvc')
 	t(env)
-	env['MSVS_VERSION'] = '8.0'
+	#env['MSVS_VERSION'] = '8.0'
 	print "Using msvs version ",env['MSVS_VERSION']
 	#manifest 
 	env['LINKCOM'] = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1']

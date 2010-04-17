@@ -43,7 +43,7 @@ Help(vars.GenerateHelpText(env))
 if (env['OS']=='win32'):
 	t = Tool('msvc')
 	t(env)
-	env['MSVS_VERSION'] = '8.0'
+	#env['MSVS_VERSION'] = '8.0'
 	print "Using msvs version ",env['MSVS_VERSION']
 elif (env['OS']=='posix'):
 	t = Tool('gcc')
@@ -84,12 +84,12 @@ for v in variants:
 		if not conf.CheckOpenCV(v['env']['OPENCV_ROOT']):
 			print
 			print '*** error: Set $OPENCV_ROOT in ''scons.conf'' or edit opencv.conf.py!'
-			#Exit(1)
+			Exit(1)
 		# Check OpenFrameworks
 		if not conf.CheckOpenFrameworks(v['env']['OPENFRAMEWORKS_ROOT']):
 			print
 			print '*** error: Set $OPENFRAMEWORKS_ROOT in ''scons.conf'' or edit openframeworks.conf.py!'
-			#Exit(1)
+			Exit(1)
 		v['env'] = conf.Finish()
 
 if (env['OS']=='win32'):
