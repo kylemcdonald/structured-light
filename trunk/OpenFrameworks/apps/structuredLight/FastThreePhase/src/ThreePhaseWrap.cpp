@@ -6,7 +6,7 @@ unsigned char ThreePhaseWrap::phaseGammaLut[WRAP_LUT_STEPS][WRAP_LUT_STEPS][WRAP
 #endif
 
 ThreePhaseWrap::ThreePhaseWrap() :
-		threshold(128) {
+		threshold(16) {
 	#ifdef USE_WRAP_LUT
 	if(!phaseGammaLutReady) {
 		cout << "Building phase wrap lookup table... ";

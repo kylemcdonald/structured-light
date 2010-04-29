@@ -26,6 +26,8 @@ void testApp::setup() {
 	threePhaseWrap.set(0, phase1.getPixels(), 3);
 	threePhaseWrap.set(1, phase2.getPixels(), 3);
 	threePhaseWrap.set(2, phase3.getPixels(), 3);
+
+	at = bt = ct = dt = 0;
 }
 
 void testApp::update(){
@@ -36,26 +38,34 @@ void testApp::update(){
 	int wrapThreshold = mouseX;
 	if(wrapThreshold > 254)
 		wrapThreshold = 254;
-	threePhaseWrap.setThreshold(wrapThreshold);
+	//threePhaseWrap.setThreshold(wrapThreshold);
 
 	int scanlineThreshold = mouseY;
 	if(scanlineThreshold > 254)
 		scanlineThreshold = 254;
-	scanlineOffset.setThreshold(scanlineThreshold);
+	//scanlineOffset.setThreshold(scanlineThreshold);
 
+	int a = ofGetElapsedTimeMillis();
 	threePhaseWrap.makeWrappedPhase(phasePixels, qualityPixels); // 1.8 ms
+	int b = ofGetElapsedTimeMillis();
 	partialQualityMap.makeQualityMap(phasePixels, qualityPixels); // 1.8 ms
+	int c = ofGetElapsedTimeMillis();
 	scanlineOffset.makeOffset(phasePixels, qualityPixels, (char*) offsetPixels); // 3.4 ms
+	int d = ofGetElapsedTimeMillis();
 	unwrap.makeUnwrapped(qualityPixels, phasePixels, (char*) offsetPixels, unwrappedPixels); // 1.3 ms
+	int e = ofGetElapsedTimeMillis();
+
+	at += b - a;
+	bt += c - b;
+	ct += d - c;
+	dt += e - d;
 }
 
 void testApp::draw(){
 	glColor3f(1, 1, 1);
 
-	phase.update();
-	phase.draw(0, 0);
 	unwrapped.update();
-	unwrapped.draw(0, inputHeight);
+	unwrapped.draw(0, 0);
 
 	// draw histogram
 	int* qualityHistogram = scanlineOffset.getQualityHistogram();
@@ -79,5 +89,20 @@ void testApp::draw(){
 	}
 	glEnd();
 
-	ofDrawBitmapString(ofToString((int) ofGetFrameRate()), ofGetWidth() - 32, ofGetHeight() - 8);
+	ofSetColor(255, 255, 255);
+	int t = ofGetFrameNum() + 1;
+	int us = 100;
+	int a = (at * us) / t;
+	int b = (bt * us) / t;
+	int c = (ct * us) / t;
+	int d = (dt * us) / t;
+	int total = (a + b + c + d);
+	int fps = (1000 * us) / total;
+	ofDrawBitmapString(
+		"wrap " + ofToString(a) + "us + " +
+		"quality " + ofToString(b) + "us + " +
+		"offset " + ofToString(c) + "us + " +
+		"unwrap " + ofToString(d) + "us = " +
+		ofToString(total) + "us / " + ofToString(fps) + " fps",
+		10, ofGetHeight() - 10);
 }
