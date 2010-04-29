@@ -8,8 +8,8 @@
 #include "Unwrap.h"
 
 const int
-	inputWidth = 518,
-	inputHeight = 388;
+	inputWidth = 640,
+	inputHeight = 480;
 
 class testApp : public ofBaseApp {
 public:
@@ -24,4 +24,6 @@ public:
 
 	ofImage phase, quality, offset, unwrapped;
 	unsigned char *qualityPixels, *offsetPixels, *phasePixels, *unwrappedPixels;
+
+	int at, bt, ct, dt;
 };
