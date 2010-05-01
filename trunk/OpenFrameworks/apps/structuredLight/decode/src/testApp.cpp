@@ -47,7 +47,7 @@ void testApp::setup() {
 
 	panel.addSlider("range threshold", "rangeThreshold", 40, 0, 255, true);
 
-	panel.addSlider("depth scale", "depthScale", 130, -200, 200, false);
+	panel.addSlider("depth scale", "depthScale", 130, -500, 500, false);
 	panel.addSlider("depth skew", "depthSkew", -28, -50, 50, false);
 
 	panel.addSlider("filter min", "filterMin", -1024, -1024, 1024, false);
@@ -324,7 +324,7 @@ void testApp::update() {
 			if (curRecord)
 				name += "-" + ofToString(sequenceFrame);
 			if (curFormat == ".png") {
-				threePhase->exportDepth("output/" + name + "-depth.png");
+				threePhase->exportDepth("output/" + name + "-depth.png", panel.getValueI("filterMin"), panel.getValueI("filterMax"));
 				threePhase->exportTexture("output/" + name + "-texture.png");
 			} else {
 				int curStyle = panel.getValueI("style");
@@ -501,9 +501,7 @@ void testApp::draw() {
 		int srcWidth = threePhase->getWidth();
 		int srcHeight = threePhase->getHeight();
 
-		if (true /*redraw*/) {
-			redraw = false;
-
+		if (redraw) {
 			bool* mask = threePhase->getMask();
 			float* depth = threePhase->getDepth();
 			byte* color = threePhase->getColor();
@@ -530,54 +528,37 @@ void testApp::draw() {
 			int i = 0;
 			for (int y = 0; y < srcHeight; y++) {
 				for (int x = 0; x < srcWidth; x++) {
-					int pixInd = y * srcWidth + x;
-
-					///
-					ppix[pixInd] = (char) ofMap(wrappedPhase[pixInd],
+					ppix[i] = (char) ofMap(wrappedPhase[i],
 					                            0, 1,
 					                            0, 255);
 
-					///
-					rpix[pixInd] = (char) range[pixInd];
+					rpix[i] = (char) range[i];
 
-					///
 					float mag;
 					ofColor col;
 
 					if (!mask[i]) {
-						mag = ofMap(phase[pixInd], minPhase, maxPhase, 0.0, 1.0);
+						mag = ofMap(phase[i], minPhase, maxPhase, 0.0, 1.0);
 					} else {
 						mag = 0.5;
 					}
 					col = makeColor(mag);
 
-					upix[pixInd*3] =  (char)col.r;
-					upix[pixInd*3+1] = (char)col.g;
-					upix[pixInd*3+2] = (char)col.b;
+					upix[i*3] =  (char)col.r;
+					upix[i*3+1] = (char)col.g;
+					upix[i*3+2] = (char)col.b;
 
-
-					///
-					mag = 1.0 - ofMap(depth[pixInd], minDepth, maxDepth, 0.0, 1.0);
+					mag = 1.0 - ofMap(depth[i], minDepth, maxDepth, 0.0, 1.0);
 					col = makeColor(mag);
-					//if ( mask[i]) {
-					dpix[pixInd*3] = (short) col.r;
-					dpix[pixInd*3+1] = (short) col.g;
-					dpix[pixInd*3+2] = (short) col.b;
-					/*} else {
-					    dpix[pixInd*3] =  (char)0;
-					    dpix[pixInd*3+1] = (char)0;
-					    dpix[pixInd*3+2] = (char)0;
-					}*/
+					dpix[i*3] = (short) col.r;
+					dpix[i*3+1] = (short) col.g;
+					dpix[i*3+2] = (short) col.b;
 
-					///
-
-					mag = unwrapOrder[pixInd] / (float)(srcWidth * srcHeight);
+					mag = unwrapOrder[i] / (float)(srcWidth * srcHeight);
 					col = makeColor(mag);
-					opix[pixInd*3] = (short) col.r;
-					opix[pixInd*3+1] = (short) col.g;
-					opix[pixInd*3+2] = (short) col.b;
-
-					///
+					opix[i*3] = (short) col.r;
+					opix[i*3+1] = (short) col.g;
+					opix[i*3+2] = (short) col.b;
 
 					i++;
 				}
