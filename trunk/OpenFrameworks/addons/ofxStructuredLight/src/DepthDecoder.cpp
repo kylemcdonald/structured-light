@@ -73,8 +73,8 @@ void DepthDecoder::filterRange(float min, float max) {
 			mask[i] = true;
 }
 
-void DepthDecoder::exportDepth(string filename) {
-	DepthExporter::exportDepth(filename, width, height, mask, depth);
+void DepthDecoder::exportDepth(string filename, float min, float max) {
+	DepthExporter::exportDepth(filename, width, height, mask, depth, min, max);
 }
 
 void DepthDecoder::exportCloud(string filename) {

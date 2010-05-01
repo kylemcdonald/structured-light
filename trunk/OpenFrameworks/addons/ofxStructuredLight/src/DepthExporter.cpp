@@ -6,29 +6,16 @@
  http://local.wasp.uwa.edu.au/~pbourke/dataformats/ply/
 */
 
-void DepthExporter::exportDepth(string filename, int width, int height, const bool* mask, const float* depth) {
+void DepthExporter::exportDepth(string filename, int width, int height, const bool* mask, const float* depth, float min, float max) {
 	ofImage img;
 	img.allocate(width, height, OF_IMAGE_GRAYSCALE);
 	unsigned char* pixels = img.getPixels();
 	int n = width * height;
-
-	float min = + numeric_limits<float>::max();
-	float max = -numeric_limits<float>::max();
-
-	for (int i = 0; i < n; i++) {
-		if (!mask[i]) {
-			if (depth[i] < min)
-				min = depth[i];
-			if (depth[i] > max)
-				max = depth[i];
-		}
-	}
-
 	for (int i = 0; i < n; i++) {
 		if (mask[i]) {
 			pixels[i] = 0;
 		} else {
-			pixels[i] = (unsigned char) ofClamp(ofMap(depth[i], min, max, 0, 255), 0, 255);
+			pixels[i] = (unsigned char) ofClamp(ofMap(depth[i], min, max, 1, 256), 1, 255);
 		}
 	}
 

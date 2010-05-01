@@ -15,7 +15,7 @@ public:
 			target(target), phase(phase), distance(distance) {
 	}
 	bool operator<(const WrappedPixel& wrappedPixel) const {
-		return distance > wrappedPixel.distance;
+		return distance < wrappedPixel.distance;
 	}
 };
 
