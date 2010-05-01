@@ -16,10 +16,10 @@ public:
 	float* getDepth();
 	void filterDeviations(float deviations);
 	void filterRange(float min, float max);
-	void exportDepth(string filename);
+	void exportDepth(string filename, float min, float max);
 	virtual void exportCloud(string filename);
 	virtual void exportMesh(string filename);
-
+	float avgDepth;
 	float minDepth;
 	float maxDepth;
 protected:

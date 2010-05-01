@@ -4,6 +4,8 @@
 #include "FastBlur.h"
 #include "PhaseConstants.h"
 
+//#define LINEARIZE_GAMMA
+
 class PhaseDecoder : public DepthDecoder {
 public:
 	PhaseDecoder();
@@ -31,6 +33,7 @@ public:
 protected:
 	byte** colorSequence;
 	byte** graySequence;
+	byte* reflectivity;
 	float* phase;
 	float* wrappedPhase;
 	bool* ready;
@@ -46,6 +49,10 @@ protected:
 	float* lastPhase;
 	float* range;
 
+	#ifdef LINEARIZE_GAMMA
+	int gammaHistogram[256];
+	#endif
+
 	/// this is where phase unwrapping begins, and unwrapped phase will be zero
 	int startInd;
 
@@ -55,4 +62,7 @@ protected:
 	virtual void makeColor() = 0;
 	virtual int getStart();
 	float getRemaining();
+
+	static const int offsetBinSize = 128;
+	static const int offsetBinCount = 256;
 };
