@@ -127,6 +127,8 @@ subdivisions: starting with the lowest frequency, at 1024x768 you might project 
 
 Decode takes a three phase capture (either a folder of .jpg files or a movie) and decodes its depth a texture components. Once decoded, it can output these to a variety of formats.
 
+While rendering, the application has mouse control over the 3d camera using some basic input: left click is for rotation, right click is for zoom, both/middle button is for translation.
+
 === input ===
 
 input: select a movie file or folder containing a numbered sequence of .jpg files for decoding.
@@ -183,7 +185,7 @@ maxPhase, maxDepthPower: controls the color normalization of the phase image and
 
 == Preview ==
 
-This app is very experimental, but can do some basic interactive rendering of 3d capture.
+This app is very experimental, but can do some basic interactive rendering of 3d capture. The camera controls are the same as the Decode app.
 
 === camera ===
 
