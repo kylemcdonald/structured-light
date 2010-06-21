@@ -5,13 +5,16 @@ void testApp::setup() {
 
 	cout << "Loading images... ";
 	ofImage phase1, phase2, phase3;
-	string directory = "kyle";
-	phase1.loadImage(directory + "/phase1.png");
-	phase2.loadImage(directory + "/phase2.png");
-	phase3.loadImage(directory + "/phase3.png");
+	string directory = "zhang";
+	string extension = "png";
+	phase1.loadImage(directory + "/phase1." + extension);
+	phase2.loadImage(directory + "/phase2." + extension);
+	phase3.loadImage(directory + "/phase3." + extension);
 
 	inputWidth = (int) phase1.getWidth();
 	inputHeight = (int) phase2.getHeight();
+
+	ofSetWindowShape(inputWidth, inputHeight);
 
 	phase.allocate(inputWidth, inputHeight, OF_IMAGE_GRAYSCALE);
 	quality.allocate(inputWidth, inputHeight, OF_IMAGE_GRAYSCALE);
