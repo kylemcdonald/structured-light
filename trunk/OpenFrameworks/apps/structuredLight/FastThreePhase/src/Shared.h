@@ -2,7 +2,7 @@
 
 #include <string> // for memset, memcpy
 #include <math.h> // for sqrtf
-
+#include <vector>
 #include <iostream>
 using namespace std;
 

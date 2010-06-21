@@ -7,7 +7,7 @@
 	memory. If you're willing to sacrifice some accuracy, WRAP_LUT_ACCURACY = 1
 	offers a good compromise with speed.
 */
-#define USE_WRAP_LUT
+//#define USE_WRAP_LUT
 
 #include "ImageUtility.h"
 #include "Shared.h"
