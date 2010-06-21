@@ -11,7 +11,7 @@ void ThreadedSolver::setup() {
 	smoothness = .1;
 
 	#ifdef DOUBLECHECK
-	lut.setup("firefly-lut-int.csv");
+	lut.setup("firefly-lut.csv");
 	#endif
 
 	ofxDirList dirList;
