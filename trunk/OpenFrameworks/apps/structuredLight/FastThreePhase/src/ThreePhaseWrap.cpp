@@ -1,33 +1,30 @@
 #include "ThreePhaseWrap.h"
 
-#ifdef USE_WRAP_LUT
-	bool ThreePhaseWrap::phaseGammaLutReady = false;
-	unsigned char ThreePhaseWrap::phaseGammaLut[WRAP_LUT_STEPS][WRAP_LUT_STEPS][WRAP_LUT_STEPS][2];
-#endif
+bool ThreePhaseWrap::phaseGammaLutReady = false;
+unsigned char ThreePhaseWrap::phaseGammaLut[WRAP_V_SIZE][WRAP_U_SIZE][2];
 
 ThreePhaseWrap::ThreePhaseWrap() :
 		threshold(64) {
-	#ifdef USE_WRAP_LUT
 	if(!phaseGammaLutReady) {
 		cout << "Building phase wrap lookup table... ";
 		float sqrt3 = sqrtf(3.);
 		float ipi = 128. / M_PI;
-		for(int i1 = 0; i1 < WRAP_LUT_STEPS; i1++) {
-			for(int i2 = 0; i2 < WRAP_LUT_STEPS; i2++) {
-				for(int i3 = 0; i3 < WRAP_LUT_STEPS; i3++) {
-					int v = i1 - i3;
-					int u = 2 * i2 - i1 - i3;
-					float phase = atan2f(sqrt3 * v, u) * ipi;
-					float modulation = sqrtf(3 * v * v + u * u) / (i1 + i2 + i3);
-					phaseGammaLut[i1][i2][i3][0] = 128 + (unsigned char) phase;
-					phaseGammaLut[i1][i2][i3][1] = (unsigned char) (255 * modulation);
-				}
+		for(int vo = 0; vo < WRAP_V_SIZE; vo++) {
+			for(int uo = 0; uo < WRAP_U_SIZE; uo++) {
+				int v = vo - WRAP_V_OFFSET;
+				int u = uo - WRAP_U_OFFSET;
+				float phase = atan2f(sqrt3 * v, u) * ipi;
+				float modulation = sqrtf(3 * v * v + u * u);
+				//float average = i1 + i2 + i3;
+				//float gamma = modulation / average;
+				phaseGammaLut[vo][uo][0] = 128 + (unsigned char) phase;
+				//phaseGammaLut[vo][uo][1] = (gamma * 255) > 255 ? 255 : (unsigned char) (gamma * 255);
+				phaseGammaLut[vo][uo][1] = modulation > 255 ? 255 : (unsigned char) modulation;
 			}
 		}
 		cout << "done." << endl;
 		phaseGammaLutReady = true;
 	}
-	#endif
 }
 
 ThreePhaseWrap::~ThreePhaseWrap() {
@@ -71,23 +68,11 @@ void ThreePhaseWrap::makeWrappedPhase(unsigned char* wrappedPhase, unsigned char
 		int i2 = *(p2itr++);
 		int i3 = *(p3itr++);
 
-		#ifdef USE_WRAP_LUT
-			i1 >>= WRAP_LUT_ACCURACY;
-			i2 >>= WRAP_LUT_ACCURACY;
-			i3 >>= WRAP_LUT_ACCURACY;
-			unsigned char* cur = phaseGammaLut[i1][i2][i3];
-			wrappedPhase[i] = cur[0];
-			mask[i] = cur[1] < threshold ? LABEL_BACKGROUND : 0;
-		#else
-			int a = i1 - i3;
-			int b = 2 * i2 - i1 - i3;
-			float r = atan2f(sqrt3 * a, b) * ipi;
-			wrappedPhase[i] = 128 + (unsigned char) r;
-			float intensityModulation = sqrtf(3 * a * a + b * b);
-			//float intensityAverage = i1 + i2 + i3;
-			//float g = intensityModulation / intensityAverage;
-			//mask[i] = (g * 255);// < threshold ? LABEL_BACKGROUND : 0;
-			mask[i] = intensityModulation < threshold ? LABEL_BACKGROUND : 0;
-		#endif
+		int v = i1 - i3;
+		int u = 2 * i2 - i1 - i3;
+
+		unsigned char* cur = phaseGammaLut[v + WRAP_V_OFFSET][u + WRAP_U_OFFSET];
+		wrappedPhase[i] = cur[0];
+		mask[i] = cur[1] < threshold ? LABEL_BACKGROUND : 0;
 	}
 }
