@@ -114,6 +114,8 @@ void ScanlineOffset::makeLevelCutoff() {
 		sumQuality += qualityHistogram[i] * i;
 		sumQualityWeights += qualityHistogram[i];
 	}
+	if(sumQualityWeights == 0)
+		return; // everything is in the background
 	int meanQuality = sumQuality / sumQualityWeights;
 
 	// get std dev
