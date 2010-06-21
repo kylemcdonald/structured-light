@@ -1,14 +1,5 @@
 #pragma once
 
-/*
-	Using a wrap LUT increases the speed of the three phase wrapping by
-	pre-computing the sqrtf and gamma for every three phase combination. It offers
-	a significant speed increase when WRAP_LUT_ACCURACY = 0, but requires a lot of
-	memory. If you're willing to sacrifice some accuracy, WRAP_LUT_ACCURACY = 1
-	offers a good compromise with speed.
-*/
-//#define USE_WRAP_LUT
-
 #include "ImageUtility.h"
 #include "Shared.h"
 
@@ -26,10 +17,19 @@ private:
 	unsigned char threshold;
 	unsigned char* phaseImage[3];
 
-	#ifdef USE_WRAP_LUT
-	#define WRAP_LUT_ACCURACY 1
-	#define WRAP_LUT_STEPS (256 >> WRAP_LUT_ACCURACY)
+/*
+	Using a LUT on the wrapping significantly speeds things up by avoiding the
+	repeated sqrtf and atan2f calls. It uses the v and u values as idices to an
+	array for phase and data modulation values (used here as a substitute for
+	gamma).
+
+	This technique is also described in the 2010 paper "Dual-frequency pattern
+	scheme for high-speed 3-D shape measurement" by Liu et al.
+*/
+	#define WRAP_V_SIZE 511 // i1 - i3, -255 to 255, |511|
+	#define WRAP_U_SIZE 1021 // 2 * i2 - i1 - i3, -510 to 510, |1021|
+	#define WRAP_V_OFFSET 255 // min value is -255
+	#define WRAP_U_OFFSET 510 // min value is -510
 	static bool phaseGammaLutReady;
-	static unsigned char phaseGammaLut[WRAP_LUT_STEPS][WRAP_LUT_STEPS][WRAP_LUT_STEPS][2];
-	#endif
+	static unsigned char phaseGammaLut[WRAP_V_SIZE][WRAP_U_SIZE][2];
 };
