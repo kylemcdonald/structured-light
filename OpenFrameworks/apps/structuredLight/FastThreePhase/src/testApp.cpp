@@ -3,6 +3,16 @@
 void testApp::setup() {
 	ofSetVerticalSync(false);
 
+	cout << "Loading images... ";
+	ofImage phase1, phase2, phase3;
+	string directory = "kyle";
+	phase1.loadImage(directory + "/phase1.png");
+	phase2.loadImage(directory + "/phase2.png");
+	phase3.loadImage(directory + "/phase3.png");
+
+	inputWidth = (int) phase1.getWidth();
+	inputHeight = (int) phase2.getHeight();
+
 	phase.allocate(inputWidth, inputHeight, OF_IMAGE_GRAYSCALE);
 	quality.allocate(inputWidth, inputHeight, OF_IMAGE_GRAYSCALE);
 	offset.allocate(inputWidth, inputHeight, OF_IMAGE_GRAYSCALE);
@@ -13,19 +23,24 @@ void testApp::setup() {
 	offsetPixels = offset.getPixels();
 	unwrappedPixels = unwrapped.getPixels();
 
+	cout << "Setting up decoding instances..." << endl;
 	threePhaseWrap.setup(inputWidth, inputHeight);
 	partialQualityMap.setup(inputWidth, inputHeight);
 	scanlineOffset.setup(inputWidth, inputHeight);
 	unwrap.setup(inputWidth, inputHeight);
+	cout << "Done setting up decoding instances." << endl;
 
-	ofImage phase1, phase2, phase3;
-	phase1.loadImage("phase1.png");
-	phase2.loadImage("phase2.png");
-	phase3.loadImage("phase3.png");
+	cout << "Converting to Grayscale..." << endl;
+	phase1.setImageType(OF_IMAGE_GRAYSCALE);
+	phase2.setImageType(OF_IMAGE_GRAYSCALE);
+	phase3.setImageType(OF_IMAGE_GRAYSCALE);
 
-	threePhaseWrap.set(0, phase1.getPixels(), 3);
-	threePhaseWrap.set(1, phase2.getPixels(), 3);
-	threePhaseWrap.set(2, phase3.getPixels(), 3);
+	cout << "sending to threePhaseWrap... ";
+	int channels = 1;
+	threePhaseWrap.set(0, phase1.getPixels(), channels);
+	threePhaseWrap.set(1, phase2.getPixels(), channels);
+	threePhaseWrap.set(2, phase3.getPixels(), channels);
+	cout << "done." << endl;
 
 	at = bt = ct = dt = 0;
 }
@@ -38,12 +53,14 @@ void testApp::update(){
 	int wrapThreshold = mouseX;
 	if(wrapThreshold > 254)
 		wrapThreshold = 254;
-	//threePhaseWrap.setThreshold(wrapThreshold);
+	threePhaseWrap.setThreshold(wrapThreshold);
 
+/*
 	int scanlineThreshold = mouseY;
 	if(scanlineThreshold > 254)
 		scanlineThreshold = 254;
-	//scanlineOffset.setThreshold(scanlineThreshold);
+	scanlineOffset.setThreshold(scanlineThreshold);
+*/
 
 	int a = ofGetElapsedTimeMillis();
 	threePhaseWrap.makeWrappedPhase(phasePixels, qualityPixels); // 1.8 ms
@@ -64,8 +81,12 @@ void testApp::update(){
 void testApp::draw(){
 	glColor3f(1, 1, 1);
 
-	unwrapped.update();
-	unwrapped.draw(0, 0);
+	ofImage& show = unwrapped;
+	show.update();
+	show.draw(0, 0);
+
+	if(ofGetFrameNum() == 0)
+		ofSaveScreen("phase.png");
 
 	// draw histogram
 	int* qualityHistogram = scanlineOffset.getQualityHistogram();
@@ -96,7 +117,7 @@ void testApp::draw(){
 	int b = (bt * us) / t;
 	int c = (ct * us) / t;
 	int d = (dt * us) / t;
-	int total = (a + b + c + d);
+	int total = (a + b + c + d) + 1;
 	int fps = (1000 * us) / total;
 	ofDrawBitmapString(
 		"wrap " + ofToString(a) + "us + " +

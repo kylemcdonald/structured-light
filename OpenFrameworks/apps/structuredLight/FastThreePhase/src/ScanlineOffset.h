@@ -5,7 +5,14 @@
 	slightly slower... but provides a more complete unwrapping for higher gamma
 	thresholds.
 */
-//#define GIVE_SECOND_CHANCES
+#define GIVE_SECOND_CHANCES
+
+/*
+	In the original paper this is given as 3, but for systems with more noise
+	it is helpful to boost this a bit. This parameter offers a speed/accuracy
+	tradeoff. Lower values are faster but less accurate.
+*/
+#define LEVEL_COUNT 6
 
 #include "Shared.h"
 
@@ -30,7 +37,6 @@ private:
 	unsigned char *phase, *quality;
 	char *offset;
 
-	#define LEVEL_COUNT 3
 	int levelCutoff[LEVEL_COUNT];
 	void makeLevelCutoff();
 
@@ -41,4 +47,16 @@ private:
 		int xlen, int ylen, int xinside, int yinside);
 	void processLeftover(int xoff, int yoff);
 	char unwrapPhase(unsigned char source, unsigned char target);
+
+	static const int farthestNeighbor = 128;
+	vector<int> neighbors;
+};
+
+class DistanceIndex {
+public:
+	float distance;
+	int index;
+	bool operator<(const DistanceIndex& b) const {
+		return distance < b.distance;
+	}
 };

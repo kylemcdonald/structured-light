@@ -39,6 +39,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-O3" />
 			<Add option="-Wno-multichar" />
 			<Add directory="..\..\..\libs\glu\include" />
 			<Add directory="..\..\..\libs\freetype\include" />

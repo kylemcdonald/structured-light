@@ -5,7 +5,7 @@
 	quality metric. E.g., when QUALITY_LUT_ACCURACY == 1, it approximately halves
 	the runtime of makeQualityMap().
 */
-#define USE_QUALITY_LUT
+//#define USE_QUALITY_LUT
 
 #include "Shared.h"
 

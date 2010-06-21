@@ -1,11 +1,14 @@
 #include "ScanlineOffset.h"
 
 ScanlineOffset::ScanlineOffset() :
-	threshold(LABEL_BACKGROUND) {
+	threshold(LABEL_BACKGROUND),
+	leftover(NULL),
+	n(0) {
 }
 
 ScanlineOffset::~ScanlineOffset() {
-	delete [] leftover;
+	if(n != 0)
+		delete [] leftover;
 }
 
 void ScanlineOffset::setup(int width, int height) {
@@ -13,6 +16,22 @@ void ScanlineOffset::setup(int width, int height) {
 	this->height = height;
 	n = width * height;
 	leftover = new int[n];
+
+	// precompute nearest neighbors as offsets
+	vector<DistanceIndex> distanceIndices;
+	for(int y = 0; y < farthestNeighbor; y++) {
+		for(int x = 0; x < farthestNeighbor; x++) {
+			int yd = y - farthestNeighbor / 2;
+			int xd = x - farthestNeighbor / 2;
+			DistanceIndex cur;
+			cur.index = yd * width + xd;
+			cur.distance = sqrtf(xd * xd + yd * yd);
+			distanceIndices.push_back(cur);
+		}
+	}
+	sort(distanceIndices.begin(), distanceIndices.end());
+	for(int i = 0; i < distanceIndices.size(); i++)
+		neighbors.push_back(distanceIndices[i].index);
 }
 
 void ScanlineOffset::setThreshold(unsigned char threshold) {
@@ -48,14 +67,23 @@ void ScanlineOffset::makeOffset(
 	int startX = width / 2;
 	int startY = height / 2;
 	int start = startY * width + startX;
-	if(quality[start] != 0) {
-		// right now, just give up if the middle isn't a good place to start
-		// this needs to be replaced by code that finds a good starting point
-		return;
-	} else
-		quality[start] = LABEL_UNWRAPPED;
 
-	offset[start] = 0; // center start
+	if(quality[start] != 0) {
+		// if the starting point isn't look for the nearest point that is
+		int i = 0;
+		while(i < neighbors.size() && quality[start + neighbors[i]] != 0)
+			i++;
+		if(i == neighbors.size()) {
+			cout << "Couldn't find a valid pixel to unwrap." << endl;
+			return;
+		}
+		start += neighbors[i];
+		startX = start % width;
+		startY = start / width;
+	}
+
+	quality[start] = LABEL_UNWRAPPED;
+	offset[start] = 0; // center start offset
 	for(unsigned char curLevel = 0; curLevel < LEVEL_COUNT; curLevel++) {
 		unwrapPatch(start, curLevel, startX - 1, startY - 1, +1, +width); // nw
 		unwrapPatch(start, curLevel, width - startX - 1, startY - 1, -1, +width); // ne
