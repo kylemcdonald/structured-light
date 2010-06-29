@@ -5,7 +5,7 @@
 #endif
 
 #include "ThreePhaseGenerator.h"
-#include "RgbThreePhaseGenerator.h"
+#include "PatternGenerator.h"
 #include "GrayCodeGenerator.h"
 #include "GradientGenerator.h"
 
