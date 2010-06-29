@@ -15,37 +15,44 @@ class DLL_EXPORT PhaseDecoder : public DepthDecoder {
 public:
 	PhaseDecoder();
 	virtual ~PhaseDecoder();
+	void setGamma(float gamma);
 	void setDepthScale(float depthScale);
-	float getDepthScale();
 	void setDepthSkew(float depthSkew);
-	float getDepthSkew();
 	void setOrientation(phaseOrientation orientation);
 	void setMaxPasses(int maxPasses);
 	void setMinRemaining(float minRemaining);
 	void setPhasePersistence(bool phasePersistence);
-	void set(int i, byte* image);
+	void clearLastPhase();
+	void set(int i, byte* image, int channels = 3);
 	void makeDepth();
 	void decode();
 	float* getPhase();
+	float* getWrappedPhase();
 	byte* getColor();
+	byte** getGraySequence();
 	int* getBlur();
-	void exportCloud(std::string filename);
-	void exportMesh(std::string filename);
+	void exportCloud(string filename);
+	void exportMesh(string filename);
+	void exportTexture(string filename);
+	float* unwrapOrder;
 protected:
-	int sequenceSize;
 	byte** colorSequence;
 	byte** graySequence;
 	byte* reflectivity;
 	float* phase;
+	float* wrappedPhase;
 	bool* ready;
-	float depthScale, depthSkew;
+	byte* color;
+	int sequenceSize;
+	float gamma;
 	int maxPasses;
 	float minRemaining;
-	byte* color;
+	float depthScale, depthSkew;
 	phaseOrientation orientation;
 	FastBlur blur;
 	bool phasePersistence;
 	float* lastPhase;
+	float* range;
 
 	#ifdef LINEARIZE_GAMMA
 	int gammaHistogram[256];

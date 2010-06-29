@@ -1,23 +1,20 @@
 #include "ThreePhaseDecoder.h"
 
-#include "basics.h"
-
-float ThreePhaseDecoder::rangeThreshold = 20;
-
-ThreePhaseDecoder::ThreePhaseDecoder() {
-	range = NULL;
+ThreePhaseDecoder::ThreePhaseDecoder() :
+	brightness(.8),
+	rangeThreshold(20) {
 	#ifdef LINEARIZE_PHASE
 	linearize = false;
 	#endif
 }
 
 ThreePhaseDecoder::~ThreePhaseDecoder() {
-	delete [] range;
 }
 
 void ThreePhaseDecoder::setup(int width, int height) {
 	PhaseDecoder::setup(width, height, 3);
 	range = new float[width * height];
+	unwrapOrder = new float[width * height];
 }
 
 #ifdef USE_GAMMA
@@ -48,7 +45,7 @@ float ThreePhaseDecoder::Gamma(float x, float gamma) {
 void ThreePhaseDecoder::makePhase() {
 	int n = width * height;
 	float i1, i2, i3;
-	for(int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) {
 		i1 = (float) graySequence[0][i];
 		i2 = (float) graySequence[1][i];
 		i3 = (float) graySequence[2][i];
@@ -201,10 +198,10 @@ void ThreePhaseDecoder::setRangeThreshold(float rangeThreshold) {
 	this->rangeThreshold = rangeThreshold;
 }
 
-float ThreePhaseDecoder::getRangeThreshold() {
-	return this->rangeThreshold;
+void ThreePhaseDecoder::setBrightness(float brightness) {
+	this->brightness = brightness;
 }
 
 void ThreePhaseDecoder::unwrapPhase() {
-	PriorityDecoder::unwrapPhase();
+	FloodFillDecoder::unwrapPhase();
 }

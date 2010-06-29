@@ -7,7 +7,6 @@ srcs = 	[
 	'GradientGenerator.cpp',
 	'GrayCodeGenerator.cpp',
 	'PatternGenerator.cpp',
-	'PatternGenerator.cpp',
 	'PhaseDecoder.cpp',
 	'PriorityDecoder.cpp',
 	'ThreePhaseDecoder.cpp',

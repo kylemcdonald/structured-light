@@ -274,7 +274,14 @@ void ofxQtVideoSaver::addAudioTrack(string audioPath)
 
 	char * p = new char[audioPath.length()+1];
     strcpy(p, audioPath.c_str());
+#ifdef TARGET_WIN32
     NativePathNameToFSSpec(p, &fileSpec, 0L);
+#endif
+#ifdef TARGET_OSX
+	Boolean isdir;
+	FSPathMakeRef((const UInt8*)p, &fsref, &isdir);
+	FSGetCatalogInfo(&fsref, kFSCatInfoNone, NULL, NULL, &fileSpec, NULL);
+#endif
 
 	err = OpenMovieFile(&fileSpec, &audioMovieRefNum, fsRdPerm);
 	err = NewMovieFromFile(&audioMovie, audioMovieRefNum, &audioMovieResId, NULL, newMovieActive, NULL);
@@ -429,6 +436,8 @@ void ofxQtVideoSaver::finishMovie(){
 
 void ofxQtVideoSaver::addFrame(unsigned char* data, float frameLengthInSecs){
 
+    float timeForQt;
+
 	if (!bSetupForRecordingMovie) return;
 
 /*  Save the current GWorld and set the offscreen GWorld as current.
@@ -498,7 +507,7 @@ void ofxQtVideoSaver::addFrame(unsigned char* data, float frameLengthInSecs){
       ======================================  */
 
 	  // converting frame length to a time duration;
-	  float timeForQt = 1 / frameLengthInSecs;
+	  timeForQt = 1 / frameLengthInSecs;
 
       osErr = AddMediaSample
         (

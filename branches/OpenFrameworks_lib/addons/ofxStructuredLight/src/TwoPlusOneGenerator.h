@@ -3,7 +3,9 @@
 #include "PatternGenerator.h"
 #include "PhaseConstants.h"
 
-class TwoPlusOneGenerator : public PatternGenerator {
+#include "libexport.h"
+
+class DLL_EXPORT TwoPlusOneGenerator : public PatternGenerator {
 private:
 	phaseOrientation orientation;
 	float wavelength;

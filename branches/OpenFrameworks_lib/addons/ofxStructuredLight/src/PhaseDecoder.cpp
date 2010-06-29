@@ -31,12 +31,13 @@ void PhaseDecoder::setup(int width, int height, int sequenceSize) {
 	colorSequence = new byte*[sequenceSize];
 	graySequence = new byte*[sequenceSize];
 	int n = width * height;
-	for(int i = 0; i < sequenceSize; i++) {
+	for (int i = 0; i < sequenceSize; i++) {
 		colorSequence[i] = new byte[n * 3];
 		graySequence[i] = new byte[n];
 	}
 	reflectivity = new byte[n];
 	phase = new float[n];
+	wrappedPhase = new float[n];
 	mask = new bool[n];
 	ready = new bool[n];
 	depth = new float[n];
@@ -48,10 +49,10 @@ void PhaseDecoder::setup(int width, int height, int sequenceSize) {
 }
 
 PhaseDecoder::~PhaseDecoder() {
-	if(colorSequence != NULL) {
-		for(int i = 0; i < sequenceSize; i++) {
-				delete [] colorSequence[i];
-				delete [] graySequence[i];
+	if (colorSequence != NULL) {
+		for (int i = 0; i < sequenceSize; i++) {
+			delete [] colorSequence[i];
+			delete [] graySequence[i];
 		}
 		delete [] reflectivity;
 		delete [] colorSequence;
@@ -60,6 +61,7 @@ PhaseDecoder::~PhaseDecoder() {
 		delete [] ready;
 		delete [] color;
 		delete [] lastPhase;
+		delete [] range;
 	}
 }
 
@@ -71,10 +73,10 @@ void PhaseDecoder::setMinRemaining(float minRemaining) {
 	this->minRemaining = minRemaining;
 }
 
-void PhaseDecoder::set(int position, byte* image) {
+void PhaseDecoder::set(int position, byte* image, int channels) {
 	byte* curColor = colorSequence[position];
 	byte* curGray = graySequence[position];
-	memcpy(curColor, image, width * height * 3);
+
 	int n = width * height;
 	int i = 0;
 	int j = 0;
@@ -114,35 +116,35 @@ void PhaseDecoder::set(int position, byte* image) {
 void PhaseDecoder::decode() {
 	makeColor();
 	makePhase();
-	for(int pass = 0; pass < maxPasses; pass++) {
+	memcpy( wrappedPhase, phase, sizeof(float) * width * height);
+	for (int pass = 0; pass < maxPasses; pass++) {
 		unwrapPhase();
-		if(getRemaining() < minRemaining)
+		if (minRemaining != 0 && getRemaining() < minRemaining)
 			break;
 	}
-	if(phasePersistence)
+	if (phasePersistence)
 		memcpy(lastPhase, phase, sizeof(float) * width * height);
 	makeDepth();
-	makeColor();
 }
 
 float* PhaseDecoder::getPhase() {
 	return phase;
 }
 
+float* PhaseDecoder::getWrappedPhase() {
+	return wrappedPhase;
+}
+
+void PhaseDecoder::setGamma(float gamma) {
+	this->gamma = gamma;
+}
+
 void PhaseDecoder::setDepthScale(float depthScale) {
 	this->depthScale = depthScale;
 }
 
-float PhaseDecoder::getDepthScale() {
-	return this->depthScale;
-}
-
 void PhaseDecoder::setDepthSkew(float depthSkew) {
 	this->depthSkew = depthSkew;
-}
-
-float PhaseDecoder::getDepthSkew() {
-	return this->depthSkew;
 }
 
 void PhaseDecoder::setOrientation(phaseOrientation orientation) {
@@ -153,6 +155,10 @@ void PhaseDecoder::setPhasePersistence(bool phasePersistence) {
 	this->phasePersistence = phasePersistence;
 }
 
+void PhaseDecoder::clearLastPhase() {
+	memset(lastPhase, 0, sizeof(float) * width * height);
+}
+
 void PhaseDecoder::makeDepth() {
 	int n = width * height;
 	if (orientation == PHASE_VERTICAL) {
@@ -160,7 +166,7 @@ void PhaseDecoder::makeDepth() {
 		for (int i = 0; i < n; i++) {
 			if (!mask[i]) {
 				float x = (float) (i % width);
-				float planephase = ((x / width) - .5f) * depthSkew;
+				float planephase = ((x / width) - planeZero) * depthSkew;
 				depth[i] = (phase[i] - planephase) * depthScale;
 			} else {
 				depth[i] = 0;
@@ -212,11 +218,15 @@ byte* PhaseDecoder::getColor() {
 	return color;
 }
 
+byte** PhaseDecoder::getGraySequence() {
+	return graySequence;
+}
+
 float PhaseDecoder::getRemaining() {
 	int n = width * height;
 	int readySum = 0;
 	int maskSum = 0;
-	for(int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) {
 		readySum += (unsigned char) ready[i];
 		maskSum += (unsigned char) mask[i];
 	}
@@ -228,8 +238,8 @@ int PhaseDecoder::getStart() {
 	int* sum = blur.getSum();
 	int max = 0;
 	int n = width * height;
-	for(int i = 0; i < n; i++)
-		if(sum[i] > sum[max])
+	for (int i = 0; i < n; i++)
+		if (sum[i] > sum[max])
 			max = i;
 	return max;
 }
@@ -244,4 +254,8 @@ void PhaseDecoder::exportCloud(string filename) {
 
 void PhaseDecoder::exportMesh(string filename) {
 	DepthExporter::exportMesh(filename, width, height, mask, depth, color);
+}
+
+void PhaseDecoder::exportTexture(string filename) {
+	DepthExporter::exportTexture(filename, width, height, mask, color);
 }

@@ -40,11 +40,15 @@ void testApp::setup(){
 	grayCode.setSubdivisions(10);
 	grayCode.generate();
 
+	twoPlusOne.setSize(1024, 768);
+	twoPlusOne.setWavelength(64);
+	twoPlusOne.generate();
+
 	gradient.setSize(1024, 768);
 	gradient.generate();
 
 	// setup panel
-	panel.setup("control", 8, 8, 300, 700);
+	panel.setup("control", 8, 8, 300, 740);
 	panel.loadSettings("control.xml");
 	panel.addPanel("capture", 1);
 	panel.addPanel("three phase", 1);
@@ -54,10 +58,13 @@ void testApp::setup(){
 	panel.addToggle("enable camera", "enableCamera", false);
 	panel.addToggle("camera settings", "cameraSettings", false);
 	panel.addToggle("fullscreen", "fullscreen", false);
+	panel.addToggle("frame by frame", "frameByFrame", false);
+
 	vector<string> patternTypes;
 	patternTypes.push_back("three phase");
 	patternTypes.push_back("gray code");
 	patternTypes.push_back("gradient");
+	patternTypes.push_back("two + one");
 	panel.addMultiToggle("pattern type", "patternType", 0, patternTypes);
 	vector<string> orientations;
 	orientations.push_back("vertical");
@@ -67,6 +74,8 @@ void testApp::setup(){
 	panel.addSlider("pattern rate", "patternRate", 1, 1, 6, true);
 	panel.addSlider("camera rate", "cameraRate", 1, 1, 6, true);
 	panel.addSlider("camera offset", "cameraOffset", 0, 0, 5, true);
+	panel.addSlider("min brightness", "minBrightness", 0, 0, 255, true);
+	panel.addToggle("use projector lut", "projectorLut", false);
 
 	panel.setWhichPanel("three phase");
 	panel.addSlider("wavelength", "wavelength", 64, 8, 512, true);
@@ -90,6 +99,8 @@ void testApp::setup(){
 	int captureTime = 15;
 	imageSaver.setup(cameraWidth, cameraHeight, captureTime * 60);
 
+	ofSetVerticalSync(true);
+
 	ofBackground(0, 0, 0);
 }
 
@@ -100,8 +111,19 @@ void testApp::update(){
 	if(curWavelength != lastWavelength) {
 		threePhase.setWavelength(curWavelength);
 		threePhase.generate();
+		twoPlusOne.setWavelength(curWavelength);
+		twoPlusOne.generate();
 	}
 	lastWavelength = curWavelength;
+
+	int minBrightness = panel.getValueI("minBrightness");
+	if (minBrightness != lastMinBrightness) {
+		threePhase.setMinBrightness(minBrightness);
+		threePhase.generate();
+		twoPlusOne.setMinBrightness(minBrightness);
+		twoPlusOne.generate();
+	}
+	lastMinBrightness = minBrightness;
 
 	int curOrientation = panel.getValueI("orientation");
 	if(curOrientation != lastOrientation) {
@@ -112,6 +134,8 @@ void testApp::update(){
 		grayCode.generate();
 		gradient.setOrientation(orientation);
 		gradient.generate();
+		twoPlusOne.setOrientation(orientation);
+		twoPlusOne.generate();
 	}
 	lastOrientation = curOrientation;
 
@@ -123,6 +147,7 @@ void testApp::update(){
 	lastSubdivisions = curSubdivisions;
 
 	threePhase.setReverse(panel.getValueB("reverse"));
+	twoPlusOne.setReverse(panel.getValueB("reverse"));
 	grayCode.setReverse(panel.getValueB("reverse"));
 
 	int curFullscreen = panel.getValueB("fullscreen");
@@ -134,6 +159,7 @@ void testApp::update(){
 	if(curEnableCamera != lastEnableCamera) {
 		if(curEnableCamera) {
 			camera.setup(cameraWidth, cameraHeight, this);
+			camera.setDesiredFrameRate(60);
 		} else {
 			camera.stopThread();
 			camera.close();
@@ -152,13 +178,21 @@ void testApp::update(){
 			case 0: curGenerator = &threePhase; break;
 			case 1: curGenerator = &grayCode; break;
 			case 2: curGenerator = &gradient; break;
+			case 3: curGenerator = &twoPlusOne; break;
 		}
 	}
 	lastPatternType = curPatternType;
+
+	if(panel.getValueB("projectorLut")) {
+		curGenerator->applyLut(ofToDataPath("projector-lut.tsv"));
+		panel.setValueB("projectorLut", false);
+	}
 }
 
 void testApp::draw(){
-	int patternFrame = ofGetFrameNum() / panel.getValueI("patternRate");
+	if(!panel.getValueB("frameByFrame")){
+		patternFrame = ofGetFrameNum() / panel.getValueI("patternRate");
+	}
 	curGenerator->get(patternFrame).draw(0, 0);
 	if(!hidden) {
 		int cameraRate = panel.getValueI("cameraRate");
@@ -203,5 +237,12 @@ void testApp::keyPressed(int key) {
 			ofShowCursor();
 		if(!hidden)
 			imageSaver.saveAll();
+	}
+	if(panel.getValueB("frameByFrame") && key == OF_KEY_LEFT){
+		patternFrame--;
+	}
+
+	if(panel.getValueB("frameByFrame") && key == OF_KEY_RIGHT){
+		patternFrame++;
 	}
 }
