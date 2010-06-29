@@ -1,7 +1,6 @@
 #include "GradientGenerator.h"
 
 GradientGenerator::GradientGenerator() :
-	PatternGenerator(),
 	orientation(PHASE_VERTICAL) {
 }
 

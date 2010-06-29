@@ -3,9 +3,8 @@
 #include "basics.h"
 
 ThreePhaseGenerator::ThreePhaseGenerator() :
-	wavelength(0),
 	orientation(PHASE_VERTICAL),
-	gamma(1) {
+	wavelength(0) {
 }
 
 void ThreePhaseGenerator::setOrientation(phaseOrientation orientation) {
@@ -16,19 +15,14 @@ void ThreePhaseGenerator::setWavelength(float wavelength) {
 	this->wavelength = wavelength;
 }
 
-void ThreePhaseGenerator::setGamma(float gamma) {
-	this->gamma = gamma;
+void ThreePhaseGenerator::setMinBrightness(float minBrightness) {
+    this->minBrightness = minBrightness;
 }
 
 void ThreePhaseGenerator::generate() {
 	allocateSequence(3);
+	float offsets[] = {-TWO_PI / 3, 0, +TWO_PI / 3};
 	for(int k = 0; k < 3; k++) {
-		float offset;
-		switch(k) {
-			case 0: offset = - TWO_PI / 3; break;
-			case 1: offset = 0; break;
-			case 2: offset = + TWO_PI / 3; break;
-		}
 #ifdef OPENFRAMEWORKS_AVAIL
 		unsigned char* pixels = sequence[k].getPixels();
 #else
@@ -39,9 +33,9 @@ void ThreePhaseGenerator::generate() {
 		unsigned char* single = new unsigned char[side * 3];
 		int i = 0;
 		for(int j = 0; j < side; j++) {
-			float curPhase = (cosf(j * normalize + offset) + 1) / 2;
-			curPhase = powf(curPhase, gamma);
-			curPhase *= 256;
+			float curPhase = (cosf(j * normalize + offsets[k]) + 1) / 2;
+			curPhase *= (256-minBrightness);
+			curPhase += minBrightness;
 			if(curPhase >= 256)
 				curPhase = 255;
 			unsigned char value = (unsigned char) curPhase;

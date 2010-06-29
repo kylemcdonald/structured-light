@@ -10,8 +10,8 @@
 
 class DLL_EXPORT PatternGenerator {
 protected:
-	int width, height;
 	bool reverse;
+	int width, height;
 #ifdef OPENFRAMEWORKS_AVAIL
 	std::vector<ofImage> sequence;
 #else
@@ -26,6 +26,7 @@ public:
 	int getWidth();
 	int getHeight();
 	int size();
+	void applyLut(string filename);
 #ifdef OPENFRAMEWORKS_AVAIL
 	ofImage& get(int i);
 #else

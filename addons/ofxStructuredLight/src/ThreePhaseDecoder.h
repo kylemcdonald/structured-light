@@ -3,8 +3,7 @@
 #include "FloodFillDecoder.h"
 #include "PriorityDecoder.h"
 
-#ifndef range
-	#define range(a, b, c) \
+#define findRange(a, b, c) \
 		(a < b ? \
 			(b < c ? c - a : \
 			(a < c ? b - a : \
@@ -12,7 +11,6 @@
 			(c < b ? a - c : \
 			(a < c ? c - b : \
 				(a - b))))
-#endif
 
 //#define USE_GAMMA
 //#define ACCURATE_COLOR
@@ -26,7 +24,7 @@
 	DecodingStrategy while ThreePhaseDecoder is just a phase generator
 	and color generator.
 */
-class DLL_EXPORT ThreePhaseDecoder : public PriorityDecoder {
+class DLL_EXPORT ThreePhaseDecoder : public FloodFillDecoder {
 public:
 	ThreePhaseDecoder();
 	~ThreePhaseDecoder();

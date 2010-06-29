@@ -6,6 +6,7 @@
 #include "ofxThreadedVideoGrabber.h"
 #include "ofxImageSaver.h"
 
+
 class testApp : public ofBaseApp{
 
 public:
@@ -25,12 +26,16 @@ public:
 	GrayCodeGenerator grayCode;
 	int lastSubdivisions;
 
+	TwoPlusOneGenerator twoPlusOne;
+
 	GradientGenerator gradient;
 
 	PatternGenerator* curGenerator;
 	int lastPatternType;
 	int lastOrientation;
 	bool lastFullscreen;
+
+	int lastMinBrightness;
 
 	ofxThreadedVideoGrabber camera;
 	ofxImageSaver imageSaver;
@@ -42,4 +47,5 @@ public:
 	bool lastEnableCamera;
 	int lastCameraRate;
 	int cameraFrameNum;
+	int patternFrame;
 };

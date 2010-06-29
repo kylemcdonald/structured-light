@@ -18,7 +18,7 @@ public:
 	virtual ~DepthDecoder();
 	int getWidth();
 	int getHeight();
-	virtual void set(int i, byte* image) = 0;
+	virtual void set(int i, byte* image, int channels) = 0;
 	virtual void decode() = 0;
 	bool* getMask();
 	float* getDepth();
