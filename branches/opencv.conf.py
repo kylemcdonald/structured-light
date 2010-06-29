@@ -51,11 +51,11 @@ def CheckOpenCV(context, cvdir):
 			"$OPENCV_ROOT/lib",
 			],
 			LIBS = [
-			'cv'+context.env['DSUF'],
-			'cxcore'+context.env['DSUF'],
-			'cvaux'+context.env['DSUF'],
-			'highgui'+context.env['DSUF'],
-			'ml'+context.env['DSUF'],
+			'cv',#+context.env['DSUF'],
+			'cxcore',#+context.env['DSUF'],
+			'cvaux',#+context.env['DSUF'],
+			'highgui',#+context.env['DSUF'],
+			'ml',#+context.env['DSUF'],
 			]
 		)
 	ret = context.TryLink("""

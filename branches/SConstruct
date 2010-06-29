@@ -32,6 +32,7 @@ for v in variants:
 SConsignFile('build/.sconsign.dblite')
 env = Environment(
 	OS=str(ARGUMENTS.get('OS', Platform())),
+	TARGET_ARCH = "x86", #"x86_64"
 	variables=vars,
 	tools = ['default'],
 	CONFIGUREDIR='#build/.sconf_temp',

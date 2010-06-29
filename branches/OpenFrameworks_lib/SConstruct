@@ -13,6 +13,8 @@ VariantDir('build/debug', '.', duplicate=0)
 SConsignFile('build/.sconsign.dblite')
 env = Environment(
 	OS=str(ARGUMENTS.get('OS', Platform())),
+	TARGET_ARCH = "x86", #"x86_64"
+	DSUF = '',
 	variables=vars,
 	tools = ['default'],
 	CONFIGUREDIR='#build/.sconf_temp',
@@ -29,11 +31,8 @@ env = Environment(
 		'addons',
 		'addons/ofx3DModelLoader/src',
 		'addons/ofx3DModelLoader/src/3DS',
-		'addons/ofx3DUtils/src',
 		'addons/ofxDirList/src',
-		'addons/ofxMovieSaver/src',
 		'addons/ofxNetwork/src',
-		'addons/ofxObjLoader/src',
 		'addons/ofxOpenCv/src',
 		'addons/ofxOpenCv/libs/opencv/include',
 		'addons/ofxOsc/src',
@@ -60,28 +59,97 @@ env = Environment(
 		'addons/ofx3DUtils/src',
 		'addons/ofxControlPanel/src',
 		'addons/ofxQtVideoSaver/src'
-	],
-	LIBPATH = [
-		'libs/fmodex/lib',
-		'libs/freetype/lib',
-		'libs/FreeImage',
-		'libs/glee/lib',
-		'libs/glu/lib',
-		'libs/glut/lib',
-		'libs/Poco/lib',
-		'libs/quicktime/lib',
-		'libs/rtAudio/lib/vs2008',
-		'libs/videoInput/lib',
-		'addons/ofxOpenCv/libs/opencv/lib/win32',
-		'addons/ofxOsc/libs/oscpack/lib/win32',
-	],
-	LIBS = ['cv110', 'cvaux110', 'cxcore110', 'oscpack',
-		'fmodex_vc', 'GLee', 'PocoFoundationmt', 'PocoNetmt', 'PocoUtilmt', 'PocoXMLmt', 'videoInput',
-		'opengl32', 'glut32', 'glu32', 'GLee', 'dsound', 'rtAudio', 'winmm', 'qtmlClient', 'QTSClient', 'Rave',
-		'FreeImage', 'FreeImagePlus', 'libfreetype',
-		'uuid', 'ole32', 'oleaut32', 'setupapi', 'wsock32', 'shell32', 'ws2_32', 'user32', 'advapi32'
+		'addons/ofxMovieSaver/src',
+		'addons/ofxObjLoader/src',
 	],
 )
+
+if (env['OS']=='win32'):
+	env.AppendUnique(
+		CPPPATH = [
+		#empty
+		],
+		LIBPATH = [
+		'lib',
+		'libs/fmodex/lib/vs2008',
+		'libs/FreeImage/lib/vs2008',
+		'libs/freetype/lib/vs2008',
+		'libs/glee/lib/vs2008',
+		'libs/glu/lib/vs2008',
+		'libs/glut/lib/vs2008',
+		'libs/Poco/lib/vs2008',
+		'libs/quicktime/lib/vs2008',
+		'libs/rtAudio/lib/vs2008',
+		'libs/videoInput/lib/vs2008',
+		'addons/ofxOpenCv/libs/opencv/lib/win32',
+		'addons/ofxOsc/libs/oscpack/lib/win32',
+		],
+		LIBS = ['openFrameworks'+env['DSUF'],
+		'cv200'+env['DSUF'], 'cvaux200'+env['DSUF'], 'cxcore200'+env['DSUF'],
+		'fmodex_vc', 'FreeImage', 'libfreetype', 'GLee', 'glu32', 'glut32',
+		'PocoFoundationmt'+env['DSUF'], 'PocoNetmt'+env['DSUF'], 'PocoUtilmt'+env['DSUF'], 'PocoXMLmt'+env['DSUF'],
+		'qtmlClient', 'QTSClient', 'Rave', 'dsound', 'rtAudio'+env['DSUF'], 'videoInput',
+		'opengl32', 'winmm', 'uuid', 'ole32', 'oleaut32', 'setupapi', 'wsock32', 'shell32', 'ws2_32', 'user32', 'advapi32'
+		],
+	)
+elif (env['OS']=='posix'):
+	env.AppendUnique(
+		CPPPATH = [
+		'/usr/include/gstreamer-0.10',
+		'/usr/include/glib-2.0',
+		'/usr/lib64/glib-2.0/include',
+		'/usr/include/libxml2',
+		'/usr/include/libswscale',
+		'/usr/include/libavutil',
+		'/usr/include/unicap',
+		'/usr/include/libavformat',
+		'/usr/include/libavcodec',
+		'/usr/include/libavutil',
+		'/usr/include/quicktime',
+		'/usr/include/hal',
+		'/usr/include/dbus-1.0',
+		'/usr/lib64/dbus-1.0/include',
+		],
+		LIBPATH = [
+		'lib',
+		'libs/ffmpeg/lib/linux64',
+		'libs/fmodex/lib/linux64',
+		'libs/FreeImage/lib/linux64',
+		'libs/freetype/lib/linux64',
+		'libs/glee/lib/linux64',
+		'libs/glu/lib/linux64',
+		'libs/glut/lib/linux64',
+		'libs/poco/lib/linux64',
+		'libs/quicktime/lib/linux64',
+		'libs/rtAudio/lib/linux64',
+		'libs/videoInput/lib/linux64',
+		'addons/ofxOpenCv/libs/opencv/lib/linux64',
+		'addons/ofxOsc/libs/oscpack/lib/linux64',
+		'$OPENCV_ROOT/lib',
+		'/usr/lib64',
+		],
+		LIBS = ['openFrameworks'+env['DSUF'],
+		'cv', 'cvaux', 'cxcore', 'glut','GL', 'GLU', 'udev', 
+		#avformat
+		'avcodec', 'z', 'bz2', 'dirac_encoder', 'dirac_decoder', 'stdc++', 'faac', 'faad', 'gsm', 'mp3lame', 'opencore-amrnb', 'opencore-amrwb', 'schroedinger-1.0', 'pthread', 			'oil-0.3', 'rt', 'speex', 'theoraenc', 'theoradec', 'vorbisenc', 'vorbis', 'ogg', 'x264', 'm', 'xvidcore', 'dc1394', 'raw1394', 'dl', 'jack', 'X11', 'Xext', 'Xfixes', 'asound', 'avutil',
+		#gstvideo
+		'gstbase-0.10', 'gstreamer-0.10', 'gobject-2.0', 'gmodule-2.0', 'gthread-2.0', 'rt', 'xml2', 'glib-2.0',
+		#gst
+		'gstapp-0.10',
+		 #'gstbase-0.10', 'gstreamer-0.10', 'gobject-2.0', 'gmodule-2.0', 'gthread-2.0', 'rt', 'xml2', 'glib-2.0',
+		'dl', 'gthread-2.0', 'z', 'm',
+		#hal
+		'hal', 'dbus-1', 'pthread',
+		 #'rt',
+		#swscale
+		'avutil',
+		#unicap
+		'rt', 'fmodex', 'freeimage', 'libfreetype', 'GLee',
+		'PocoFoundation', 'PocoNet', 'PocoUtil', 'PocoXML',
+		'RtAudio', 'bz2'
+		],
+	)
+
 Help(vars.GenerateHelpText(env))
 
 if (env['OS']=='win32'):
@@ -111,6 +179,7 @@ elif (env['OS']=='posix'):
 	env.MergeFlags(da)
 
 envd = env.Clone()
+envd['DSUF'] = 'd',
 
 if (env['OS']=='win32'):
 	dr = env.ParseFlags('-O2 -DNDEBUG -MD -arch:SSE2')
@@ -132,7 +201,6 @@ srclist = [
 	'addons/ofxObjLoader/src/*.cpp',
 	'addons/ofxOpenCv/src/*.cpp',
 	'addons/ofxOsc/src/*.cpp',
-	'addons/ofxQtVideoSaver/src/*.cpp',
 	'addons/ofxThread/src/*.cpp',
 	'addons/ofxVectorGraphics/src/*.cpp',
 	'addons/ofxVectorGraphics/libs/*.cpp',
@@ -145,8 +213,16 @@ srclist = [
 	'libs/openFrameworks/graphics/*.cpp',
 	'libs/openFrameworks/sound/*.cpp',
 	'libs/openFrameworks/utils/*.cpp',
-	'libs/openFrameworks/video/*.cpp',
+	'libs/openFrameworks/video/ofQtUtils.cpp',
+	'libs/openFrameworks/video/ofUCUtils.cpp',
+	'libs/openFrameworks/video/ofVideoGrabber.cpp',
+	'libs/openFrameworks/video/ofVideoPlayer.cpp',
 ]
+if (env['OS']=='win32'):
+	srclist += ['addons/ofxQtVideoSaver/src/*.cpp']
+elif (env['OS']=='posix'):
+	srclist += ['libs/openFrameworks/video/ofGstUtils.cpp']
+
 srcglob = map(lambda x: 'build/release/'+x, srclist)
 srcdglob = map(lambda x: 'build/debug/'+x, srclist)
 src = []
