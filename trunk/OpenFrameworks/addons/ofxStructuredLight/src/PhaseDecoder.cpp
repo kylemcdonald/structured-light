@@ -52,10 +52,11 @@ PhaseDecoder::~PhaseDecoder() {
 			delete [] colorSequence[i];
 			delete [] graySequence[i];
 		}
-		delete [] reflectivity;
 		delete [] colorSequence;
 		delete [] graySequence;
+		delete [] reflectivity;
 		delete [] phase;
+		delete [] wrappedPhase;
 		delete [] ready;
 		delete [] color;
 		delete [] lastPhase;
