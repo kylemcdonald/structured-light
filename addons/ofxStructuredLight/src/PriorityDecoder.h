@@ -21,6 +21,9 @@ public:
 	bool operator<(const UnwrapPath& path) const {
 		return abs(diff) > abs(path.diff);
 	}
+	bool operator<(const WrappedPixel& wrappedPixel) const {
+		return distance < wrappedPixel.distance;
+	}
 };
 
 class DLL_EXPORT PriorityDecoder : public PhaseDecoder {

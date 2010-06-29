@@ -12,9 +12,10 @@
 
 class DLL_EXPORT DepthExporter {
 public:
-	static void exportDepth(std::string filename, int width, int height, const bool* mask, const float* depth);
-	static void exportCloud(std::string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color = NULL);
-	static void exportMesh(std::string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color = NULL);
+	static void exportDepth(string filename, int width, int height, const bool* mask, const float* depth, float min, float max);
+	static void exportCloud(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color = NULL);
+	static void exportMesh(string filename, int width, int height, const bool* mask, const float* depth, const unsigned char* color = NULL);
+	static void exportTexture(string filename, int width, int height, const bool* mask, const unsigned char* color);
 private:
 	static std::string getExtension(std::string filename);
 

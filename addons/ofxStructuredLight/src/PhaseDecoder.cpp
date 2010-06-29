@@ -3,19 +3,22 @@
 using namespace std;
 
 PhaseDecoder::PhaseDecoder() :
-	sequenceSize(0),
-	colorSequence(NULL),
-	graySequence(NULL),
-	phase(NULL),
-	ready(NULL),
-	depthScale(1),
-	depthSkew(1),
-	maxPasses(1),
-	minRemaining(0),
-	color(NULL),
-	orientation(PHASE_VERTICAL),
-	phasePersistence(false),
-	lastPhase(NULL) {
+		sequenceSize(0),
+		gamma(1.0),
+		colorSequence(NULL),
+		graySequence(NULL),
+		reflectivity(NULL),
+		phase(NULL),
+		ready(NULL),
+		depthScale(1),
+		depthSkew(1),
+		maxPasses(1),
+		minRemaining(0),
+		color(NULL),
+		orientation(PHASE_VERTICAL),
+		phasePersistence(false),
+		lastPhase(false),
+		range(NULL) {
 }
 
 // This code should migrate to DepthDecoder, as it will
@@ -32,6 +35,7 @@ void PhaseDecoder::setup(int width, int height, int sequenceSize) {
 		colorSequence[i] = new byte[n * 3];
 		graySequence[i] = new byte[n];
 	}
+	reflectivity = new byte[n];
 	phase = new float[n];
 	mask = new bool[n];
 	ready = new bool[n];
@@ -49,6 +53,7 @@ PhaseDecoder::~PhaseDecoder() {
 				delete [] colorSequence[i];
 				delete [] graySequence[i];
 		}
+		delete [] reflectivity;
 		delete [] colorSequence;
 		delete [] graySequence;
 		delete [] phase;
@@ -73,18 +78,41 @@ void PhaseDecoder::set(int position, byte* image) {
 	int n = width * height;
 	int i = 0;
 	int j = 0;
-	while(j < n) {
-		float sum =
-			(float) curColor[i+0] +
-			(float) curColor[i+1] +
-			(float) curColor[i+2];
-		i+=3;
-		sum /= 3;
-		curGray[j++] = (byte) sum;
+	if (channels == 3) {
+		memcpy(curColor, image, n * 3);
+		while (j < n) {
+			float sum =
+				(float) curColor[i++] +
+				(float) curColor[i++] +
+				(float) curColor[i++];
+			sum /= 3;
+			curGray[j++] = (byte) sum;
+		}
+
+		#ifdef LINEARIZE_GAMMA
+		memset(gammaHistogram, 0, 256 * sizeof(int));
+		for(i = 0; i < n; i++)
+			gammaHistogram[curGray[i]]++;
+		for(i = 1; i < 256; i++)
+			gammaHistogram[i] += gammaHistogram[i - 1];
+		for(i = 0; i < 256; i++)
+			gammaHistogram[i] = (gammaHistogram[i] * 256) / n;
+		for(i = 0; i < n; i++)
+			curGray[i] = gammaHistogram[curGray[i]];
+		#endif
+	} else if(channels == 1) {
+		while(i < n) {
+			curColor[j++] = image[i];
+			curColor[j++] = image[i];
+			curColor[j++] = image[i];
+			curGray[i] = image[i];
+			i++;
+		}
 	}
 }
 
 void PhaseDecoder::decode() {
+	makeColor();
 	makePhase();
 	for(int pass = 0; pass < maxPasses; pass++) {
 		unwrapPhase();
@@ -127,7 +155,8 @@ void PhaseDecoder::setPhasePersistence(bool phasePersistence) {
 
 void PhaseDecoder::makeDepth() {
 	int n = width * height;
-	if(orientation == PHASE_VERTICAL) {
+	if (orientation == PHASE_VERTICAL) {
+		float planeZero = (float) (startInd % width) / width;
 		for (int i = 0; i < n; i++) {
 			if (!mask[i]) {
 				float x = (float) (i % width);
@@ -137,17 +166,46 @@ void PhaseDecoder::makeDepth() {
 				depth[i] = 0;
 			}
 		}
-	} else if(orientation == PHASE_HORIZONTAL) {
-			for (int i = 0; i < n; i++) {
-				if (!mask[i]) {
-					float y = (float) (i / width);
-					float planephase = ((y / height) - .5f) * depthSkew;
-					depth[i] = (phase[i] - planephase) * depthScale;
-				} else {
-					depth[i] = 0;
+	} else if (orientation == PHASE_HORIZONTAL) {
+		float planeZero = 0;//(float) (startInd / width) / (float) height;
+		for (int i = 0; i < n; i++) {
+			if (!mask[i]) {
+				float y = (float) (i / width);
+				float planephase = ((y / height) - planeZero) * depthSkew;
+				depth[i] = (phase[i] - planephase) * depthScale;
+			} else {
+				depth[i] = 0;
 			}
 		}
 	}
+
+	int offsetBins[offsetBinCount];
+	memset(offsetBins, 0, offsetBinCount * sizeof(int));
+	float offsetBinOffset = (offsetBinCount * offsetBinSize) / 2;
+	for(int i = 0; i < n; i++) {
+		if(!mask[i]) {
+			int cur = (int) ((depth[i] + offsetBinOffset) / offsetBinSize);
+			if(cur < 0)
+				cur = 0;
+			else if(cur >= offsetBinCount)
+				cur = offsetBinCount - 1;
+			offsetBins[cur]++;
+		}
+	}
+
+	int biggestBin = 0;
+	int biggestBinSize = 0;
+	for(int i = 0; i < offsetBinCount; i++) {
+		if(offsetBins[i] > biggestBinSize) {
+			biggestBinSize = offsetBins[i];
+			biggestBin = i;
+		}
+	}
+
+	float offset = (biggestBin * offsetBinSize) - offsetBinOffset;
+
+	for(int i = 0; i < n; i++)
+		depth[i] -= offset;
 }
 
 byte* PhaseDecoder::getColor() {
