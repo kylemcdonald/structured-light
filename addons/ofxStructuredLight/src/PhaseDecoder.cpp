@@ -18,7 +18,8 @@ PhaseDecoder::PhaseDecoder() :
 		orientation(PHASE_VERTICAL),
 		phasePersistence(false),
 		lastPhase(false),
-		range(NULL) {
+		range(NULL),
+		unwrapOrder(NULL)  {
 }
 
 // This code should migrate to DepthDecoder, as it will
