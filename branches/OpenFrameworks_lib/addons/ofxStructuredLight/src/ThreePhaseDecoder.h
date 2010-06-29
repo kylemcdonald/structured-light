@@ -14,6 +14,10 @@
 				(a - b))))
 #endif
 
+//#define USE_GAMMA
+//#define ACCURATE_COLOR
+#define LINEARIZE_PHASE
+
 #include "libexport.h"
 
 /*
@@ -29,11 +33,40 @@ public:
 	void setup(int width, int height);
 	float* getRange();
 	void setRangeThreshold(float rangeThreshold);
-	float getRangeThreshold();
+	void setBrightness(float brightness);
+	#ifdef USE_GAMMA
+	float Gamma(float x, float gamma);
+	float oldGamma;
+	#endif
+
+	#ifdef LINEARIZE_PHASE
+	void setLinearize(bool linearize);
+	int getLutWidth() const;
+	int getLutHeight() const;
+	const float* getLut(int i) const;
+	#endif
+
 protected:
 	void makePhase();
 	void unwrapPhase();
 	void makeColor();
-	float* range;
-	static float rangeThreshold;
+
+	float brightness;
+	float rangeThreshold;
+
+	#ifdef USE_GAMMA
+	static const int LUT_SIZE = 16384;
+	float gammaLut[LUT_SIZE];
+	#endif
+
+	#ifdef LINEARIZE_PHASE
+	bool linearize;
+
+	static const int lutWidth = 128;
+	static const int lutHeight = 16;
+	float lut[lutHeight][lutWidth];
+
+	void buildLut();
+	void applyLut();
+	#endif
 };

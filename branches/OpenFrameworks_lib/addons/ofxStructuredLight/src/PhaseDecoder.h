@@ -4,6 +4,9 @@
 #include "FastBlur.h"
 #include "PhaseConstants.h"
 
+//#define LINEARIZE_GAMMA
+
+
 #include <string>
 
 #include "libexport.h"
@@ -32,6 +35,7 @@ protected:
 	int sequenceSize;
 	byte** colorSequence;
 	byte** graySequence;
+	byte* reflectivity;
 	float* phase;
 	bool* ready;
 	float depthScale, depthSkew;
@@ -43,10 +47,20 @@ protected:
 	bool phasePersistence;
 	float* lastPhase;
 
+	#ifdef LINEARIZE_GAMMA
+	int gammaHistogram[256];
+	#endif
+
+	/// this is where phase unwrapping begins, and unwrapped phase will be zero
+	int startInd;
+
 	void setup(int width, int height, int sequenceSize);
 	virtual void makePhase() = 0;
 	virtual void unwrapPhase() = 0;
 	virtual void makeColor() = 0;
 	virtual int getStart();
 	float getRemaining();
+
+	static const int offsetBinSize = 128;
+	static const int offsetBinCount = 256;
 };

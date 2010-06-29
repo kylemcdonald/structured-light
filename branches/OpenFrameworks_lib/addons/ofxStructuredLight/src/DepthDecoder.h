@@ -24,9 +24,12 @@ public:
 	float* getDepth();
 	void filterDeviations(float deviations);
 	void filterRange(float min, float max);
-	void exportDepth(std::string filename);
-	virtual void exportCloud(std::string filename);
-	virtual void exportMesh(std::string filename);
+	void exportDepth(string filename, float min, float max);
+	virtual void exportCloud(string filename);
+	virtual void exportMesh(string filename);
+	float avgDepth;
+	float minDepth;
+	float maxDepth;
 protected:
 	int width, height;
 	bool* mask;

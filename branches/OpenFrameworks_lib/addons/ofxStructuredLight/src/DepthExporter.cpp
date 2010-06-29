@@ -12,9 +12,7 @@
  http://local.wasp.uwa.edu.au/~pbourke/dataformats/ply/
 */
 
-using namespace std;
-
-void DepthExporter::exportDepth(string filename, int width, int height, const bool* mask, const float* depth) {
+void DepthExporter::exportDepth(string filename, int width, int height, const bool* mask, const float* depth, float min, float max) {
 #ifdef OPENFRAMEWORKS_AVAIL
 	ofImage img;
 	img.allocate(width, height, OF_IMAGE_GRAYSCALE);
@@ -24,25 +22,12 @@ void DepthExporter::exportDepth(string filename, int width, int height, const bo
 	unsigned char* pixels = (unsigned char*)(img->imageData);
 #endif
 	int n = width * height;
-
-	float min = +std::numeric_limits<float>::max();
-	float max = -std::numeric_limits<float>::max();
-
-	for(int i = 0; i < n; i++) {
-		if(!mask[i]) {
-			if(depth[i] < min)
-				min = depth[i];
-			if(depth[i] > max)
-				max = depth[i];
-		}
-	}
-
-	for(int i = 0; i < n; i++) {
-		if(mask[i]) {
+	for (int i = 0; i < n; i++) {
+		if (mask[i]) {
 			pixels[i] = 0;
 		} else {
 #ifdef OPENFRAMEWORKS_AVAIL
-			pixels[i] = (unsigned char) ofClamp(ofMap(depth[i], min, max, 0, 255), 0, 255);
+			pixels[i] = (unsigned char) ofClamp(ofMap(depth[i], min, max, 1, 256), 1, 255);
 #else
 			//TODO
 #endif

@@ -40,7 +40,7 @@ void testApp::setup(){
 
 	panel.addSlider("range threshold", "rangeThreshold", 40, 0, 255, true);
 
-	panel.addSlider("depth scale", "depthScale", 130, -200, 200, false);
+	panel.addSlider("depth scale", "depthScale", 130, -500, 500, false);
 	panel.addSlider("depth skew", "depthSkew", -28, -50, 50, false);
 
 	panel.addSlider("filter min", "filterMin", -1024, -1024, 1024, false);
@@ -245,7 +245,7 @@ void testApp::update(){
 			if(curRecord)
 				name += "-" + ofToString(sequenceFrame);
 			if(curFormat == ".png") {
-				threePhase->exportDepth("output/" + name + "-depth.png");
+				threePhase->exportDepth("output/" + name + "-depth.png", panel.getValueI("filterMin"), panel.getValueI("filterMax"));
 			} else {
 				int curStyle = panel.getValueI("style");
 				string outputFile = "output/" + name + "-" + styles[curStyle] + curFormat;
@@ -364,6 +364,99 @@ void testApp::draw(){
 	if(panel.getValueB("renderMovie") && hidden) {
 		screenCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
 		movieOutput.addFrame(screenCapture.getPixels(), 1. / panel.getValueI("movieFramerate"));
+	}
+
+	glPopMatrix();
+
+	if ((threePhase != NULL) && panel.getValueB("hud")) {
+
+		int srcWidth = threePhase->getWidth();
+		int srcHeight = threePhase->getHeight();
+
+		if (redraw) {
+			bool* mask = threePhase->getMask();
+			float* depth = threePhase->getDepth();
+			byte* color = threePhase->getColor();
+			float* phase = threePhase->getPhase();
+			float* wrappedPhase = threePhase->getWrappedPhase();
+			float* range = threePhase->getRange();
+			float* unwrapOrder = threePhase->unwrapOrder;
+
+			unsigned char* upix = phaseUnwrapped.getPixels();
+			unsigned char* ppix = phaseWrapped.getPixels();
+			unsigned char* rpix = rangeIm.getPixels();
+			unsigned char* opix = unwrapOrderIm.getPixels();
+			unsigned char* dpix = depthIm.getPixels();
+
+			///float minPhase = threePhase->minPhase;
+			///float maxPhase = threePhase->maxPhase;
+			float minPhase = -panel.getValueF("maxPhase");
+			float maxPhase = -minPhase;
+
+			// threePhase->minDepth,threePhase->maxDepth
+			float maxDepth = pow(10, panel.getValueF("maxDepth"));
+			float minDepth = -maxDepth;
+
+			int i = 0;
+			for (int y = 0; y < srcHeight; y++) {
+				for (int x = 0; x < srcWidth; x++) {
+					ppix[i] = (char) ofMap(wrappedPhase[i],
+					                            0, 1,
+					                            0, 255);
+
+					rpix[i] = (char) range[i];
+
+					float mag;
+					ofColor col;
+
+					if (!mask[i]) {
+						mag = ofMap(phase[i], minPhase, maxPhase, 0.0, 1.0);
+					} else {
+						mag = 0.5;
+					}
+					col = makeColor(mag);
+
+					upix[i*3] =  (char)col.r;
+					upix[i*3+1] = (char)col.g;
+					upix[i*3+2] = (char)col.b;
+
+					mag = 1.0 - ofMap(depth[i], minDepth, maxDepth, 0.0, 1.0);
+					col = makeColor(mag);
+					dpix[i*3] = (short) col.r;
+					dpix[i*3+1] = (short) col.g;
+					dpix[i*3+2] = (short) col.b;
+
+					mag = unwrapOrder[i] / (float)(srcWidth * srcHeight);
+					col = makeColor(mag);
+					opix[i*3] = (short) col.r;
+					opix[i*3+1] = (short) col.g;
+					opix[i*3+2] = (short) col.b;
+
+					i++;
+				}
+			}
+			phaseUnwrapped.update();
+			phaseWrapped.update();
+			rangeIm.update();
+			unwrapOrderIm.update();
+			depthIm.update();
+
+		}
+
+		int w = (int)panel.getValueF("hudWidth");
+		float hOff = panel.getValueF("hudHeightOffset");
+
+		ofSetColor(255, 255, 255);
+		glColor3f(1, 1, 1);
+		float sc = (float)srcHeight / (float)srcWidth;
+		hOff *= -2 * w * sc;
+
+		phaseUnwrapped.getTextureReference().draw(ofGetWidth() - w, hOff + 0*w*sc, w, w*sc);
+		depthIm.getTextureReference().draw(ofGetWidth() - w, hOff + 1*w*sc, w, w*sc);
+		rangeIm.getTextureReference().draw(ofGetWidth() - w, hOff + 2*w*sc, w, w*sc);
+
+		unwrapOrderIm.getTextureReference().draw(ofGetWidth() - 2*w, hOff + 0*w*sc, w, w*sc);
+		phaseWrapped.getTextureReference().draw(ofGetWidth() - 2*w, hOff + 1*w*sc, w, w*sc);
 	}
 }
 
