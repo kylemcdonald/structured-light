@@ -17,6 +17,8 @@
 #include "ofxAutoControlPanel.h"
 #include "ofxQtVideoSaver.h"
 
+#include "ofxVectorMath.h"
+
 #include <fstream>
 
 class testApp : public ofBaseApp {
