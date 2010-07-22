@@ -48,4 +48,6 @@ public:
 	int lastCameraRate;
 	int cameraFrameNum;
 	int patternFrame;
+
+	bool blackout;
 };

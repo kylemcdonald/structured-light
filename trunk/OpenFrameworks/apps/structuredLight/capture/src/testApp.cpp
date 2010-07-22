@@ -29,6 +29,7 @@ void testApp::frameReceived(ofVideoGrabber& grabber) {
 void testApp::setup(){
 	hidden = false;
 	lastEnableCamera = false;
+	blackout = false;
 	cameraFrameNum = 0;
 
 	threePhase.setSize(1024, 768);
@@ -50,16 +51,16 @@ void testApp::setup(){
 	// setup panel
 	panel.setup("control", 8, 8, 300, 740);
 	panel.loadSettings("control.xml");
-	panel.addPanel("capture", 1);
-	panel.addPanel("three phase", 1);
-	panel.addPanel("gray code", 1);
 
+	panel.addPanel("capture", 1);
 	panel.setWhichPanel("capture");
 	panel.addToggle("enable camera", "enableCamera", false);
 	panel.addToggle("camera settings", "cameraSettings", false);
 	panel.addToggle("fullscreen", "fullscreen", false);
 	panel.addToggle("frame by frame", "frameByFrame", false);
 
+	panel.addPanel("pattern", 1);
+	panel.setWhichPanel("pattern");
 	vector<string> patternTypes;
 	patternTypes.push_back("three phase");
 	patternTypes.push_back("gray code");
@@ -71,15 +72,18 @@ void testApp::setup(){
 	orientations.push_back("horizonal");
 	panel.addMultiToggle("orientation", "orientation", 0, orientations);
 	panel.addToggle("reverse", "reverse", false);
-	panel.addSlider("pattern rate", "patternRate", 1, 1, 6, true);
-	panel.addSlider("camera rate", "cameraRate", 1, 1, 6, true);
-	panel.addSlider("camera offset", "cameraOffset", 0, 0, 5, true);
+	panel.addSlider("pattern rate", "patternRate", 1, 1, 12, true);
+	panel.addSlider("pattern offset", "patternOffset", 0, 0, 11, true);
+	panel.addSlider("camera rate", "cameraRate", 1, 1, 12, true);
+	panel.addSlider("camera offset", "cameraOffset", 0, 0, 11, true);
 	panel.addSlider("min brightness", "minBrightness", 0, 0, 255, true);
 	panel.addToggle("use projector lut", "projectorLut", false);
 
+	panel.addPanel("three phase", 1);
 	panel.setWhichPanel("three phase");
 	panel.addSlider("wavelength", "wavelength", 64, 8, 512, true);
 
+	panel.addPanel("gray code", 1);
 	panel.setWhichPanel("gray code");
 	panel.addSlider("subdivisions", "subdivisions", 10, 1, 10, true);
 
@@ -190,44 +194,49 @@ void testApp::update(){
 }
 
 void testApp::draw(){
-	if(!panel.getValueB("frameByFrame")){
-		patternFrame = ofGetFrameNum() / panel.getValueI("patternRate");
-	}
-	curGenerator->get(patternFrame).draw(0, 0);
-	if(!hidden) {
-		int cameraRate = panel.getValueI("cameraRate");
-		int cameraOffset = panel.getValueI("cameraOffset");
-		ofPushStyle();
-		ofPushMatrix();
-		int padding = 8;
-		ofTranslate(panel.getWidth() + padding * 2, padding);
-		int recentWidth = 160;
-		int recentHeight = 120;
-		for(int i = 0; i < curGenerator->size(); i++) {
-			ofPushMatrix();
-			ofTranslate(
-				(i % 3) * (recentWidth + padding),
-				(i / 3) * (recentHeight + padding));
-			ofSetColor(255, 255, 255);
-			if(needsUpdate[i]) {
-				recent[i].update();
-				needsUpdate[i] = false;
-			}
-			recent[i].draw(0, 0, recentWidth, recentHeight);
-			ofSetColor(255, 0, 0);
-			ofNoFill();
-			ofRect(0, 0, recentWidth, recentHeight);
-			ofPopMatrix();
+	if(blackout) {
+		ofBackground(0, 0, 0);
+	} else {
+		if(!panel.getValueB("frameByFrame")){
+			patternFrame = (ofGetFrameNum() + panel.getValueI("patternOffset")) / panel.getValueI("patternRate");
 		}
-		ofPopMatrix();
-		ofPopStyle();
+		curGenerator->get(patternFrame).draw(0, 0);
+		if(!hidden) {
+			int cameraRate = panel.getValueI("cameraRate");
+			int cameraOffset = panel.getValueI("cameraOffset");
+			ofPushStyle();
+			ofPushMatrix();
+			int padding = 8;
+			ofTranslate(panel.getWidth() + padding * 2, padding);
+			int recentWidth = 160;
+			int recentHeight = 120;
+			for(int i = 0; i < curGenerator->size(); i++) {
+				ofPushMatrix();
+				ofTranslate(
+					(i % 3) * (recentWidth + padding),
+					(i / 3) * (recentHeight + padding));
+				ofSetColor(255, 255, 255);
+				if(needsUpdate[i]) {
+					recent[i].update();
+					needsUpdate[i] = false;
+				}
+				recent[i].draw(0, 0, recentWidth, recentHeight);
+				ofSetColor(255, 0, 0);
+				ofNoFill();
+				ofRect(0, 0, recentWidth, recentHeight);
+				ofPopMatrix();
+			}
+			ofPopMatrix();
+			ofPopStyle();
+		}
 	}
 }
 
 void testApp::keyPressed(int key) {
-	if(key == 'f') {
+	if(key == 'f')
 		ofToggleFullscreen();
-	}
+	if(key == 'b')
+		blackout = !blackout;
 	if(key == '\t') {
 		hidden = !hidden;
 		panel.hidden = hidden;
