@@ -205,6 +205,11 @@ void testApp::setupInput() {
 	if (usingDirectory) {
 		inputDir = "input/" + name + "/";
 		totalImages = imageList.listDir(inputDir);
+
+		for(int i = 0; i < totalImages; i++) {
+			cout << i << ": " << imageList.getName(i) << endl;
+		}
+
 		ofImage phase;
 		//  TBD
 		string imageName = imageList.getName(0);

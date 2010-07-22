@@ -16,7 +16,7 @@
 #include "ofxStructuredLight.h"
 #include "ofxAutoControlPanel.h"
 #include "ofxQtVideoSaver.h"
-
+#include "ofxNumericalDirList.h"
 #include "ofxVectorMath.h"
 
 #include <fstream>
@@ -48,7 +48,7 @@ public:
 	string inputDir;
 
 	simpleFileLister inputList;
-	ofxDirList imageList;
+	ofxNumericalDirList imageList;
 	ofVideoPlayer movieInput;
 	bool usingDirectory;
 	unsigned totalImages;

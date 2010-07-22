@@ -183,6 +183,7 @@
 		<Unit filename="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
 		<Unit filename="src\main.cpp" />
 		<Unit filename="src\ofxAutoControlPanel.h" />
+		<Unit filename="src\ofxNumericalDirList.h" />
 		<Unit filename="src\testApp.cpp" />
 		<Unit filename="src\testApp.h" />
 		<Extensions>
