@@ -20,9 +20,8 @@ void testApp::setup() {
 
 	panel.setWhichPanel("input");
 
-	
-	cuantos = inputList.listDir("input");
-	
+	inputList.listDir("input");
+
 	panel.addFileLister("input", &inputList, 240, 440);
 	panel.addSlider("camera rate", "cameraRate", 1, 1, 6, true);
 	panel.addSlider("camera offset", "cameraOffset", 0, 0, 5, true);
@@ -76,7 +75,7 @@ void testApp::setup() {
 
 	panel.addSlider("maxPhase", "maxPhase", 10.0, 0.0, 100.0, false);
 	panel.addSlider("maxDepth power", "maxDepth", 3.0, 0.0, 5.0, false);
-	
+
 }
 
 void testApp::drawCloud() {
@@ -457,7 +456,7 @@ void testApp::draw() {
 	if (hidden)
 		ofBackground(0, 0, 0);
 	else
-		ofBackground(128, 128, 128);	
+		ofBackground(128, 128, 128);
 	glPushMatrix();
 	camera.place();
 	glEnable(GL_DEPTH_TEST);
