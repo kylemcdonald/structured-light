@@ -1,0 +1,162 @@
+// !$*UTF8*$!
+{
+	B01BC01011F12675009D9444 /* StructuredLight FastThreePhase */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = "StructuredLight FastThreePhase";
+		sourceDirectories = (
+		);
+	};
+	B01BC01411F12681009D9444 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */;
+		name = "main.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 184;
+		vrLoc = 0;
+	};
+	B01BC01611F12681009D9444 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */;
+		name = "main.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 184;
+		vrLoc = 0;
+	};
+	B01BC01B11F12681009D9444 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	B01BC01C11F12681009D9444 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	B01BC02211F12692009D9444 /* testApp.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {519, 1834}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 567}";
+		};
+	};
+	B01BC05211F127C6009D9444 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B01BC02211F12692009D9444 /* testApp.cpp */;
+		name = "testApp.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 567;
+		vrLoc = 0;
+	};
+	B01BC06811F127DD009D9444 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B01BC02211F12692009D9444 /* testApp.cpp */;
+		name = "testApp.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 567;
+		vrLoc = 0;
+	};
+	E4B69B4C0A3A1720003C02F2 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = B01BC01011F12675009D9444 /* StructuredLight FastThreePhase */;
+		activeTarget = E4B69B5A0A3A1756003C02F2 /* StructuredLight FastThreePhase */;
+		addToTargets = (
+			E4B69B5A0A3A1756003C02F2 /* StructuredLight FastThreePhase */,
+		);
+		codeSenseManager = B01BC01C11F12681009D9444 /* Code sense */;
+		executables = (
+			B01BC01011F12675009D9444 /* StructuredLight FastThreePhase */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					341,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXSymbolsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXSymbolsDataSource_SymbolNameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					16,
+					200,
+					50,
+					281,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXSymbolsDataSource_SymbolTypeIconID,
+					PBXSymbolsDataSource_SymbolNameID,
+					PBXSymbolsDataSource_SymbolTypeID,
+					PBXSymbolsDataSource_ReferenceNameID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 301017046;
+			PBXWorkspaceStateSaveDate = 301017046;
+		};
+		perUserProjectItems = {
+			B01BC01411F12681009D9444 /* PBXTextBookmark */ = B01BC01411F12681009D9444 /* PBXTextBookmark */;
+			B01BC01611F12681009D9444 /* PBXTextBookmark */ = B01BC01611F12681009D9444 /* PBXTextBookmark */;
+			B01BC05211F127C6009D9444 /* PBXTextBookmark */ = B01BC05211F127C6009D9444 /* PBXTextBookmark */;
+			B01BC06811F127DD009D9444 /* PBXTextBookmark */ = B01BC06811F127DD009D9444 /* PBXTextBookmark */;
+		};
+		sourceControlManager = B01BC01B11F12681009D9444 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	E4B69B5A0A3A1756003C02F2 /* StructuredLight FastThreePhase */ = {
+		activeExec = 0;
+		executables = (
+			B01BC01011F12675009D9444 /* StructuredLight FastThreePhase */,
+		);
+	};
+	E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {
+		isa = PBXFileReference;
+		fileEncoding = 30;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = main.cpp;
+		path = /Users/roy/Desktop/CODE/OpenFrameworks/of_preRelease_v0061_osx_FAT1/apps/structuredLight/FastThreePhase/src/main.cpp;
+		sourceTree = "<absolute>";
+	};
+}
