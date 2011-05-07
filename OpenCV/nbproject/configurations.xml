@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="62">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>Global.h</itemPath>
+      <itemPath>R3DCamera.h</itemPath>
+      <itemPath>R3DScene.h</itemPath>
+      <itemPath>R3DSceneWindow.h</itemPath>
+      <itemPath>R3DUtil.h</itemPath>
+      <itemPath>RApp.h</itemPath>
+      <itemPath>RCalibUtil.h</itemPath>
+      <itemPath>RCalibWindow.h</itemPath>
+      <itemPath>RCaptWindow.h</itemPath>
+      <itemPath>RCvCamera.h</itemPath>
+      <itemPath>RExporter.h</itemPath>
+      <itemPath>RImageWindow.h</itemPath>
+      <itemPath>RPixelQueue.h</itemPath>
+      <itemPath>RReconstWindow.h</itemPath>
+      <itemPath>RScanUtil.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>R3DCamera.cpp</itemPath>
+      <itemPath>R3DScene.cpp</itemPath>
+      <itemPath>R3DSceneWindow.cpp</itemPath>
+      <itemPath>R3DUtil.cpp</itemPath>
+      <itemPath>RApp.cpp</itemPath>
+      <itemPath>RCalibUtil.cpp</itemPath>
+      <itemPath>RCalibWindow.cpp</itemPath>
+      <itemPath>RCaptWindow.cpp</itemPath>
+      <itemPath>RCvCamera.cpp</itemPath>
+      <itemPath>RExporter.cpp</itemPath>
+      <itemPath>RImageWindow.cpp</itemPath>
+      <itemPath>RPixelQueue.cpp</itemPath>
+      <itemPath>RReconstWindow.cpp</itemPath>
+      <itemPath>RScanUtil.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/GL</pElem>
+            <pElem>/usr/include</pElem>
+            <pElem>/usr/local/include</pElem>
+            <pElem>/usr/lib/gcc/i486-linux-gnu/4.4.3/include</pElem>
+            <pElem>/usr/lib/gcc/i486-linux-gnu/4.4/include-fixed</pElem>
+            <pElem>/usr/local/include/wx-2.8</pElem>
+            <pElem>/usr/local/include/opencv</pElem>
+          </incDir>
+          <commandLine>`/usr/local/lib/wx/config/gtk2-ansi-release-2.8 --cxxflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>/usr/include/GL</pElem>
+            <pElem>/usr/local/include/wx-2.8</pElem>
+            <pElem>/usr/local/lib</pElem>
+            <pElem>/usr/local/lib/wx</pElem>
+            <pElem>/usr/local/lib/wx/include/gtk2-ansi-release-2.8/wx</pElem>
+            <pElem>/usr/local/lib/wx/config</pElem>
+            <pElem>/usr/local/include/opencv</pElem>
+          </linkerAddLib>
+          <commandlineTool>g++</commandlineTool>
+          <linkerLibItems>
+          </linkerLibItems>
+          <commandLine>-I/usr/local/include/opencv -L/usr/local/lib -lcxcore -lcv -lhighgui -lcvaux -lml -L/usr/lib -lglut -lGL -lGLU `/usr/local/lib/wx/config/gtk2-ansi-release-2.8 --libs --gl_libs`</commandLine>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
